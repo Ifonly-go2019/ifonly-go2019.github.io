@@ -22,7 +22,7 @@
     <meta name="description" content="">
     <meta property="og:type" content="website">
 <meta property="og:title" content="可惜没如果、m0nk3y‘s Blog">
-<meta property="og:url" content="https://hack-for.fun/tags/%E7%AC%AC%E4%B8%89%E6%96%B9%E6%BC%8F%E6%B4%9E/index.html">
+<meta property="og:url" content="https://hack-for.fun/tags/Redis/index.html">
 <meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="m0nk3y">
@@ -355,12 +355,16 @@
     
     
     <article class="index-post">
-        <a class="abstract-title" href = "/e42fccb.html" >
+        <a class="abstract-title" href = "/c10c5ca9.html" >
             
-                <span>常见端口服务漏洞</span>
+                <span>Redis 安全学习笔记</span>
         </a>
         <div class="abstract-content">
-            列举21    ftp/tftp/vsftpd文件传输协议    爆破/嗅探/溢出/后门22    ssh远程连接    爆破/openssh漏洞23    Telnet远程连接    爆破/嗅探/弱口令25    SMTP邮件服务    邮件伪造53    DNS域名解析系统    域传送/劫持/缓存投毒/欺骗81    Ipcam    登陆绕过/远程代码执行110    pop3    爆破/嗅探139    Samba服务    爆破/未授权访问/远程命令执行143    Imap协议    爆破389    Ldap目录访问协议    注入/未授权访问/弱口令445    sm...
+            最近放出来的文章都是以前早就总结好的了。
+Redis 安全学习笔记
+[TOC]
+实战环境下，感觉Redis 未授权非常常见，而我之前只知道怎么利用别人的写好的工具去解CTF，没有去研究过原理，遂在端午节来研究一波！
+Redis 介绍Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、 Key-Value数据库。和Memcached类似，它支持存储的value 类型相对更多，包括 string(字符串)、list ( 链表)、 set(集合)、zset(sorted set – 有序集合)和 hash（哈希类型）。这些数据类型都支持push/pop 、 ...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
@@ -371,7 +375,7 @@
             
             <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = "第三方漏洞">第三方漏洞</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "Redis">Redis</a>
     
 </div>
             
@@ -495,9 +499,18 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 3
+        Total : 4
         </div>
         <!-- search  -->
         
@@ -510,6 +523,11 @@
     
     <div class="archive-year"> 2020 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/26</span><a class="archive-post-title" href= "/c10c5ca9.html" >Redis 安全学习笔记</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -533,7 +551,9 @@
     
         <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
     
-        <span class="sidebar-tag-name" data-tags="第三方漏洞"><span class="iconfont-archer">&#xe606;</span>第三方漏洞</span>
+        <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
+    
+        <span class="sidebar-tag-name" data-tags="Redis"><span class="iconfont-archer">&#xe606;</span>Redis</span>
     
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
