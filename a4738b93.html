@@ -20,15 +20,15 @@
     <meta name="keywords" content="信息安全,CTF,攻防对抗,代码审计,安全研究,渗透测试">
     
     <meta name="description" content="">
-    <meta name="description" content="[toc] 今天要回学校了，回学校也快考实验班了，我C 语言太菜，CTF 也很久没玩了。所以简单总结一下之前有遇到过的CTF 知识。慢慢补充细节和其他内容。 脚本题(python、php)快速计算并发起HTTP 请求快速处理数据在大量数据中获取指定内容php 伪随机数安全比较常见的就是seed 爆破。 加密算法可破解XSS反射型XSS存储型XSSDOM-XSSXSS 打cookie的姿势bypas">
+    <meta name="description" content="[toc] 今天要回学校了，回学校也快考实验班了，我C 语言太菜，CTF 也很久没玩了。所以简单总结一下之前有遇到过的CTF 知识。慢慢补充细节和其他内容。 脚本题(python、php)快速计算并发起HTTP 请求快速处理数据在大量数据中获取指定内容php 伪随机数安全比较常见的就是seed 爆破。 https:&#x2F;&#x2F;www.anquanke.com&#x2F;post&#x2F;id&#x2F;215349 加密算法可破解X">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CTF Tricks 总结">
 <meta property="og:url" content="https://hack-for.fun/a4738b93.html">
 <meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
-<meta property="og:description" content="[toc] 今天要回学校了，回学校也快考实验班了，我C 语言太菜，CTF 也很久没玩了。所以简单总结一下之前有遇到过的CTF 知识。慢慢补充细节和其他内容。 脚本题(python、php)快速计算并发起HTTP 请求快速处理数据在大量数据中获取指定内容php 伪随机数安全比较常见的就是seed 爆破。 加密算法可破解XSS反射型XSS存储型XSSDOM-XSSXSS 打cookie的姿势bypas">
+<meta property="og:description" content="[toc] 今天要回学校了，回学校也快考实验班了，我C 语言太菜，CTF 也很久没玩了。所以简单总结一下之前有遇到过的CTF 知识。慢慢补充细节和其他内容。 脚本题(python、php)快速计算并发起HTTP 请求快速处理数据在大量数据中获取指定内容php 伪随机数安全比较常见的就是seed 爆破。 https:&#x2F;&#x2F;www.anquanke.com&#x2F;post&#x2F;id&#x2F;215349 加密算法可破解X">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-08-27T03:06:06.000Z">
-<meta property="article:modified_time" content="2020-08-27T14:38:33.200Z">
+<meta property="article:modified_time" content="2020-08-29T02:28:42.264Z">
 <meta property="article:author" content="m0nk3y">
 <meta property="article:tag" content="CTF">
 <meta name="twitter:card" content="summary">
@@ -286,7 +286,7 @@ height:50vh;
                 
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">545</span>Reading time: <span class="post-count reading-time">2 min</span></span>
+                        <span>Word count: <span class="post-count word-count">552</span>Reading time: <span class="post-count reading-time">2 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
@@ -418,6 +418,7 @@ height:50vh;
         <p>[toc]</p>
 <p>今天要回学校了，回学校也快考实验班了，我C 语言太菜，CTF 也很久没玩了。所以简单总结一下之前有遇到过的CTF 知识。慢慢补充细节和其他内容。</p>
 <h1 id="脚本题-python、php"><a href="#脚本题-python、php" class="headerlink" title="脚本题(python、php)"></a>脚本题(python、php)</h1><h2 id="快速计算并发起HTTP-请求"><a href="#快速计算并发起HTTP-请求" class="headerlink" title="快速计算并发起HTTP 请求"></a>快速计算并发起HTTP 请求</h2><h2 id="快速处理数据"><a href="#快速处理数据" class="headerlink" title="快速处理数据"></a>快速处理数据</h2><h2 id="在大量数据中获取指定内容"><a href="#在大量数据中获取指定内容" class="headerlink" title="在大量数据中获取指定内容"></a>在大量数据中获取指定内容</h2><h2 id="php-伪随机数安全"><a href="#php-伪随机数安全" class="headerlink" title="php 伪随机数安全"></a>php 伪随机数安全</h2><p>比较常见的就是seed 爆破。</p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/215349">https://www.anquanke.com/post/id/215349</a></p>
 <h2 id="加密算法可破解"><a href="#加密算法可破解" class="headerlink" title="加密算法可破解"></a>加密算法可破解</h2><h1 id="XSS"><a href="#XSS" class="headerlink" title="XSS"></a>XSS</h1><h2 id="反射型XSS"><a href="#反射型XSS" class="headerlink" title="反射型XSS"></a>反射型XSS</h2><h2 id="存储型XSS"><a href="#存储型XSS" class="headerlink" title="存储型XSS"></a>存储型XSS</h2><h2 id="DOM-XSS"><a href="#DOM-XSS" class="headerlink" title="DOM-XSS"></a>DOM-XSS</h2><h2 id="XSS-打cookie的姿势"><a href="#XSS-打cookie的姿势" class="headerlink" title="XSS 打cookie的姿势"></a>XSS 打cookie的姿势</h2><h2 id="bypass"><a href="#bypass" class="headerlink" title="bypass"></a>bypass</h2><h1 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h1><h1 id="XXE"><a href="#XXE" class="headerlink" title="XXE"></a>XXE</h1><h2 id="有回显XXE"><a href="#有回显XXE" class="headerlink" title="有回显XXE"></a>有回显XXE</h2><h2 id="blind-XXE"><a href="#blind-XXE" class="headerlink" title="blind XXE"></a>blind XXE</h2><h2 id="oob"><a href="#oob" class="headerlink" title="oob"></a>oob</h2><h2 id="bypass-1"><a href="#bypass-1" class="headerlink" title="bypass"></a>bypass</h2><h1 id="SSI"><a href="#SSI" class="headerlink" title="SSI"></a>SSI</h1><p>SSI 注入全称Server-Side Includes Injection，即服务端包含注入。SSI 是类似于 CGI，用于动态页面的指令。SSI 注入允许远程在 Web 应用中注入脚本来执行代码。</p>
 <p>SSI是嵌入HTML页面中的指令，在页面被提供时由服务器进行运算，以对现有HTML页面增加动态生成的内容，而无须通过CGI程序提供其整个页面，或者使用其他动态技术。</p>
 <h1 id="SSTI"><a href="#SSTI" class="headerlink" title="SSTI"></a>SSTI</h1><h2 id="Flask"><a href="#Flask" class="headerlink" title="Flask"></a>Flask</h2><h2 id="Twig"><a href="#Twig" class="headerlink" title="Twig"></a>Twig</h2><h2 id="Bypass"><a href="#Bypass" class="headerlink" title="Bypass"></a>Bypass</h2><h1 id="SQL-Injection"><a href="#SQL-Injection" class="headerlink" title="SQL Injection"></a>SQL Injection</h1><h2 id="普通注入"><a href="#普通注入" class="headerlink" title="普通注入"></a>普通注入</h2><h2 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h2><h2 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h2><h2 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h2><h2 id="读、写文件"><a href="#读、写文件" class="headerlink" title="读、写文件"></a>读、写文件</h2><h2 id="Oracle-mssql"><a href="#Oracle-mssql" class="headerlink" title="Oracle \ mssql"></a>Oracle \ mssql</h2><h2 id="bypass-2"><a href="#bypass-2" class="headerlink" title="bypass"></a>bypass</h2><h1 id="SSRF"><a href="#SSRF" class="headerlink" title="SSRF"></a>SSRF</h1><h2 id="SSRF-探测内网主机存活"><a href="#SSRF-探测内网主机存活" class="headerlink" title="SSRF 探测内网主机存活"></a>SSRF 探测内网主机存活</h2><h2 id="SSRF-文件读取"><a href="#SSRF-文件读取" class="headerlink" title="SSRF 文件读取"></a>SSRF 文件读取</h2><h1 id="RCE"><a href="#RCE" class="headerlink" title="RCE"></a>RCE</h1><h2 id="常规RCE"><a href="#常规RCE" class="headerlink" title="常规RCE"></a>常规RCE</h2><h2 id="Bypass-disable-functions"><a href="#Bypass-disable-functions" class="headerlink" title="Bypass disable_functions"></a>Bypass disable_functions</h2><h2 id="Bypass-open-basedir"><a href="#Bypass-open-basedir" class="headerlink" title="Bypass open_basedir"></a>Bypass open_basedir</h2><h2 id="无字母数字webshell"><a href="#无字母数字webshell" class="headerlink" title="无字母数字webshell"></a>无字母数字webshell</h2><p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/webshell-without-alphanum-advanced.html">https://www.leavesongs.com/PENETRATION/webshell-without-alphanum-advanced.html</a></p>
@@ -430,13 +431,18 @@ height:50vh;
             <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
             <p>原文链接：<a href="https://hack-for.fun/a4738b93.html">https://hack-for.fun/a4738b93.html</a>
             <p>发表日期：<a href="https://hack-for.fun/a4738b93.html">August 27th 2020, 11:06:06 am</a>
-            <p>更新日期：<a href="https://hack-for.fun/a4738b93.html">August 27th 2020, 10:38:33 pm</a>
+            <p>更新日期：<a href="https://hack-for.fun/a4738b93.html">August 29th 2020, 10:28:42 am</a>
             <p>版权声明：<b>原创文章转载时请注明出处</b></p>
         </div>
     
     <!-- paginator  -->
     <ul class="post-paginator">
         <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/bc077bb7.html" title= "HTTP request smuggling(请求走私)">
+                    <div class="nextTitle">HTTP request smuggling(请求走私)</div>
+                </a>
             
         </li>
         <li class="previous">
@@ -630,9 +636,42 @@ top:50vh;
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 6
+        Total : 9
         </div>
         <!-- search  -->
         
@@ -645,6 +684,21 @@ top:50vh;
     
     <div class="archive-year"> 2020 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/dbb484a9.html" >CTF - RCE</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/103ec22a.html" >CTF - 文件上传</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/29</span><a class="archive-post-title" href= "/bc077bb7.html" >HTTP request smuggling(请求走私)</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -681,9 +735,11 @@ top:50vh;
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
-    
         <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="协议层安全"><span class="iconfont-archer">&#xe606;</span>协议层安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
     
         <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
     
@@ -724,9 +780,9 @@ jsonContent:
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
-        <span class="sidebar-category-name" data-categories="渗透测试"><span class="iconfont-archer">&#xe60a;</span>渗透测试</span>
-    
         <span class="sidebar-category-name" data-categories="CTF"><span class="iconfont-archer">&#xe60a;</span>CTF</span>
+    
+        <span class="sidebar-category-name" data-categories="渗透测试"><span class="iconfont-archer">&#xe60a;</span>渗透测试</span>
     
         <span class="sidebar-category-name" data-categories="运维知识"><span class="iconfont-archer">&#xe60a;</span>运维知识</span>
     
