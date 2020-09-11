@@ -20,22 +20,20 @@
     <meta name="keywords" content="信息安全,CTF,攻防对抗,代码审计,安全研究,渗透测试">
     
     <meta name="description" content="">
-    <meta name="description" content="文件包含漏洞技术点多数情况此处只考虑php开发的后端网站、CTF 赛题。 基础知识文件包含函数php 中，与文件包含相关的函数 require()require_once()include()include_once() 伪协议远程文件包含 allow_url_open &#x3D; on  本地文件包含(反序列化)SSRF -&gt; 本地文件包含、读取日志文件包含临时文件包含session 文件包含To">
-<meta property="og:type" content="article">
-<meta property="og:title" content="CTF - 文件包含">
-<meta property="og:url" content="https://hack-for.fun/7881c78e.html">
+    <meta property="og:type" content="article">
+<meta property="og:title" content="Windows 服务器应急响应">
+<meta property="og:url" content="https://hack-for.fun/54449ea6.html">
 <meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
-<meta property="og:description" content="文件包含漏洞技术点多数情况此处只考虑php开发的后端网站、CTF 赛题。 基础知识文件包含函数php 中，与文件包含相关的函数 require()require_once()include()include_once() 伪协议远程文件包含 allow_url_open &#x3D; on  本地文件包含(反序列化)SSRF -&gt; 本地文件包含、读取日志文件包含临时文件包含session 文件包含To">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-09-02T16:40:30.000Z">
-<meta property="article:modified_time" content="2020-09-05T13:26:04.114Z">
+<meta property="article:published_time" content="2020-09-07T08:40:08.000Z">
+<meta property="article:modified_time" content="2020-09-07T08:40:56.275Z">
 <meta property="article:author" content="m0nk3y">
-<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="Linux应急响应">
 <meta name="twitter:card" content="summary">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     
-    <title>CTF - 文件包含 · m0nk3y&#39;s Blog</title>
+    <title>Windows 服务器应急响应 · m0nk3y&#39;s Blog</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -231,7 +229,7 @@
                 <a href="/" >沉下心来搞技术！</a>
             </div>
             <div class="post-title">
-                <a href="#" class="post-name">CTF - 文件包含</a>
+                <a href="#" class="post-name">Windows 服务器应急响应</a>
             </div>
     </div>
     
@@ -261,7 +259,7 @@ height:50vh;
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            CTF - 文件包含
+            Windows 服务器应急响应
             <!-- 404 -->
             
         </h1>
@@ -280,18 +278,18 @@ height:50vh;
                 
                     <div class= post-intro-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "Linux应急响应">Linux应急响应</a>
     
 </div>
                 
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">116</span>Reading time: <span class="post-count reading-time">1 min</span></span>
+                        <span>Word count: <span class="post-count word-count">0</span>Reading time: <span class="post-count reading-time">1 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
                     <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2020/09/03</span>
+                    <span class="post-intro-time">2020/09/07</span>
                     
                     <span id="busuanzi_container_page_pv" class="busuanzi-pv">
                         <span class="iconfont-archer">&#xe602;</span>
@@ -415,21 +413,15 @@ height:50vh;
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        <h1 id="文件包含漏洞技术点"><a href="#文件包含漏洞技术点" class="headerlink" title="文件包含漏洞技术点"></a>文件包含漏洞技术点</h1><p>多数情况此处只考虑php开发的后端网站、CTF 赛题。</p>
-<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="文件包含函数"><a href="#文件包含函数" class="headerlink" title="文件包含函数"></a>文件包含函数</h3><p>php 中，与文件包含相关的函数</p>
-<p>require()<br>require_once()<br>include()<br>include_once()</p>
-<h3 id="伪协议"><a href="#伪协议" class="headerlink" title="伪协议"></a>伪协议</h3><h2 id="远程文件包含"><a href="#远程文件包含" class="headerlink" title="远程文件包含"></a>远程文件包含</h2><ul>
-<li>allow_url_open = on</li>
-</ul>
-<h2 id="本地文件包含"><a href="#本地文件包含" class="headerlink" title="本地文件包含"></a>本地文件包含</h2><h3 id="反序列化-SSRF-gt-本地文件包含、读取"><a href="#反序列化-SSRF-gt-本地文件包含、读取" class="headerlink" title="(反序列化)SSRF -&gt; 本地文件包含、读取"></a>(反序列化)SSRF -&gt; 本地文件包含、读取</h3><h3 id="日志文件包含"><a href="#日志文件包含" class="headerlink" title="日志文件包含"></a>日志文件包含</h3><h3 id="临时文件包含"><a href="#临时文件包含" class="headerlink" title="临时文件包含"></a>临时文件包含</h3><h3 id="session-文件包含"><a href="#session-文件包含" class="headerlink" title="session 文件包含"></a>session 文件包含</h3><h1 id="Tomcat-Ajp-文件包含、文件读取漏洞"><a href="#Tomcat-Ajp-文件包含、文件读取漏洞" class="headerlink" title="Tomcat Ajp 文件包含、文件读取漏洞"></a>Tomcat Ajp 文件包含、文件读取漏洞</h1><h1 id="CTF"><a href="#CTF" class="headerlink" title="CTF"></a>CTF</h1>
+        
     </article>
     <!-- license  -->
     
         <div class="license-wrapper">
             <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
-            <p>原文链接：<a href="https://hack-for.fun/7881c78e.html">https://hack-for.fun/7881c78e.html</a>
-            <p>发表日期：<a href="https://hack-for.fun/7881c78e.html">September 3rd 2020, 12:40:30 am</a>
-            <p>更新日期：<a href="https://hack-for.fun/7881c78e.html">September 5th 2020, 9:26:04 pm</a>
+            <p>原文链接：<a href="https://hack-for.fun/54449ea6.html">https://hack-for.fun/54449ea6.html</a>
+            <p>发表日期：<a href="https://hack-for.fun/54449ea6.html">September 7th 2020, 4:40:08 pm</a>
+            <p>更新日期：<a href="https://hack-for.fun/54449ea6.html">September 7th 2020, 4:40:56 pm</a>
             <p>版权声明：<b>原创文章转载时请注明出处</b></p>
         </div>
     
@@ -438,16 +430,16 @@ height:50vh;
         <li class="next">
             
                 <div class="nextSlogan">Next Post</div>
-                <a href= "/7d5ef8ca.html" title= "信安专业课-汇编语言">
-                    <div class="nextTitle">信安专业课-汇编语言</div>
+                <a href= "/936f84c6.html" title= "CTF-SSTI">
+                    <div class="nextTitle">CTF-SSTI</div>
                 </a>
             
         </li>
         <li class="previous">
             
                 <div class="prevSlogan">Previous Post</div>
-                <a href= "/dbb484a9.html" title= "CTF - RCE">
-                    <div class="prevTitle">CTF - RCE</div>
+                <a href= "/e312198e.html" title= "Linux 服务器应急响应">
+                    <div class="prevTitle">Linux 服务器应急响应</div>
                 </a>
             
         </li>
@@ -563,7 +555,7 @@ top:50vh;
         <div class="toc-catalog">
             <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
         </div>
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E6%8A%80%E6%9C%AF%E7%82%B9"><span class="toc-number">1.</span> <span class="toc-text">文件包含漏洞技术点</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="toc-number">1.1.</span> <span class="toc-text">基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.1.</span> <span class="toc-text">文件包含函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%AA%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.1.2.</span> <span class="toc-text">伪协议</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.2.</span> <span class="toc-text">远程文件包含</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.</span> <span class="toc-text">本地文件包含</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-SSRF-gt-%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E3%80%81%E8%AF%BB%E5%8F%96"><span class="toc-number">1.3.1.</span> <span class="toc-text">(反序列化)SSRF -&gt; 本地文件包含、读取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.2.</span> <span class="toc-text">日志文件包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%B4%E6%97%B6%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.3.</span> <span class="toc-text">临时文件包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#session-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.4.</span> <span class="toc-text">session 文件包含</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Tomcat-Ajp-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E3%80%81%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E"><span class="toc-number">2.</span> <span class="toc-text">Tomcat Ajp 文件包含、文件读取漏洞</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CTF"><span class="toc-number">3.</span> <span class="toc-text">CTF</span></a></li></ol>
+        
     </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>

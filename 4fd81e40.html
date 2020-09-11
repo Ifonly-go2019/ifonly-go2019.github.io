@@ -20,22 +20,39 @@
     <meta name="keywords" content="信息安全,CTF,攻防对抗,代码审计,安全研究,渗透测试">
     
     <meta name="description" content="">
-    <meta name="description" content="文件包含漏洞技术点多数情况此处只考虑php开发的后端网站、CTF 赛题。 基础知识文件包含函数php 中，与文件包含相关的函数 require()require_once()include()include_once() 伪协议远程文件包含 allow_url_open &#x3D; on  本地文件包含(反序列化)SSRF -&gt; 本地文件包含、读取日志文件包含临时文件包含session 文件包含To">
+    <meta name="description" content="[toc] 环境搭建环境配置参考文章：https:&#x2F;&#x2F;www.sqlsec.com&#x2F;2020&#x2F;07&#x2F;macphp.html#toc-heading-2  所需App： MAMP PRO ，我是在Google 里找的Cracked Version PHPStorm &#x2F; Vscode  MAMP 中的 php.ini 设置 在切换php版本时需添加如下内容，免得debug 环境出错。 1234567x">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CTF - 文件包含">
-<meta property="og:url" content="https://hack-for.fun/7881c78e.html">
+<meta property="og:title" content="MacOS 下配置PHP代码审计环境，PHP调试学习">
+<meta property="og:url" content="https://hack-for.fun/4fd81e40.html">
 <meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
-<meta property="og:description" content="文件包含漏洞技术点多数情况此处只考虑php开发的后端网站、CTF 赛题。 基础知识文件包含函数php 中，与文件包含相关的函数 require()require_once()include()include_once() 伪协议远程文件包含 allow_url_open &#x3D; on  本地文件包含(反序列化)SSRF -&gt; 本地文件包含、读取日志文件包含临时文件包含session 文件包含To">
+<meta property="og:description" content="[toc] 环境搭建环境配置参考文章：https:&#x2F;&#x2F;www.sqlsec.com&#x2F;2020&#x2F;07&#x2F;macphp.html#toc-heading-2  所需App： MAMP PRO ，我是在Google 里找的Cracked Version PHPStorm &#x2F; Vscode  MAMP 中的 php.ini 设置 在切换php版本时需添加如下内容，免得debug 环境出错。 1234567x">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-09-02T16:40:30.000Z">
-<meta property="article:modified_time" content="2020-09-05T13:26:04.114Z">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911203443.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222248.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222425.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222559.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222713.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222146.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222725.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222737.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222752.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222811.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911223609.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222823.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911223553.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911223540.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911234844.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911235149.png">
+<meta property="article:published_time" content="2020-09-11T12:34:13.000Z">
+<meta property="article:modified_time" content="2020-09-11T15:55:57.876Z">
 <meta property="article:author" content="m0nk3y">
-<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="代码审计">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911203443.png">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     
-    <title>CTF - 文件包含 · m0nk3y&#39;s Blog</title>
+    <title>MacOS 下配置PHP代码审计环境，PHP调试学习 · m0nk3y&#39;s Blog</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -231,7 +248,7 @@
                 <a href="/" >沉下心来搞技术！</a>
             </div>
             <div class="post-title">
-                <a href="#" class="post-name">CTF - 文件包含</a>
+                <a href="#" class="post-name">MacOS 下配置PHP代码审计环境，PHP调试学习</a>
             </div>
     </div>
     
@@ -261,7 +278,7 @@ height:50vh;
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            CTF - 文件包含
+            MacOS 下配置PHP代码审计环境，PHP调试学习
             <!-- 404 -->
             
         </h1>
@@ -280,18 +297,18 @@ height:50vh;
                 
                     <div class= post-intro-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "代码审计">代码审计</a>
     
 </div>
                 
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">116</span>Reading time: <span class="post-count reading-time">1 min</span></span>
+                        <span>Word count: <span class="post-count word-count">382</span>Reading time: <span class="post-count reading-time">1 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
                     <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2020/09/03</span>
+                    <span class="post-intro-time">2020/09/11</span>
                     
                     <span id="busuanzi_container_page_pv" class="busuanzi-pv">
                         <span class="iconfont-archer">&#xe602;</span>
@@ -415,21 +432,67 @@ height:50vh;
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        <h1 id="文件包含漏洞技术点"><a href="#文件包含漏洞技术点" class="headerlink" title="文件包含漏洞技术点"></a>文件包含漏洞技术点</h1><p>多数情况此处只考虑php开发的后端网站、CTF 赛题。</p>
-<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="文件包含函数"><a href="#文件包含函数" class="headerlink" title="文件包含函数"></a>文件包含函数</h3><p>php 中，与文件包含相关的函数</p>
-<p>require()<br>require_once()<br>include()<br>include_once()</p>
-<h3 id="伪协议"><a href="#伪协议" class="headerlink" title="伪协议"></a>伪协议</h3><h2 id="远程文件包含"><a href="#远程文件包含" class="headerlink" title="远程文件包含"></a>远程文件包含</h2><ul>
-<li>allow_url_open = on</li>
-</ul>
-<h2 id="本地文件包含"><a href="#本地文件包含" class="headerlink" title="本地文件包含"></a>本地文件包含</h2><h3 id="反序列化-SSRF-gt-本地文件包含、读取"><a href="#反序列化-SSRF-gt-本地文件包含、读取" class="headerlink" title="(反序列化)SSRF -&gt; 本地文件包含、读取"></a>(反序列化)SSRF -&gt; 本地文件包含、读取</h3><h3 id="日志文件包含"><a href="#日志文件包含" class="headerlink" title="日志文件包含"></a>日志文件包含</h3><h3 id="临时文件包含"><a href="#临时文件包含" class="headerlink" title="临时文件包含"></a>临时文件包含</h3><h3 id="session-文件包含"><a href="#session-文件包含" class="headerlink" title="session 文件包含"></a>session 文件包含</h3><h1 id="Tomcat-Ajp-文件包含、文件读取漏洞"><a href="#Tomcat-Ajp-文件包含、文件读取漏洞" class="headerlink" title="Tomcat Ajp 文件包含、文件读取漏洞"></a>Tomcat Ajp 文件包含、文件读取漏洞</h1><h1 id="CTF"><a href="#CTF" class="headerlink" title="CTF"></a>CTF</h1>
+        <p>[toc]</p>
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>环境配置参考文章：<a target="_blank" rel="noopener" href="https://www.sqlsec.com/2020/07/macphp.html#toc-heading-2">https://www.sqlsec.com/2020/07/macphp.html#toc-heading-2</a></p>
+<blockquote>
+<p>所需App：</p>
+<p>MAMP PRO ，我是在Google 里找的Cracked Version</p>
+<p>PHPStorm / Vscode</p>
+</blockquote>
+<p>MAMP 中的 <code>php.ini</code> 设置</p>
+<p>在切换php版本时需添加如下内容，免得debug 环境出错。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">xdebug.remote_enable&#x3D;1</span><br><span class="line">xdebug.remote_host&#x3D;localhost</span><br><span class="line">xdebug.remote_port&#x3D;9000</span><br><span class="line">xdebug.remote_autostart&#x3D;1</span><br><span class="line">xdebug.profiler_enable&#x3D;0</span><br><span class="line">xdebug.profiler_output_dir&#x3D;&quot;&#x2F;Applications&#x2F;MAMP&#x2F;tmp&quot;</span><br><span class="line">xdebug.idekey&#x3D;&quot;my_key&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>出现下图的情况，说明Debug 配置正常。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911203443.png" alt="image-20200911203438853"></p>
+<hr>
+<blockquote>
+<p>推荐将整个代码审计的路径设置成Project, 比如:  xxx/www/xxx</p>
+<p>然后MAMP 和 PhpStorm 的设置要一致。</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222248.png" alt="image-20200911204652392"></p>
+<h1 id="单个文件调试"><a href="#单个文件调试" class="headerlink" title="单个文件调试"></a>单个文件调试</h1><p>测试Debug 是否成功：在第四行，变量字符串拼接的地方，下个断点进行调试。结果如图。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222425.png" alt="image-20200911205830698"></p>
+<h1 id="整个文件夹-网站目录-调试"><a href="#整个文件夹-网站目录-调试" class="headerlink" title="整个文件夹(网站目录)调试"></a>整个文件夹(网站目录)调试</h1><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222559.png" alt="image-20200911210726371"></p>
+<blockquote>
+<p>关键是选择下面的Server 即可。</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222713.png" alt="image-20200911210857642"></p>
+<p>PHPMyadmin 需要php  5.5+ , cms 安装时，数据库在phpmyadmin 中创建即可。</p>
+<p>这里以国光师傅文章的cms，后台语言设置GetShell，来测试。</p>
+<p><a target="_blank" rel="noopener" href="https://www.sqlsec.com/2020/01/sinsiu.html#toc-heading-36">https://www.sqlsec.com/2020/01/sinsiu.html#toc-heading-36</a></p>
+<p>在 149 行下断点调试</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222146.png"></p>
+<p>可直接在<code>$lang_text</code> 中修改值即可进行调试。</p>
+<p>Burp Suite 抓包的请求包：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222725.png" alt="image-20200911220557034"></p>
+<h1 id="文件监控"><a href="#文件监控" class="headerlink" title="文件监控"></a>文件监控</h1><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222737.png" alt="image-20200911213334993"></p>
+<h1 id="MySQL-监控"><a href="#MySQL-监控" class="headerlink" title="MySQL 监控"></a>MySQL 监控</h1><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222752.png" alt="image-20200911214143396"></p>
+<p>需要修改<code>config.ini</code> 中的数据库为之前cms 创建的数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[dbconf]</span><br><span class="line">host&#x3D;localhost</span><br><span class="line">port&#x3D;8889</span><br><span class="line">user&#x3D;root</span><br><span class="line">password&#x3D;root</span><br><span class="line">db_name&#x3D;test</span><br><span class="line">charset&#x3D;utf8</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222811.png" alt="image-20200911214903921"></p>
+<p>使用DataGrip 连接MySQL 时的监控日志</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911223609.png" alt="image-20200911215237610"></p>
+<h2 id="DataGrip-连接数据库"><a href="#DataGrip-连接数据库" class="headerlink" title="DataGrip 连接数据库"></a>DataGrip 连接数据库</h2><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911222823.png" alt="image-20200911215449398"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911223553.png" alt="image-20200911215526972"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911223540.png" alt="image-20200911215342544"></p>
+<h1 id="VsCode-配置"><a href="#VsCode-配置" class="headerlink" title="VsCode 配置"></a>VsCode 配置</h1><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911234844.png" alt="image-20200911234023142"></p>
+<p>VScode 单步调试。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200911235149.png" alt="image-20200911233946444"></p>
+<p>终于会调试了~ </p>
+<p>下一步就是去完整代码审计一下这个CMS~</p>
+
     </article>
     <!-- license  -->
     
         <div class="license-wrapper">
             <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
-            <p>原文链接：<a href="https://hack-for.fun/7881c78e.html">https://hack-for.fun/7881c78e.html</a>
-            <p>发表日期：<a href="https://hack-for.fun/7881c78e.html">September 3rd 2020, 12:40:30 am</a>
-            <p>更新日期：<a href="https://hack-for.fun/7881c78e.html">September 5th 2020, 9:26:04 pm</a>
+            <p>原文链接：<a href="https://hack-for.fun/4fd81e40.html">https://hack-for.fun/4fd81e40.html</a>
+            <p>发表日期：<a href="https://hack-for.fun/4fd81e40.html">September 11th 2020, 8:34:13 pm</a>
+            <p>更新日期：<a href="https://hack-for.fun/4fd81e40.html">September 11th 2020, 11:55:57 pm</a>
             <p>版权声明：<b>原创文章转载时请注明出处</b></p>
         </div>
     
@@ -437,17 +500,12 @@ height:50vh;
     <ul class="post-paginator">
         <li class="next">
             
-                <div class="nextSlogan">Next Post</div>
-                <a href= "/7d5ef8ca.html" title= "信安专业课-汇编语言">
-                    <div class="nextTitle">信安专业课-汇编语言</div>
-                </a>
-            
         </li>
         <li class="previous">
             
                 <div class="prevSlogan">Previous Post</div>
-                <a href= "/dbb484a9.html" title= "CTF - RCE">
-                    <div class="prevTitle">CTF - RCE</div>
+                <a href= "/66043e4c.html" title= "WAF Bypass 姿势总结">
+                    <div class="prevTitle">WAF Bypass 姿势总结</div>
                 </a>
             
         </li>
@@ -563,7 +621,7 @@ top:50vh;
         <div class="toc-catalog">
             <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
         </div>
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E6%8A%80%E6%9C%AF%E7%82%B9"><span class="toc-number">1.</span> <span class="toc-text">文件包含漏洞技术点</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="toc-number">1.1.</span> <span class="toc-text">基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.1.</span> <span class="toc-text">文件包含函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%AA%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.1.2.</span> <span class="toc-text">伪协议</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.2.</span> <span class="toc-text">远程文件包含</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.</span> <span class="toc-text">本地文件包含</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-SSRF-gt-%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E3%80%81%E8%AF%BB%E5%8F%96"><span class="toc-number">1.3.1.</span> <span class="toc-text">(反序列化)SSRF -&gt; 本地文件包含、读取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.2.</span> <span class="toc-text">日志文件包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%B4%E6%97%B6%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.3.</span> <span class="toc-text">临时文件包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#session-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.4.</span> <span class="toc-text">session 文件包含</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Tomcat-Ajp-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E3%80%81%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E"><span class="toc-number">2.</span> <span class="toc-text">Tomcat Ajp 文件包含、文件读取漏洞</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CTF"><span class="toc-number">3.</span> <span class="toc-text">CTF</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">1.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%95%E4%B8%AA%E6%96%87%E4%BB%B6%E8%B0%83%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">单个文件调试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B4%E4%B8%AA%E6%96%87%E4%BB%B6%E5%A4%B9-%E7%BD%91%E7%AB%99%E7%9B%AE%E5%BD%95-%E8%B0%83%E8%AF%95"><span class="toc-number">3.</span> <span class="toc-text">整个文件夹(网站目录)调试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E7%9B%91%E6%8E%A7"><span class="toc-number">4.</span> <span class="toc-text">文件监控</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MySQL-%E7%9B%91%E6%8E%A7"><span class="toc-number">5.</span> <span class="toc-text">MySQL 监控</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#DataGrip-%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">5.1.</span> <span class="toc-text">DataGrip 连接数据库</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#VsCode-%E9%85%8D%E7%BD%AE"><span class="toc-number">6.</span> <span class="toc-text">VsCode 配置</span></a></li></ol>
     </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
