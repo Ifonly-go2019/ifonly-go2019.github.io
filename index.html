@@ -368,6 +368,51 @@ height:40vh;
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/844d1b07.html" >
+            
+                <span>新秀企业网站系统代码审计学习(复现)</span>
+        </a>
+        <div class="abstract-content">
+            [TOC]
+参考资料：
+代码审计常见的三种方法（PHP篇）
+PHP代码审计初次尝试之新秀企业网站系统
+审计思路通过脑图大概总结如下：
+
+了解系统CMS名称：新秀企业网站系统PHP版
+
+看着界面就知道是用于企业打广告(x)和发布信息，招聘等功能的系统。且存在前台用户登录和后台管理系统。存在搜索功能。
+防护策略IP登录限制 - 猜测伪造IP注入限制了前台、后台的登录次数限制、注册限制、可能会影响到后面SQL注入漏洞的测试。
+
+可能出现的漏洞：伪造IP进行注入攻击
+数据库监控，在注册的地方看看ip 是否被带入了数据库。
+
+1select * from php_shisiusafe where ...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/12</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "代码审计">代码审计</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "漏洞挖掘">漏洞挖掘</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/4fd81e40.html" >
             
                 <span>MacOS 下配置PHP代码审计环境，PHP调试学习</span>
@@ -635,49 +680,6 @@ allow_url_open = on
             <!-- date  -->
             <div class="abstract-date">
                 <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/03</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/dbb484a9.html" >
-            
-                <span>CTF - RCE</span>
-        </a>
-        <div class="abstract-content">
-            [toc]
-RCE(远程代码\命令执行)漏洞技术点漏洞原理源码编写逻辑不严，参数入口过滤不严或者没过滤。
-利用条件
-存在操作者可控的输入
-存在可执行任意代码的危险函数（通过各种手段，包括不安全的反序列化。
-存在可执行远程命令操作的接口
-
-Linux 、Windows 管道符Windows 系统管道符
-
-“|” ：直接执行后面的语句。eg: ping 127.0.0.1|whoami
-“||”：前面执行的语句执行出错，则执行后面的语句。前面的语句只能为假，eg: ping 2||whoami
-
-
-
-“&amp;”：前面语句为假则直接执行后面的语句，前面的语句可真可假。eg: ping 12...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/30</span>
             </div>
             <!-- tags  -->
             
@@ -1074,9 +1076,20 @@ Linux 、Windows 管道符Windows 系统管道符
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 18
+        Total : 19
         </div>
         <!-- search  -->
         
@@ -1089,6 +1102,11 @@ Linux 、Windows 管道符Windows 系统管道符
     
     <div class="archive-year"> 2020 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/12</span><a class="archive-post-title" href= "/844d1b07.html" >新秀企业网站系统代码审计学习(复现)</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -1185,25 +1203,27 @@ Linux 、Windows 管道符Windows 系统管道符
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
-    
         <span class="sidebar-tag-name" data-tags="SSTI"><span class="iconfont-archer">&#xe606;</span>SSTI</span>
     
-        <span class="sidebar-tag-name" data-tags="JAVA"><span class="iconfont-archer">&#xe606;</span>JAVA</span>
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
     
         <span class="sidebar-tag-name" data-tags="协议层安全"><span class="iconfont-archer">&#xe606;</span>协议层安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="JAVA"><span class="iconfont-archer">&#xe606;</span>JAVA</span>
     
         <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
     
         <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
     
-        <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
-    
         <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
+    
+        <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
     
         <span class="sidebar-tag-name" data-tags="汇编"><span class="iconfont-archer">&#xe606;</span>汇编</span>
     
         <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
+    
+        <span class="sidebar-tag-name" data-tags="漏洞挖掘"><span class="iconfont-archer">&#xe606;</span>漏洞挖掘</span>
     
         <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
     

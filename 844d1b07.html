@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="m0nk3y">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="m0nk3y">
+    
+    <meta name="keywords" content="信息安全,CTF,攻防对抗,代码审计,安全研究,渗透测试">
+    
+    <meta name="description" content="">
+    <meta name="description" content="[TOC] 参考资料： 代码审计常见的三种方法（PHP篇） PHP代码审计初次尝试之新秀企业网站系统 审计思路通过脑图大概总结如下：  了解系统CMS名称：新秀企业网站系统PHP版  看着界面就知道是用于企业打广告(x)和发布信息，招聘等功能的系统。且存在前台用户登录和后台管理系统。存在搜索功能。 防护策略IP登录限制 - 猜测伪造IP注入限制了前台、后台的登录次数限制、注册限制、可能会影响到后面">
+<meta property="og:type" content="article">
+<meta property="og:title" content="新秀企业网站系统代码审计学习(复现)">
+<meta property="og:url" content="https://hack-for.fun/844d1b07.html">
+<meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="[TOC] 参考资料： 代码审计常见的三种方法（PHP篇） PHP代码审计初次尝试之新秀企业网站系统 审计思路通过脑图大概总结如下：  了解系统CMS名称：新秀企业网站系统PHP版  看着界面就知道是用于企业打广告(x)和发布信息，招聘等功能的系统。且存在前台用户登录和后台管理系统。存在搜索功能。 防护策略IP登录限制 - 猜测伪造IP注入限制了前台、后台的登录次数限制、注册限制、可能会影响到后面">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912095326.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912183413.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912183349.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184550.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184533.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184500.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184441.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184427.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184409.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184208.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184157.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184144.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184031.gif">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184010.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912183848.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912183833.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912183821.png">
+<meta property="article:published_time" content="2020-09-12T01:19:38.000Z">
+<meta property="article:modified_time" content="2020-09-12T10:49:22.494Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="代码审计">
+<meta property="article:tag" content="漏洞挖掘">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912095326.png">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    
+    <title>新秀企业网站系统代码审计学习(复现) · m0nk3y&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825203605.JPG" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="可惜没如果、m0nk3y‘s Blog" type="application/atom+xml">
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >沉下心来搞技术！</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">新秀企业网站系统代码审计学习(复现)</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>沉下心来搞技术！</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            新秀企业网站系统代码审计学习(复现)
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "代码审计">代码审计</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "漏洞挖掘">漏洞挖掘</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>Word count: <span class="post-count word-count">2.1k</span>Reading time: <span class="post-count reading-time">9 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2020/09/12</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <p>[TOC]</p>
+<p>参考资料：</p>
+<p><a target="_blank" rel="noopener" href="https://v0w.top/2020/08/26/CodeAudit-php/">代码审计常见的三种方法（PHP篇）</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.sqlsec.com/2020/01/sinsiu.html#toc-heading-1">PHP代码审计初次尝试之新秀企业网站系统</a></p>
+<p>审计思路通过脑图大概总结如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912095326.png" alt="image-20200912095322738"></p>
+<h1 id="了解系统"><a href="#了解系统" class="headerlink" title="了解系统"></a>了解系统</h1><p><strong>CMS名称</strong>：新秀企业网站系统PHP版</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912183413.png" alt="image-20200912095625466"></p>
+<p>看着界面就知道是用于企业打广告(x)和发布信息，招聘等功能的系统。且存在前台用户登录和后台管理系统。存在搜索功能。</p>
+<h1 id="防护策略"><a href="#防护策略" class="headerlink" title="防护策略"></a>防护策略</h1><h2 id="IP登录限制-猜测伪造IP注入"><a href="#IP登录限制-猜测伪造IP注入" class="headerlink" title="IP登录限制 - 猜测伪造IP注入"></a>IP登录限制 - 猜测伪造IP注入</h2><p>限制了前台、后台的登录次数限制、注册限制、可能会影响到后面SQL注入漏洞的测试。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912183349.png" alt="image-20200912100248513"></p>
+<p>可能出现的漏洞：<strong>伪造IP进行注入攻击</strong></p>
+<p>数据库监控，在注册的地方看看<code>ip</code> 是否被带入了数据库。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184550.png" alt="image-20200912102325325"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from php_shisiusafe where saf_ip &#x3D; &#39;127.0.0.1&#39;  and saf_action &#x3D; &#39;register&#39;</span><br></pre></td></tr></table></figure>
+
+<p>全局定位到获取用户iP的代码部分：</p>
+<p>phpstorm 搜索 获取IP，即可。</p>
+<p>include/function.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取客户端IP</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_ip</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(getenv(<span class="string">&#x27;HTTP_CLIENT_IP&#x27;</span>) &amp;&amp; strcasecmp(getenv(<span class="string">&#x27;HTTP_CLIENT_IP&#x27;</span>),<span class="string">&#x27;unknown&#x27;</span>))</span><br><span class="line">	&#123;</span><br><span class="line">		$ip = getenv(<span class="string">&#x27;HTTP_CLIENT_IP&#x27;</span>);</span><br><span class="line">	&#125;<span class="keyword">elseif</span>(getenv(<span class="string">&#x27;HTTP_X_FORWARDED_FOR&#x27;</span>) &amp;&amp; strcasecmp(getenv(<span class="string">&#x27;HTTP_X_FORWARDED_FOR&#x27;</span>),<span class="string">&#x27;unknown&#x27;</span>))&#123;</span><br><span class="line">		$ip = getenv(<span class="string">&#x27;HTTP_X_FORWARDED_FOR&#x27;</span>);</span><br><span class="line">	&#125;<span class="keyword">elseif</span>(getenv(<span class="string">&#x27;REMOTE_ADDR&#x27;</span>) &amp;&amp; strcasecmp(getenv(<span class="string">&#x27;REMOTE_ADDR&#x27;</span>),<span class="string">&#x27;unknown&#x27;</span>))&#123;</span><br><span class="line">		$ip = getenv(<span class="string">&#x27;REMOTE_ADDR&#x27;</span>);</span><br><span class="line">	&#125;<span class="keyword">elseif</span>(<span class="keyword">isset</span>($_SERVER[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>]) &amp;&amp; $_SERVER[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>] &amp;&amp; strcasecmp($_SERVER[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>],<span class="string">&#x27;unknown&#x27;</span>))&#123;</span><br><span class="line">		$ip = $_SERVER[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>];</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		$ip = <span class="string">&#x27;0.0.0.0&#x27;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(!is_numeric(str_replace(<span class="string">&#x27;.&#x27;</span>,<span class="string">&#x27;&#x27;</span>,$ip)))</span><br><span class="line">	&#123;</span><br><span class="line">		$ip = <span class="string">&#x27;0.0.0.0&#x27;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> $ip; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以发现，当ip 除去<code>.</code>  后，如果不是纯数字，那么就设置为 0.0.0.0 。因此通过伪造IP进行注入是行不通了。</p>
+<h2 id="XSS-过滤"><a href="#XSS-过滤" class="headerlink" title="XSS 过滤"></a>XSS 过滤</h2><p>前台存在留言功能。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184533.png" alt="image-20200912103732317"></p>
+<p>提交后，我们登录后台管理员进行查看留言内容。 发现并没有执行js代码。</p>
+<p>index/module/info_main.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">add_message</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	safe(<span class="string">&#x27;message&#x27;</span>);</span><br><span class="line">	<span class="keyword">global</span> $global,$smarty,$lang;</span><br><span class="line">	$mes_email = post(<span class="string">&#x27;email&#x27;</span>);</span><br><span class="line">	$mes_type = post(<span class="string">&#x27;type&#x27;</span>);</span><br><span class="line">	$mes_title = post(<span class="string">&#x27;title&#x27;</span>);</span><br><span class="line">	$mes_text = post(<span class="string">&#x27;text&#x27;</span>);</span><br><span class="line">	$mes_show = post(<span class="string">&#x27;show&#x27;</span>);</span><br><span class="line">	<span class="keyword">if</span>($mes_email == <span class="string">&#x27;&#x27;</span> || $mes_type == <span class="string">&#x27;&#x27;</span> || $mes_title == <span class="string">&#x27;&#x27;</span> || $mes_text == <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		$info_text = $lang[<span class="string">&#x27;submit_error_info&#x27;</span>];</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		$mes_add_time = time();</span><br><span class="line">		<span class="keyword">if</span>($mes_show != <span class="string">&#x27;2&#x27;</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			$mes_show = <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		$obj = <span class="keyword">new</span> message();</span><br><span class="line">		$obj-&gt;set_value(<span class="string">&#x27;mes_user_id&#x27;</span>,$global[<span class="string">&#x27;user_id&#x27;</span>]);</span><br><span class="line">		$obj-&gt;set_value(<span class="string">&#x27;mes_type&#x27;</span>,$mes_type);</span><br><span class="line">		$obj-&gt;set_value(<span class="string">&#x27;mes_email&#x27;</span>,$mes_email);</span><br><span class="line">		$obj-&gt;set_value(<span class="string">&#x27;mes_title&#x27;</span>,$mes_title);</span><br><span class="line">		$obj-&gt;set_value(<span class="string">&#x27;mes_text&#x27;</span>,$mes_text);</span><br><span class="line">		$obj-&gt;set_value(<span class="string">&#x27;mes_add_time&#x27;</span>,$mes_add_time);</span><br><span class="line">		$obj-&gt;set_value(<span class="string">&#x27;mes_show&#x27;</span>,$mes_show);</span><br><span class="line">		$obj-&gt;set_value(<span class="string">&#x27;mes_lang&#x27;</span>,S_LANG);</span><br><span class="line">		$obj-&gt;add();</span><br><span class="line">		<span class="keyword">if</span>(intval(get_varia(<span class="string">&#x27;sentmail&#x27;</span>)))</span><br><span class="line">		&#123;</span><br><span class="line">			$email_title = <span class="string">&#x27;您的网站有了新的留言&#x27;</span>;</span><br><span class="line">			$email_text = <span class="string">&quot;[$mes_type] $mes_title &lt;br /&gt; $mes_text&quot;</span>;</span><br><span class="line">			call_send_email($email_title,$email_text,$global[<span class="string">&#x27;user_id&#x27;</span>],$mes_email);</span><br><span class="line">		&#125;</span><br><span class="line">		$info_text = $lang[<span class="string">&#x27;submit_message&#x27;</span>];</span><br><span class="line">	&#125;</span><br><span class="line">	$smarty-&gt;assign(<span class="string">&#x27;info_text&#x27;</span>,$info_text);</span><br><span class="line">	$smarty-&gt;assign(<span class="string">&#x27;link_text&#x27;</span>,$lang[<span class="string">&#x27;go_back&#x27;</span>]);</span><br><span class="line">	$smarty-&gt;assign(<span class="string">&#x27;link_href&#x27;</span>,url(<span class="keyword">array</span>(<span class="string">&#x27;channel&#x27;</span>=&gt;<span class="string">&#x27;message&#x27;</span>)));	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们的输入是被传入了<code>post</code> 函数进行执行，跟进该函数。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取post</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">post</span>(<span class="params">$val,$filter = <span class="string">&#x27;strict&#x27;</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> $filter(<span class="keyword">isset</span>($_POST[$val])?$_POST[$val]:<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过了<code>strict</code> 条件的过滤函数，找到这个的定义处。</p>
+<p>include/function.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//严格过滤字符串中的危险符号</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">strict</span>(<span class="params">$str</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(S_MAGIC_QUOTES_GPC)</span><br><span class="line">   &#123;</span><br><span class="line">      $str = stripslashes($str);</span><br><span class="line">   &#125;</span><br><span class="line">   $str = str_replace(<span class="string">&#x27;&lt;&#x27;</span>,<span class="string">&#x27;&amp;#60;&#x27;</span>,$str);</span><br><span class="line">   $str = str_replace(<span class="string">&#x27;&gt;&#x27;</span>,<span class="string">&#x27;&amp;#62;&#x27;</span>,$str);</span><br><span class="line">   $str = str_replace(<span class="string">&#x27;?&#x27;</span>,<span class="string">&#x27;&amp;#63;&#x27;</span>,$str);</span><br><span class="line">   $str = str_replace(<span class="string">&#x27;%&#x27;</span>,<span class="string">&#x27;&amp;#37;&#x27;</span>,$str);</span><br><span class="line">   $str = str_replace(chr(<span class="number">39</span>),<span class="string">&#x27;&amp;#39;&#x27;</span>,$str);</span><br><span class="line">   $str = str_replace(chr(<span class="number">34</span>),<span class="string">&#x27;&amp;#34;&#x27;</span>,$str);</span><br><span class="line">   $str = str_replace(chr(<span class="number">13</span>).chr(<span class="number">10</span>),<span class="string">&#x27;&lt;br /&gt;&#x27;</span>,$str);</span><br><span class="line">   <span class="keyword">return</span> $str;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到html 的闭合标签被转义了，所以没法XSS</p>
+<h2 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">edit_pwd</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	safe(<span class="string">&#x27;edit_pwd&#x27;</span>);</span><br><span class="line">	<span class="keyword">global</span> $global,$smarty,$lang;</span><br><span class="line">	$old_pwd = post(<span class="string">&#x27;old_pwd&#x27;</span>);</span><br><span class="line">	$new_pwd = post(<span class="string">&#x27;new_pwd&#x27;</span>);</span><br><span class="line">	$re_pwd = post(<span class="string">&#x27;re_pwd&#x27;</span>);</span><br><span class="line">	<span class="keyword">if</span>(strlen($old_pwd) &lt; <span class="number">6</span> || strlen($old_pwd) &gt; <span class="number">15</span> || strlen($new_pwd) &lt; <span class="number">6</span> || strlen($new_pwd) &gt; <span class="number">15</span> || $new_pwd != $re_pwd)</span><br><span class="line">	&#123;</span><br><span class="line">		$info_text = $lang[<span class="string">&#x27;submit_error_info&#x27;</span>];</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		$use_password = md5($old_pwd);</span><br><span class="line">		$obj = <span class="keyword">new</span> users();</span><br><span class="line">		$obj-&gt;set_where(<span class="string">&#x27;use_id = &#x27;</span>.$global[<span class="string">&#x27;user_id&#x27;</span>]);</span><br><span class="line">		$obj-&gt;set_where(<span class="string">&quot;use_password = &#x27;$use_password&#x27;&quot;</span>);</span><br><span class="line">		<span class="keyword">if</span>($obj-&gt;get_count() &gt; <span class="number">0</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			$use_password = md5($new_pwd);</span><br><span class="line">			$obj-&gt;set_value(<span class="string">&#x27;use_password&#x27;</span>,$use_password);</span><br><span class="line">			$obj-&gt;set_where(<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">			$obj-&gt;set_where(<span class="string">&#x27;use_id = &#x27;</span>.$global[<span class="string">&#x27;user_id&#x27;</span>]);</span><br><span class="line">			$obj-&gt;edit();</span><br><span class="line">			$info_text = $lang[<span class="string">&#x27;over&#x27;</span>];</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			$info_text = $lang[<span class="string">&#x27;old_pwd_error&#x27;</span>];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	$smarty-&gt;assign(<span class="string">&#x27;info_text&#x27;</span>,$info_text);</span><br><span class="line">	$smarty-&gt;assign(<span class="string">&#x27;link_text&#x27;</span>,$lang[<span class="string">&#x27;go_back&#x27;</span>]);</span><br><span class="line">	$smarty-&gt;assign(<span class="string">&#x27;link_href&#x27;</span>,url(<span class="keyword">array</span>(<span class="string">&#x27;entrance&#x27;</span>=&gt;$global[<span class="string">&#x27;entrance&#x27;</span>],<span class="string">&#x27;channel&#x27;</span>=&gt;<span class="string">&#x27;user&#x27;</span>,<span class="string">&#x27;mod&#x27;</span>=&gt;<span class="string">&#x27;profile&#x27;</span>)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>CSRF 修改用户密码，需要旧密码，行不通。</p>
+<h2 id="可控变量过滤"><a href="#可控变量过滤" class="headerlink" title="可控变量过滤"></a>可控变量过滤</h2><h3 id="session-过滤"><a href="#session-过滤" class="headerlink" title="session 过滤"></a>session 过滤</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取session</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_session</span>(<span class="params">$name,$filter = <span class="string">&#x27;strict&#x27;</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(S_SESSION)</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="keyword">return</span> $filter(<span class="keyword">isset</span>($_SESSION[$name])?$_SESSION[$name]:<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">   &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">      <span class="keyword">return</span> $filter(<span class="keyword">isset</span>($_COOKIE[$name])?$_COOKIE[$name]:<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="cookie-过滤"><a href="#cookie-过滤" class="headerlink" title="cookie 过滤"></a>cookie 过滤</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设置cookie</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">set_cookie</span>(<span class="params">$name,$value,$filter = <span class="string">&#x27;strict&#x27;</span>,$expire = <span class="number">0</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">if</span>($expire == <span class="number">0</span>)</span><br><span class="line">   &#123;</span><br><span class="line">      setcookie($name,$filter($value));</span><br><span class="line">   &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">      setcookie($name,$filter($value),$expire);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="admin-登录"><a href="#admin-登录" class="headerlink" title="admin 登录"></a>admin 登录</h3><p>admin/module/info_main.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">admin_login</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   safe(<span class="string">&#x27;admin_login&#x27;</span>);</span><br><span class="line">   <span class="keyword">global</span> $smarty,$lang;</span><br><span class="line">   $username = substr(post(<span class="string">&#x27;username&#x27;</span>),<span class="number">0</span>,<span class="number">30</span>);</span><br><span class="line">   $password = substr(post(<span class="string">&#x27;password&#x27;</span>),<span class="number">0</span>,<span class="number">30</span>);</span><br><span class="line">   <span class="keyword">if</span>($username == <span class="string">&#x27;&#x27;</span> || $password == <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">   &#123;</span><br><span class="line">      unset_session(<span class="string">&#x27;admin_username&#x27;</span>);</span><br><span class="line">      unset_session(<span class="string">&#x27;admin_password&#x27;</span>);</span><br><span class="line">      $info_text = <span class="string">&#x27;对不起，用户名和密码不能为空&#x27;</span>;</span><br><span class="line">      $link_text = <span class="string">&#x27;返回重新登录&#x27;</span>;</span><br><span class="line">   &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">     ……</span><br></pre></td></tr></table></figure>
+
+<h3 id="user-登录"><a href="#user-登录" class="headerlink" title="user 登录"></a>user 登录</h3><p>index/module/info_main.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">user_login</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   safe(<span class="string">&#x27;user_login&#x27;</span>);</span><br><span class="line">   <span class="keyword">global</span> $global,$smarty,$lang;</span><br><span class="line">   $info_text = post(<span class="string">&#x27;info_text&#x27;</span>);</span><br><span class="line">   $link_text = post(<span class="string">&#x27;link_text&#x27;</span>);</span><br><span class="line">   $link_href = post(<span class="string">&#x27;link_href&#x27;</span>);</span><br><span class="line">   $username = post(<span class="string">&#x27;username&#x27;</span>);</span><br><span class="line">   $password = post(<span class="string">&#x27;password&#x27;</span>);</span><br><span class="line">   </span><br><span class="line">   <span class="keyword">if</span>(strlen($username) &gt; <span class="number">30</span>)&#123;$username = substr($username,<span class="number">30</span>);&#125;</span><br><span class="line">   <span class="keyword">if</span>(strlen($password) &gt; <span class="number">30</span>)&#123;$password = substr($password,<span class="number">30</span>);&#125;</span><br><span class="line">   <span class="keyword">if</span>($username == <span class="string">&#x27;&#x27;</span> <span class="keyword">or</span> $password == <span class="string">&#x27;&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，基本都经过了带有过滤的函数处理。所以像，SQL注入和XSS 这种需要构造特殊符号的漏洞几乎很难了</p>
+<h1 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h1><p>基于功能点去测，先高危后低危。后台一般防御较弱，从后台突破较容易。而后台存在的功能有：图片、文件、模板管理、删除、留言审核，等其他功能。</p>
+<h2 id="前台搜索框SQL-注入"><a href="#前台搜索框SQL-注入" class="headerlink" title="前台搜索框SQL 注入"></a>前台搜索框SQL 注入</h2><p>开启MySQL 监控，然后再搜索框进行搜索。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184500.png" alt="image-20200912161945551"></p>
+<p>如图，123，被带入SQL语句进行查询，单引号闭合。将关键字在整个文件夹中搜索：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184441.png" alt="image-20200912162117271"></p>
+<p>这里先rawurldecode 解码，然后带入拼接进入查询。</p>
+<p>然后下断点进行分析：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184427.png" alt="image-20200912165411168"></p>
+<p>直接上sqlmap。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184409.png" alt="image-20200912155851842"></p>
+<h2 id="后台任意文件删除漏洞"><a href="#后台任意文件删除漏洞" class="headerlink" title="后台任意文件删除漏洞"></a>后台任意文件删除漏洞</h2><p><strong>/admin/deal.php</strong> </p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184208.png" alt="image-20200912144227587"></p>
+<p>此处采用了白名单的形式，只能删除 指定的三个目录下的文件。但是忽略了可以用<code>../</code>来绕过。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(substr($path,<span class="number">0</span>,strlen($dir[$i])) == $dir[$i])</span><br><span class="line">&#123;</span><br><span class="line">   $flag = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>substr 从第<code>$path</code>的第一个字母开始往后判断，截取path前半部分长度和白名单是否相等，即是否是白名单里的那几个目录，是，然后<code>unlink</code>删除掉。</p>
+<p>成功删除文件时，返回1。</p>
+<p>这里我遇到了一个问题，就是这个域名是通过MAMP修改的本地HOSTS文件解析的，然后找到了一篇文章，<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/3018b2697bb0%EF%BC%8C%E7%AE%80%E5%8D%95%E8%AE%BE%E7%BD%AE%E4%B8%80%E4%B8%8B%E5%B0%B1%E5%8F%AF%E4%BB%A5%E4%BA%86%E3%80%82">https://www.jianshu.com/p/3018b2697bb0，简单设置一下就可以了。</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184157.png" alt="image-20200912152353172"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184144.png" alt="image-20200912152108244"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184031.gif" alt="漏洞演示"></p>
+<h2 id="后台编辑语言文件设置GetShell"><a href="#后台编辑语言文件设置GetShell" class="headerlink" title="后台编辑语言文件设置GetShell"></a>后台编辑语言文件设置GetShell</h2><p>成功编辑后，回显 编辑语言包成功。那么在整个文件中搜索即可定位到代码。<br>**/admin/module/file/deal.php**</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">edit_lang</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">global</span> $smarty,$lang;</span><br><span class="line">   $path = post(<span class="string">&#x27;path&#x27;</span>);</span><br><span class="line">   $lang_text = post(<span class="string">&#x27;lang_text&#x27;</span>,<span class="string">&#x27;no_filter&#x27;</span>);</span><br><span class="line">   file_put_contents($path,$lang_text);</span><br><span class="line">   $smarty-&gt;assign(<span class="string">&#x27;info_text&#x27;</span>,<span class="string">&#x27;编辑语言包成功&#x27;</span>);</span><br><span class="line">   $smarty-&gt;assign(<span class="string">&#x27;link_text&#x27;</span>,<span class="string">&#x27;返回上一页&#x27;</span>);</span><br><span class="line">   $smarty-&gt;assign(<span class="string">&#x27;link_href&#x27;</span>,url(<span class="keyword">array</span>(<span class="string">&#x27;channel&#x27;</span>=&gt;<span class="string">&#x27;file&#x27;</span>,<span class="string">&#x27;mod&#x27;</span>=&gt;<span class="string">&#x27;lang_edit&#x27;</span>,<span class="string">&#x27;path&#x27;</span>=&gt;rawurlencode($path))));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在该函数中，经过<code>post()</code> 函数过滤，但是对于<code>$lang_text</code> 的过滤规则是<code>no_filter</code> ，跟进查看一下该规则。</p>
+<p>/include/function.php,104行。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//不过滤</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">no_filter</span>(<span class="params">$str</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">if</span>(S_MAGIC_QUOTES_GPC)</span><br><span class="line">   &#123;</span><br><span class="line">      $str = stripslashes($str); <span class="comment">// 删除反斜杠</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> $str;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里没有过滤 <code>$lang_text</code> 就通过<code>file_put_contents</code> 写入文件，那么这里就可以写WebShell。</p>
+<p>同样的，下断点来调试分析。</p>
+<p>step into ，慢慢点，可以看到这里没有任何过滤，写入webshell</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912184010.png" alt="image-20200912173700069"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912183848.png" alt="image-20200912173822681"></p>
+<p><code>$path</code> 可控的，这里只需要把<code>$path</code> 改为一个<code>.php</code> 后缀的就可以GetShell 了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912183833.png" alt="image-20200912174519203"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200912183821.png" alt="image-20200912174743837"></p>
+<h1 id="审计总结"><a href="#审计总结" class="headerlink" title="审计总结"></a>审计总结</h1><p>基本上是照搬照抄别人的思路来搞的，总比躺着玩手机强，也遇到了一些问题，比如Burp Suite 设置 域名和ip 绑定，phpstorm 调试分析，总之，能学到东西就行。学到了思路，下一步就是复现thinkphp 的历史漏洞，和thinkcmf 或者其他php框架的历史漏洞，学习完之后就去找cms进行实战！（其实这个已经搁置了快半年了。</p>
+<blockquote>
+<p>一个不能孜孜不倦，始终处于新知识、新技术学习状态下的安全爱好者，必然会被超越和取代。</p>
+</blockquote>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
+            <p>原文链接：<a href="https://hack-for.fun/844d1b07.html">https://hack-for.fun/844d1b07.html</a>
+            <p>发表日期：<a href="https://hack-for.fun/844d1b07.html">September 12th 2020, 9:19:38 am</a>
+            <p>更新日期：<a href="https://hack-for.fun/844d1b07.html">September 12th 2020, 6:49:22 pm</a>
+            <p>版权声明：<b>原创文章转载时请注明出处</b></p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/4fd81e40.html" title= "MacOS 下配置PHP代码审计环境，PHP调试学习">
+                    <div class="prevTitle">MacOS 下配置PHP代码审计环境，PHP调试学习</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- gitalk评论 -->
+
+    <!-- utteranc评论 -->
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:ifonlysec@gmail.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                <a href="/atom.xml" class="iconfont-archer rss" target="_blank" title=rss></a>
+            
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+    
+    <span id="busuanzi_container_site_uv">累计访客量: <span id="busuanzi_value_site_uv"></span> </span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%86%E8%A7%A3%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.</span> <span class="toc-text">了解系统</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%98%B2%E6%8A%A4%E7%AD%96%E7%95%A5"><span class="toc-number">2.</span> <span class="toc-text">防护策略</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#IP%E7%99%BB%E5%BD%95%E9%99%90%E5%88%B6-%E7%8C%9C%E6%B5%8B%E4%BC%AA%E9%80%A0IP%E6%B3%A8%E5%85%A5"><span class="toc-number">2.1.</span> <span class="toc-text">IP登录限制 - 猜测伪造IP注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS-%E8%BF%87%E6%BB%A4"><span class="toc-number">2.2.</span> <span class="toc-text">XSS 过滤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSRF"><span class="toc-number">2.3.</span> <span class="toc-text">CSRF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E6%8E%A7%E5%8F%98%E9%87%8F%E8%BF%87%E6%BB%A4"><span class="toc-number">2.4.</span> <span class="toc-text">可控变量过滤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#session-%E8%BF%87%E6%BB%A4"><span class="toc-number">2.4.1.</span> <span class="toc-text">session 过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cookie-%E8%BF%87%E6%BB%A4"><span class="toc-number">2.4.2.</span> <span class="toc-text">cookie 过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#admin-%E7%99%BB%E5%BD%95"><span class="toc-number">2.4.3.</span> <span class="toc-text">admin 登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#user-%E7%99%BB%E5%BD%95"><span class="toc-number">2.4.4.</span> <span class="toc-text">user 登录</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E5%8F%B0%E6%90%9C%E7%B4%A2%E6%A1%86SQL-%E6%B3%A8%E5%85%A5"><span class="toc-number">3.1.</span> <span class="toc-text">前台搜索框SQL 注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E5%8F%B0%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%88%A0%E9%99%A4%E6%BC%8F%E6%B4%9E"><span class="toc-number">3.2.</span> <span class="toc-text">后台任意文件删除漏洞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E5%8F%B0%E7%BC%96%E8%BE%91%E8%AF%AD%E8%A8%80%E6%96%87%E4%BB%B6%E8%AE%BE%E7%BD%AEGetShell"><span class="toc-number">3.3.</span> <span class="toc-text">后台编辑语言文件设置GetShell</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%A1%E8%AE%A1%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">审计总结</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 19
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/12</span><a class="archive-post-title" href= "/844d1b07.html" >新秀企业网站系统代码审计学习(复现)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/11</span><a class="archive-post-title" href= "/4fd81e40.html" >MacOS 下配置PHP代码审计环境，PHP调试学习</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/11</span><a class="archive-post-title" href= "/66043e4c.html" >WAF Bypass 姿势总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/09</span><a class="archive-post-title" href= "/fb2051a0.html" >CTF-XSS</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/07</span><a class="archive-post-title" href= "/936f84c6.html" >CTF-SSTI</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/07</span><a class="archive-post-title" href= "/54449ea6.html" >Windows 服务器应急响应</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/04</span><a class="archive-post-title" href= "/e312198e.html" >Linux 服务器应急响应</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/03</span><a class="archive-post-title" href= "/7881c78e.html" >CTF - 文件包含</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/03</span><a class="archive-post-title" href= "/94c303a9.html" >JAVA 基础</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/03</span><a class="archive-post-title" href= "/7d5ef8ca.html" >信安专业课-汇编语言</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/dbb484a9.html" >CTF - RCE</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/103ec22a.html" >CTF - 文件上传</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/29</span><a class="archive-post-title" href= "/bc077bb7.html" >HTTP request smuggling(请求走私)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/27</span><a class="archive-post-title" href= "/a4738b93.html" >CTF Tricks 总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/26</span><a class="archive-post-title" href= "/13bb2df2.html" >iptables 学习</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/26</span><a class="archive-post-title" href= "/c10c5ca9.html" >Redis 安全学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/26</span><a class="archive-post-title" href= "/e42fccb.html" >常见端口服务漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/56cfbe5.html" >PHP CVE、ThinkPHP、PhpMyAdmin、PHP 安全学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/d8714939.html" >PHP以及MYSQL相关版本差异及对应的安全问</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="SSTI"><span class="iconfont-archer">&#xe606;</span>SSTI</span>
+    
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="协议层安全"><span class="iconfont-archer">&#xe606;</span>协议层安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="JAVA"><span class="iconfont-archer">&#xe606;</span>JAVA</span>
+    
+        <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
+    
+        <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
+    
+        <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
+    
+        <span class="sidebar-tag-name" data-tags="汇编"><span class="iconfont-archer">&#xe606;</span>汇编</span>
+    
+        <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
+    
+        <span class="sidebar-tag-name" data-tags="漏洞挖掘"><span class="iconfont-archer">&#xe606;</span>漏洞挖掘</span>
+    
+        <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
+    
+        <span class="sidebar-tag-name" data-tags="Redis"><span class="iconfont-archer">&#xe606;</span>Redis</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+        <span class="sidebar-category-name" data-categories="CTF"><span class="iconfont-archer">&#xe60a;</span>CTF</span>
+    
+        <span class="sidebar-category-name" data-categories="渗透测试"><span class="iconfont-archer">&#xe60a;</span>渗透测试</span>
+    
+        <span class="sidebar-category-name" data-categories="运维知识"><span class="iconfont-archer">&#xe60a;</span>运维知识</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "m0nk3y"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+
