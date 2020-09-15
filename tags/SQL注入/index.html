@@ -22,7 +22,7 @@
     <meta name="description" content="">
     <meta property="og:type" content="website">
 <meta property="og:title" content="可惜没如果、m0nk3y‘s Blog">
-<meta property="og:url" content="https://hack-for.fun/tags/PHP%E5%AE%89%E5%85%A8/index.html">
+<meta property="og:url" content="https://hack-for.fun/tags/SQL%E6%B3%A8%E5%85%A5/index.html">
 <meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="m0nk3y">
@@ -355,68 +355,40 @@
     
     
     <article class="index-post">
-        <a class="abstract-title" href = "/d8714939.html" >
+        <a class="abstract-title" href = "/69fea760.html" >
             
-                <span>PHP以及MYSQL相关版本差异及对应的安全问</span>
+                <span>ThinkPHP5漏洞学习——SQL注入</span>
         </a>
         <div class="abstract-content">
-            前言一直觉得自己对相关的漏洞学的马马虎虎，没有深入总结，最近几次CTF比赛中也吃了不少的亏。遂想花一两天的时间来好好总结一下各个版本之间的区别，漏洞利用方式的不同，于是有了这篇文章。
-PHPPHP 现在应该一般都升级为php7了吧，所以来学习一波php7的新特性。
-主要是参考这篇文章：http://www.php7.site/book/php7/variable-changes-22.html#0
-变量处理机制
-间接变量，属性和方法引用都按照 从作到右到顺序进行解释（如果想要改变顺序，可以使用大括号
-global 关键字只能引用简单变量
-无法将一个函数作为另一个函数的参数进行传递
-引用赋...
+            [toc]
+参考资料：https://github.com/Mochazz/ThinkPHP-Vuln
+环境准备：
+
+PHPStorm + MAMP PRO
+
+环境搭建可以看我前两篇文章。
+
+composer
+
+12brew install composercomposer config -g repo.packagist composer https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;composer&#x2F;
+
+
+获取复现代码
+
+1composer create-project --prefer-dist topthink&#x2F;think...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
             <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/25</span>
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/13</span>
             </div>
             <!-- tags  -->
             
             <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = "PHP安全">PHP安全</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "代码审计">代码审计</a>
     
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/56cfbe5.html" >
-            
-                <span>PHP CVE、ThinkPHP、PhpMyAdmin、PHP 安全学习笔记</span>
-        </a>
-        <div class="abstract-content">
-            [TOC]
-
-资料来源于网络, 仅用作学习记录。本笔记还未完成，正重新整理中。
-
-PHP CVE、ThinkPHP、PhpMyAdmin 、PHP安全学习ThinkPHP5 SQL注入漏洞(一) &amp;&amp; 敏感信息泄露https://github.com/vulhub/vulhub/tree/master/thinkphp/in-sqlinjectionhttps://xz.aliyun.com/t/125
-1http:&#x2F;&#x2F;your-ip&#x2F;index.php?ids[]&#x3D;1&amp;ids[]&#x3D;2
-
-
-
-PHP-FPM 远程代...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/25</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "PHP安全">PHP安全</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "SQL注入">SQL注入</a>
     
 </div>
             
