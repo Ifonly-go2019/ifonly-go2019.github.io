@@ -363,9 +363,10 @@
             [toc]
 ThinkPHP5文件包含漏洞POC1&#x2F;public&#x2F;index.php&#x2F;index&#x2F;index?cacheFile&#x3D;favicon.ico
 
-![image-20200916135216791](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20200916135216791.png)
+
 可配合文件上传图片马，GetShell。(PHP 文件包含都讲文件当做php后缀文件进行解析，与实际文件类型无关)
-漏洞概述漏洞存在于 ThinkPHP ...
+漏洞概述漏洞存在于 ThinkPHP 模板引擎中，在加载模版解析变量时存在变量覆盖问题，而且程序没有对数据进行很好的过滤，最终导致 文件包含漏洞 的产生。
+影响版本5.0.0&lt;=ThinkPHP5&lt;=5.0.18 、5.1.0&lt;=ThinkPHP&lt...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
@@ -815,8 +816,6 @@ MAMP 中的 php.ini 设置
     
     
     
-    
-    
     <div class="total-and-search">
         <div class="total-archive">
         Total : 19
@@ -933,9 +932,9 @@ MAMP 中的 php.ini 设置
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
-    
         <span class="sidebar-tag-name" data-tags="SSTI"><span class="iconfont-archer">&#xe606;</span>SSTI</span>
+    
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
     
         <span class="sidebar-tag-name" data-tags="协议层安全"><span class="iconfont-archer">&#xe606;</span>协议层安全</span>
     
@@ -943,9 +942,9 @@ MAMP 中的 php.ini 设置
     
         <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
     
-        <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
-    
         <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
+    
+        <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
     
         <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
     
