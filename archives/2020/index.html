@@ -355,6 +355,59 @@
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/0.html" >
+            
+                <span>[Untitled Post]</span>
+        </a>
+        <div class="abstract-content">
+            
+《透视APT》网络空间中的对抗APT的典型事件之——“震网病毒”
+目标系统：工控系统
+潜伏渗透：感染了伊朗境内60%的PC
+突破物理隔离：U盘(病毒检测到宿主机插上U盘则主动向U盘感染病毒)
+技术水平：同时利用多个0day(微软和西门子工控系统)，体现了APT的高级性
+攻击者：极有可能是敌对关系的政治势力
+攻击持续性：C2服务器2005.11就完成注册,可能长达6~7年
+
+APT攻击的概念
+起源
+
+由美国一名空军上校2006年提出
+
+
+何时引起关注、高潮
+
+2010伊朗震网病毒、2013美国”棱镜门”事件
+
+
+定义
+
+知名第三方机构
+
+维基百科、Mandiant、赛门铁克、Dambal...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/21</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "APT">APT</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/8d0f.html" >
             
                 <span>ThinkPHP5漏洞学习-文件包含漏洞</span>
@@ -366,7 +419,10 @@ ThinkPHP5文件包含漏洞POC1&#x2F;public&#x2F;index.php&#x2F;index&#x2F;index
 
 可配合文件上传图片马，GetShell。(PHP 文件包含都讲文件当做php后缀文件进行解析，与实际文件类型无关)
 漏洞概述漏洞存在于 ThinkPHP 模板引擎中，在加载模版解析变量时存在变量覆盖问题，而且程序没有对数据进行很好的过滤，最终导致 文件包含漏洞 的产生。
-影响版本5.0.0&lt;=ThinkPHP5&lt;=5.0.18 、5.1.0&lt;=ThinkPHP&lt...
+
+变量覆盖漏洞
+
+https://www.cnblogs.com/wangtanzhi/p/12748967.ht...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
@@ -663,41 +719,6 @@ Linux 入侵排查0x00 前言当企业发生黑客入侵、系统...
             <div class= abstract-tags >
     
         <a class="post-tag" href="javascript:void(0);" data-tags = "Linux应急响应">Linux应急响应</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/7881c78e.html" >
-            
-                <span>CTF - 文件包含</span>
-        </a>
-        <div class="abstract-content">
-            文件包含漏洞技术点多数情况此处只考虑php开发的后端网站、CTF 赛题。
-基础知识文件包含函数php 中，与文件包含相关的函数
-require()require_once()include()include_once()
-伪协议远程文件包含
-allow_url_open = on
-
-本地文件包含(反序列化)SSRF -&gt; 本地文件包含、读取日志文件包含临时文件包含session 文件包含Tomcat Ajp 文件包含、文件读取漏洞CTF
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/03</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
     
 </div>
             
@@ -1009,9 +1030,28 @@ allow_url_open = on
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 19
+        Total : 20
         </div>
         <!-- search  -->
         
@@ -1024,6 +1064,11 @@ allow_url_open = on
     
     <div class="archive-year"> 2020 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/21</span><a class="archive-post-title" href= "/0.html" >[Untitled Post]</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -1135,9 +1180,9 @@ allow_url_open = on
     
         <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
     
-        <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
-    
         <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
+    
+        <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
     
         <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
     
@@ -1148,6 +1193,8 @@ allow_url_open = on
         <span class="sidebar-tag-name" data-tags="SQL注入"><span class="iconfont-archer">&#xe606;</span>SQL注入</span>
     
         <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
+    
+        <span class="sidebar-tag-name" data-tags="APT"><span class="iconfont-archer">&#xe606;</span>APT</span>
     
         <span class="sidebar-tag-name" data-tags="Redis"><span class="iconfont-archer">&#xe606;</span>Redis</span>
     

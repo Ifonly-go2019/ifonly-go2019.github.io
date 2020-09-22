@@ -40,7 +40,7 @@
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200916185825.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200916185031.png">
 <meta property="article:published_time" content="2020-09-16T05:10:50.000Z">
-<meta property="article:modified_time" content="2020-09-16T15:18:49.433Z">
+<meta property="article:modified_time" content="2020-09-16T15:59:09.731Z">
 <meta property="article:author" content="m0nk3y">
 <meta property="article:tag" content="代码审计">
 <meta property="article:tag" content="文件包含">
@@ -302,7 +302,7 @@ height:50vh;
                 
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">646</span>Reading time: <span class="post-count reading-time">2 min</span></span>
+                        <span>Word count: <span class="post-count word-count">817</span>Reading time: <span class="post-count reading-time">3 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
@@ -437,6 +437,17 @@ height:50vh;
 <p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200916231827.png" alt="image-20200916135216791"></p>
 <p>可配合文件上传图片马，GetShell。(PHP 文件包含都讲文件当做php后缀文件进行解析，与实际文件类型无关)</p>
 <h2 id="漏洞概述"><a href="#漏洞概述" class="headerlink" title="漏洞概述"></a>漏洞概述</h2><p>漏洞存在于 <strong>ThinkPHP</strong> 模板引擎中，在加载模版解析变量时存在<strong>变量覆盖</strong>问题，而且程序没有对数据进行很好的过滤，最终导致 <strong>文件包含漏洞</strong> 的产生。</p>
+<ul>
+<li>变量覆盖漏洞</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wangtanzhi/p/12748967.html">https://www.cnblogs.com/wangtanzhi/p/12748967.html</a></p>
+<p><strong>如果没有指定 flags，则被假定为 EXTR_OVERWRITE。</strong></p>
+<p>代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$auth = <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">extract($_GET)；</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>($auth==<span class="number">1</span>)&#123;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;private!&quot;</span>;</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;public!&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>这种情况没有指定 flags，则被假定为 EXTR_OVERWRITE</strong></p>
+<p>假设用户构造以下链接：<a target="_blank" rel="noopener" href="http://www.a.com/test1.php?auth=1">http://www.a.com/test1.php?auth=1</a><br>界面上会打印出private！</p>
+<p>安全的做法是确定register_globals=OFF后，在调用extract()时使用EXTR_SKIP保证已有变量不会被覆盖。<br>ps:<br>PHP extract() 函数从数组中把变量导入到当前的符号表中。对于数组中的每个元素，键名用于变量名，键值用于变量值。</p>
 <h2 id="影响版本"><a href="#影响版本" class="headerlink" title="影响版本"></a>影响版本</h2><p><strong>5.0.0&lt;=ThinkPHP5&lt;=5.0.18</strong> 、<strong>5.1.0&lt;=ThinkPHP&lt;=5.1.10</strong> </p>
 <h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p>这里以<code>ThinkPHP 5.0.18</code>  进行分析。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200916184327.png" alt="image-20200916153529187"></p>
@@ -475,13 +486,18 @@ height:50vh;
             <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
             <p>原文链接：<a href="https://hack-for.fun/8d0f.html">https://hack-for.fun/8d0f.html</a>
             <p>发表日期：<a href="https://hack-for.fun/8d0f.html">September 16th 2020, 1:10:50 pm</a>
-            <p>更新日期：<a href="https://hack-for.fun/8d0f.html">September 16th 2020, 11:18:49 pm</a>
+            <p>更新日期：<a href="https://hack-for.fun/8d0f.html">September 16th 2020, 11:59:09 pm</a>
             <p>版权声明：<b>原创文章转载时请注明出处</b></p>
         </div>
     
     <!-- paginator  -->
     <ul class="post-paginator">
         <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/0.html" title= "">
+                    <div class="nextTitle">[Untitled Post]</div>
+                </a>
             
         </li>
         <li class="previous">
@@ -828,9 +844,28 @@ top:50vh;
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 19
+        Total : 20
         </div>
         <!-- search  -->
         
@@ -843,6 +878,11 @@ top:50vh;
     
     <div class="archive-year"> 2020 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/21</span><a class="archive-post-title" href= "/0.html" >[Untitled Post]</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -954,9 +994,9 @@ top:50vh;
     
         <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
     
-        <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
-    
         <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
+    
+        <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
     
         <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
     
@@ -967,6 +1007,8 @@ top:50vh;
         <span class="sidebar-tag-name" data-tags="SQL注入"><span class="iconfont-archer">&#xe606;</span>SQL注入</span>
     
         <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
+    
+        <span class="sidebar-tag-name" data-tags="APT"><span class="iconfont-archer">&#xe606;</span>APT</span>
     
         <span class="sidebar-tag-name" data-tags="Redis"><span class="iconfont-archer">&#xe606;</span>Redis</span>
     
