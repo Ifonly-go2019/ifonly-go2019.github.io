@@ -20,17 +20,36 @@
     <meta name="keywords" content="信息安全,CTF,攻防对抗,代码审计,安全研究,渗透测试">
     
     <meta name="description" content="">
-    <meta property="og:type" content="website">
-<meta property="og:title" content="可惜没如果、m0nk3y‘s Blog">
-<meta property="og:url" content="https://hack-for.fun/categories/CTF/index.html">
+    <meta name="description" content="主要参考资料： https:&#x2F;&#x2F;github.com&#x2F;Mochazz&#x2F;ThinkPHP-Vuln&#x2F; RCE1(利用缓存文件GetShell从而RCE)相关参考资料：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;zpchcbd&#x2F;p&#x2F;12546340.html POC1http:&#x2F;&#x2F;thinkphp5:8888&#x2F;public&#x2F;?username&#x3D;te">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThinkPHP5漏洞学习-RCE">
+<meta property="og:url" content="https://hack-for.fun/a45.html">
 <meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="主要参考资料： https:&#x2F;&#x2F;github.com&#x2F;Mochazz&#x2F;ThinkPHP-Vuln&#x2F; RCE1(利用缓存文件GetShell从而RCE)相关参考资料：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;zpchcbd&#x2F;p&#x2F;12546340.html POC1http:&#x2F;&#x2F;thinkphp5:8888&#x2F;public&#x2F;?username&#x3D;te">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172609.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172619.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172420.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923160412.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172411.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172318.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172308.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172114.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172102.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172037.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923173430.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923160412.png">
+<meta property="article:published_time" content="2020-09-23T03:04:09.000Z">
+<meta property="article:modified_time" content="2020-09-23T09:35:14.532Z">
 <meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="代码审计">
+<meta property="article:tag" content="RCE">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172609.png">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     
-    <title>m0nk3y&#39;s Blog</title>
+    <title>ThinkPHP5漏洞学习-RCE · m0nk3y&#39;s Blog</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -212,12 +231,23 @@
 </head>
 
     
+        <body class="post-body">
+    
     
 <header class="header">
 
     <div class="read-progress"></div>
     <div class="header-sidebar-menu">&#xe775;</div>
     <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >沉下心来搞技术！</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">ThinkPHP5漏洞学习-RCE</a>
+            </div>
+    </div>
     
     <a class="home-link" href=/>沉下心来搞技术！</a>
 </header>
@@ -229,24 +259,76 @@
 
 
 
+
+height:50vh;
 ">
     
     <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
             
     <div class="site-intro-placeholder"></div>
-    <div class="site-intro-img" style="background-image: url(/)"></div>
+    <div class="site-intro-img" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"></div>
     <div class="site-intro-meta">
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
+            
+            ThinkPHP5漏洞学习-RCE
+            <!-- 404 -->
             
         </h1>
         <!-- 副标题 -->
         <p class="intro-subtitle">
             <!-- 主页副标题  -->
             
+            
+            <!-- 404 -->
+            
         </p>
         <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "代码审计">代码审计</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "RCE">RCE</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>Word count: <span class="post-count word-count">1.1k</span>Reading time: <span class="post-count reading-time">4 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2020/09/23</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
         
     </div>
 </div>
@@ -347,43 +429,107 @@
 </script>        
         <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
         <div class="container container-unloaded">
-            <main class="main index-page">
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/a4738b93.html" >
-            
-                <span>CTF Tricks 总结</span>
-        </a>
-        <div class="abstract-content">
-            [toc]
-今天要回学校了，回学校也快考实验班了，我C 语言太菜，CTF 也很久没玩了。所以简单总结一下之前有遇到过的CTF 知识。慢慢补充细节和其他内容。
-脚本题(python、php)快速计算并发起HTTP 请求快速处理数据在大量数据中获取指定内容php 伪随机数安全比较常见的就是seed 爆破。
-https://www.anquanke.com/post/id/215349
-加密算法可破解XSS反射型XSS存储型XSSDOM-XSSXSS 打cookie的姿势bypassCSRFXXE有回显XXEblind XXEoobbypassSSISSI 注入全称Server-Side In...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/27</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
-    
-</div>
-            
-        </div>
+            <main class="main post-page">
+    <article class="article-entry">
+        <p>主要参考资料：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Mochazz/ThinkPHP-Vuln/">https://github.com/Mochazz/ThinkPHP-Vuln/</a></p>
+<h1 id="RCE1-利用缓存文件GetShell从而RCE"><a href="#RCE1-利用缓存文件GetShell从而RCE" class="headerlink" title="RCE1(利用缓存文件GetShell从而RCE)"></a>RCE1(利用缓存文件GetShell从而RCE)</h1><p>相关参考资料：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/zpchcbd/p/12546340.html">https://www.cnblogs.com/zpchcbd/p/12546340.html</a></p>
+<h2 id="POC"><a href="#POC" class="headerlink" title="POC"></a>POC</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;thinkphp5:8888&#x2F;public&#x2F;?username&#x3D;test%0d%0a@eval($_GET[_]);&#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172609.png" alt="image-20200923114608784"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172619.png" alt="image-20200923124814752"></p>
+<h2 id="漏洞概述"><a href="#漏洞概述" class="headerlink" title="漏洞概述"></a>漏洞概述</h2><blockquote>
+<p>漏洞存在于 <strong>ThinkPHP</strong> 的缓存类中。该类会将缓存数据通过序列化的方式，直接存储在 <code>.php</code> 文件中，攻击者通过精心构造的 <strong>payload</strong> ，即可将 <strong>webshell</strong> 写入缓存文件。缓存文件的名字和目录均可预测出来，一旦缓存目录可访问或结合任意文件包含漏洞，即可触发 <strong>远程代码执行漏洞</strong> 。</p>
+</blockquote>
+<p>漏洞利用前提：</p>
+<ul>
+<li><p>站点能够将缓存文件列出，并且用户可以得到路径</p>
+</li>
+<li><p>1、缓存使用文件方式并且缓存目录暴露在web目录下面<br>2、攻击者要能猜到开发者使用的缓存key</p>
+</li>
+<li><p>知道缓存类所设置的键名，这样才能找到 <strong>webshell</strong> 路径；其次如果按照官方说明开发程序， <strong>webshell</strong> 最终会被写到 <strong>runtime</strong> 目录下，而官方推荐 <strong>public</strong> 作为 <strong>web</strong> 根目录，所以即便我们写入了 <strong>shell</strong> ，也无法直接访问到；最后如果程序有设置 <strong>$this-&gt;options[‘prefix’]</strong> 的话，在没有源码的情况下，我们还是无法获得 <strong>webshell</strong> 的准确路径。</p>
+</li>
+<li><blockquote>
+<p>5.0的部署建议是public目录作为web目录访问内容，其它都是web目录之外，当然，你必须要修改public/index.php中的相关路径</p>
+</blockquote>
+</li>
+</ul>
+<p>比如这里修改的index.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">app</span>\<span class="title">index</span>\<span class="title">controller</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">think</span>\<span class="title">Cache</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Index</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">index</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Cache::set(<span class="string">&quot;name&quot;</span>,input(<span class="string">&quot;get.username&quot;</span>));</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;Cache success&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="影响版本"><a href="#影响版本" class="headerlink" title="影响版本"></a>影响版本</h2><p><strong>5.0.0&lt;=ThinkPHP5&lt;=5.0.10</strong></p>
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p>在ThinkPHP 的5.0.11 release 信息中：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172420.png" alt="image-20200923125619050"></p>
+<p>更新了完善缓存驱动(安全更新)。再去查看commit记录。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923160412.png" alt="image-20200923130139007"></p>
+<p>修复方式为将缓存文件的内容拼接到<code>&lt;?php ?&gt;</code> 标签之外，并且使用了<code>exit()</code>函数来退出当前脚本。</p>
+<p>可下断点进行单步调试，观察整个参数在Cache类以及Request类下进过相关方法的过滤，转换，并最终写入了缓存文件的过程。</p>
+<p>首先是<code>Cache::set(&quot;name&quot;,input(&quot;get.username&quot;));</code> 未实例化，所以为调用<code>autoload</code>方法，自动加载机制来进行一系列实例化操作。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172411.png" alt="image-20200923161825336"></p>
+<p>然后到helper.php 中的 <code>input</code>方法，判断请求的方法和请求的参数，此处为<code>get.username</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172318.png" alt="image-20200923162505424"></p>
+<p>然后返回过滤后的值，继续调用<code>Request</code> 类的 <code>get</code> 方法和 <code>Input</code> 方法（在TP5)中参数的处理都是这样的了，</p>
+<p>经过<code>filterVaule</code>和<code>filterExp</code>函数进行特殊字符过滤和相关判段后返回给<code>$data</code></p>
+<hr>
+<p>然后来到Cache 类的<code>set</code>方法。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172308.png" alt="image-20200923164241136"></p>
+<p>调用了Cache 类的init 方法，该方法继续调用了 Config里的get方法，这些操作是在为缓存内容做一些初始化操作。然后再到Cache 类的 connect 方法，</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172114.png" alt="image-20200923164824257"></p>
+<p>为缓存文件的文件名进行md5返回。这里的<code>self::handler</code>为<code>think\cache\driver\File</code>类。所以会调用<code>File</code>类的<code>set</code>方法。该方法调用了<code>getCacheKey</code>方法来获取缓存文件的文件名。文件名的机制如下图，先是对<code>$name</code> md5，然后截取前两位作为目录名，后面部分作为文件名然后和<code>.php</code>后缀进行拼接。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172102.png" alt="image-20200923165836437"></p>
+<p>看看set方法的处理流程：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923172037.png" alt="image-20200923170741256"></p>
+<p>最后通过<code>file_put_contents</code>函数，将<code>$data</code>（参数内容可控，并且没有对data参数进行任何过滤等操作，只是序列化后拼接存储在文件中，这里的 <strong>$this-&gt;options[‘data_compress’]</strong> 变量默认情况下为 <strong>false</strong> ，所以数据不会经过 <strong>gzcompress</strong> 函数处理。虽然在序列化数据前面拼接了单行注释符 <strong>//</strong> ，但是我们可以通过注入换行符绕过该限制。） 写入<code>$filename</code>从而GetShell。</p>
+<blockquote>
+<p>最后如果程序有设置 <strong>$this-&gt;options[‘prefix’]</strong> 的话(也就是上上图中的设置文件名前缀的代码)，在没有源码的情况下，我们还是无法获得 <strong>webshell</strong> 的准确路径。</p>
+</blockquote>
+<h2 id="利用总结"><a href="#利用总结" class="headerlink" title="利用总结"></a>利用总结</h2><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923173430.png"></p>
+<h2 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h2><p>1，thinkphp3.2的版本请选择开启：DATA_CACHE_KEY 这样就算你使用的cms是开源的人家发现了这个也无法使用。<br>2，tp3.2-tp5  做好目录权限，除公共目录绝对不要让外部可访问</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923160412.png" alt="image-20200923130139007"></p>
+<h1 id="RCE2"><a href="#RCE2" class="headerlink" title="RCE2"></a>RCE2</h1><h1 id="RCE3"><a href="#RCE3" class="headerlink" title="RCE3"></a>RCE3</h1>
     </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
+            <p>原文链接：<a href="https://hack-for.fun/a45.html">https://hack-for.fun/a45.html</a>
+            <p>发表日期：<a href="https://hack-for.fun/a45.html">September 23rd 2020, 11:04:09 am</a>
+            <p>更新日期：<a href="https://hack-for.fun/a45.html">September 23rd 2020, 5:35:14 pm</a>
+            <p>版权声明：<b>原创文章转载时请注明出处</b></p>
+        </div>
     
     <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/5dcc.html" title= "CSS 注入学习笔记">
+                    <div class="prevTitle">CSS 注入学习笔记</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
     
+    
+    <!-- gitalk评论 -->
+
+    <!-- utteranc评论 -->
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
 </main>
             <!-- profile -->
             
@@ -461,6 +607,24 @@ https://www.anquanke.com/post/id/215349
 </footer>
     </div>
     <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RCE1-%E5%88%A9%E7%94%A8%E7%BC%93%E5%AD%98%E6%96%87%E4%BB%B6GetShell%E4%BB%8E%E8%80%8CRCE"><span class="toc-number">1.</span> <span class="toc-text">RCE1(利用缓存文件GetShell从而RCE)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#POC"><span class="toc-number">1.1.</span> <span class="toc-text">POC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%A6%82%E8%BF%B0"><span class="toc-number">1.2.</span> <span class="toc-text">漏洞概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E7%89%88%E6%9C%AC"><span class="toc-number">1.3.</span> <span class="toc-text">影响版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">1.4.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%80%BB%E7%BB%93"><span class="toc-number">1.5.</span> <span class="toc-text">利用总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D"><span class="toc-number">1.6.</span> <span class="toc-text">漏洞修复</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RCE2"><span class="toc-number">2.</span> <span class="toc-text">RCE2</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RCE3"><span class="toc-number">3.</span> <span class="toc-text">RCE3</span></a></li></ol>
+    </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
     <div class="sidebar sidebar-hide">
@@ -968,6 +1132,8 @@ jsonContent:
     
     </div>
     <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
      
     </body>
 </html>
