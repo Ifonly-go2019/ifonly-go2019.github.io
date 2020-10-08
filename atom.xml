@@ -6,7 +6,7 @@
   <link href="https://hack-for.fun/atom.xml" rel="self"/>
   
   <link href="https://hack-for.fun/"/>
-  <updated>2020-09-27T13:39:21.764Z</updated>
+  <updated>2020-10-08T07:06:36.773Z</updated>
   <id>https://hack-for.fun/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>最近一点思考、也可以是杂谈</title>
+    <link href="https://hack-for.fun/3d90.html"/>
+    <id>https://hack-for.fun/3d90.html</id>
+    <published>2020-10-08T06:30:18.000Z</published>
+    <updated>2020-10-08T07:06:36.773Z</updated>
+    
+    <content type="html"><![CDATA[<p>学业：学校的课程、我除了不能逃的课我几乎都在逃课。数据结构、Java、数据库我基本都逃了、只有英语和模电我逃不了。我担心挂科、担心逃课被抓、担心被禁考。每当看到同学完成数据结构左右，用C语言写了几百行代码的时候、去弄懂一个链表的顺序结构、删除之类的知识，我心里钦佩他们。看到同学用Java随便写就是几百行的代码、而我，就只会几个基本的代码。虽然我们是信息安全专业，但是编程能力确实是非常重要的，而我编程是真的垃圾。</p><p>爱情：最近是周围同学们脱单的高峰期。好几个同学都脱单了，当然别人感情之旅说不定是从上学期或者什么不知道多早就已经开始了。身边也有同学在鼓励我去谈恋爱，去找一个合适的人，诚然，这里确实有一个我认为比较合适的人。但是我觉得还是算了，顺其自然。但是，确实，有点感觉就应该尝试，不是吗？</p><p>事业：一句话，没技术没钱。技术太菜、打CTF打不出名次(虽然CTF不是一个人能决定的，但是我好已经好久没在CTF比赛中能输出很多分数了。)、SRC漏洞挖掘（这个是直接可以挖到💰的。，然而目前，我一毛钱都没挖到。）</p><p>家庭：国庆节其实从家里走的时候，还和爸妈小吵了一下。还是那些小事，算了不说了。改变自己、提升自己，目前还不能改变的东西就先放着。</p><p>学业、爱情、事业、家庭，何尝不是一个成年男人成家立业所考虑的事吗？我他妈还只是一个20出头的大学生，不过确实也该为未来考虑了，难道等以后毕业了再来规划？</p><hr><p>我常常认为我想到太多了，缺没有详细的规划，计划赶不上变化。</p><p>距离今年结束还有84天、大二上学期结束还有110天。如何利用好这三个多月时间，非常关键。这直接决定了我后面接项目赚钱、SRC挖洞、CTF比赛、大二暑假实习。</p><hr><p>其实一个人的精力是有限的。不可能面面俱到、我暑假在长亭实习一个师傅CTF貌似就没得过多少奖，但是别人挖洞厉害，一样能进大厂实习、后来也转正的。我觉得我不适合搞安全研究、对一个过滤的绕过研究一两天、主要还是没耐心，但是安全这个行业要的就是有耐心、可能是看到太多人挣钱太容易，当然也只是看到他们的表面，本质上哪些人每天熬到凌晨两三点，都不容易。</p><hr><p>最近，也在运动，光国庆节期间不算今天，我累计跑步都20多公里了，跑了4次5公里，每次半个小时。身体明显感觉到更有精神了，但是我还是改不了熬夜和躺在床上玩手机，导致我的眼睛很疲惫、也在长痘痘。这个痘痘真他妈奇怪，每次在家不长，到学校就长痘痘。</p><p>希望能坚持运动吧，每天就跑步半个小时，当然也不可能每天，中间休息一天还是可以的，下雨太热太冷都可以选择看看书。</p><p>昨天晚上也弄了一个2020年年度清单、其实应该早点弄，2021年我要坚持下去。</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201008145223.png" alt="image-20201008145222507"></p><hr><p>继续说上面说到的一个人的精力是有限的，选择一个方向就去死磕吧。CTF、我打算放弃了、有比赛就打，打不出来就算了。</p><p>平时的主要精力还是放在渗透测试、内网渗透这边的学习和实践上：</p><ul><li>渗透靶机，至少一周打一个</li><li>SRC挖洞、EDUSRC继续挖（挖有证书的）、然后慢慢去混点其他大型SRC、要有产出，一周不得低于2个漏洞。</li><li>每周不少于三个知识点关于渗透测试的</li></ul><hr><p>其实，这篇博客就是我发泄一下而已啦。西湖论剑又一次告诉我，专注于一个领域，并产出、一定要有产出。</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201008145930.png" alt="image-20201008145928913"></p><p>BTW，博客以后可能很少更新技术文章了。因为我用了Mweb，就难得发博客了。或许等我遇到了有趣的东西来分享给这个世界、或者我又想bb了就写一篇博客来骂我自己。</p><hr><p>最后，来点鸡汤？</p><blockquote><p>“有些人就是安安稳稳的读大学，上课，上完课就在宿舍躺着；</p><p>毕业了就出去找一份安稳的工作，一做好几年。”</p></blockquote><blockquote><p>这行很辛苦，一时的风光背后会有无数个夜晚的付出，如果你确认了的话，那就请学好；现在学计算机的遍地都是；知识时刻都在更新迭代，要不停的学习，没有能力的人注定被淘汰。</p></blockquote><blockquote><p>安全学习很难，但，山顶很高，哪怕失败了，也证明你爬过了高山，而不是在土丘上登顶。土丘容易被铲平，而高山不会，你挑战的目标就是你挑战的见证。</p><p>这是鸡汤还是警句，就取决于你有没有行动。让那些一笑而过的人成为历史的沙砾吧。你、我会书写历史。– 来自Toky师傅博客。</p></blockquote><p>哦，对了，我的究极目标是啥？</p><blockquote><p>基于灰黑产的APT对抗（人，还是要有点广大的目标，哪怕实现不了。。。。。。）</p></blockquote>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;学业：学校的课程、我除了不能逃的课我几乎都在逃课。数据结构、Java、数据库我基本都逃了、只有英语和模电我逃不了。我担心挂科、担心逃课被抓、担心被禁考。每当看到同学完成数据结构左右，用C语言写了几百行代码的时候、去弄懂一个链表的顺序结构、删除之类的知识，我心里钦佩他们。看到</summary>
+      
+    
+    
+    
+    <category term="思考杂谈" scheme="https://hack-for.fun/categories/%E6%80%9D%E8%80%83%E6%9D%82%E8%B0%88/"/>
+    
+    
+    <category term="思考杂谈" scheme="https://hack-for.fun/tags/%E6%80%9D%E8%80%83%E6%9D%82%E8%B0%88/"/>
+    
+  </entry>
   
   <entry>
     <title>ThinkPHP5漏洞学习-RCE</title>
@@ -446,30 +470,6 @@
     
     
     <category term="Redis" scheme="https://hack-for.fun/tags/Redis/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>常见端口服务漏洞</title>
-    <link href="https://hack-for.fun/e42fccb.html"/>
-    <id>https://hack-for.fun/e42fccb.html</id>
-    <published>2020-08-25T16:27:28.000Z</published>
-    <updated>2020-08-26T01:59:43.500Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="列举"><a href="#列举" class="headerlink" title="列举"></a>列举</h1><p>21    ftp/tftp/vsftpd文件传输协议    爆破/嗅探/溢出/后门<br>22    ssh远程连接    爆破/openssh漏洞<br>23    Telnet远程连接    爆破/嗅探/弱口令<br>25    SMTP邮件服务    邮件伪造<br>53    DNS域名解析系统    域传送/劫持/缓存投毒/欺骗<br>81    Ipcam    登陆绕过/远程代码执行<br>110    pop3    爆破/嗅探<br>139    Samba服务    爆破/未授权访问/远程命令执行<br>143    Imap协议    爆破<br>389    Ldap目录访问协议    注入/未授权访问/弱口令<br>445    smb    ms17-010/端口溢出<br>873    Rsync服务    文件上传/未授权访问<br>1080    socket    爆破<br>1352    Lotus      domino邮件服务    爆破/信息泄漏<br>1433    mssql    爆破/注入/SA弱口令<br>1521    oracle    爆破/注入/TNS爆破/反弹shell<br>2049    Nfs服务    配置不当<br>2181    zookeeper服务    未授权访问<br>2375    docker      remote      api    未授权访问<br>3306    mysql    爆破/注入<br>3389    Rdp远程桌面链接    爆破/shift后门<br>4440    rundeck    弱口令admin<br>4848    GlassFish控制台    爆破/认证绕过<br>5000    sybase/DB2数据库    爆破/注入/提权<br>5432    postgresql    爆破/注入/缓冲区溢出<br>5632    pcanywhere服务    抓密码/代码执行<br>5900    vnc    爆破/认证绕过<br>6082    varnish    Varnish      HTTP      accelerator      CLI      未授权访问<br>6379    Redis数据库    未授权访问/爆破<br>67/68    dhcp服务    劫持/欺骗<br>8082    H2数据库    弱口令/空口令<br>8161    activemq    弱口令/写文件<br>8649    ganglia    信息泄漏<br>9000    fastcgi    远程命令执行<br>9090    Websphere控制台/用友    爆破/java反序列化/弱口令<br>11211    memcached    未授权访问<br>50000    SAP    SAP命令执行<br>80/443    http/https    web应用漏洞/心脏滴血<br>161：162    SNMP协议    爆破/搜集目标内网信息<br>2601:2604    zebra路由软件    默认密码zebra<br>3128：3312    squid    远程代码执行<br>7001/7002    weblogic    java反序列化/控制台弱口令<br>8083/8086    influxDB    未授权访问<br>9200/9300    elasticsearch    远程代码执行<br>512/513/514    Linux      Rexec服务    爆破/Rlogin登陆<br>61616/8161    ActiveMQ    未授权访问/默认密码/反序列化<br>8069/10050    zabbix服务    远程命令执行/注入<br>8000/8080/8089    Jboss/Tomcat/Resin    爆破/PUT文件上传/反序列化<br>27017/27018/28017    mongodb    未授权访问/爆破<br>8080/8088/50060:50070    hadoop    默认端口未授权访问</p><h1 id="复现"><a href="#复现" class="headerlink" title="复现"></a>复现</h1><p>等我有空，</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;列举&quot;&gt;&lt;a href=&quot;#列举&quot; class=&quot;headerlink&quot; title=&quot;列举&quot;&gt;&lt;/a&gt;列举&lt;/h1&gt;&lt;p&gt;21    ftp/tftp/vsftpd文件传输协议    爆破/嗅探/溢出/后门&lt;br&gt;22    ssh远程连接    爆破/open</summary>
-      
-    
-    
-    
-    <category term="渗透测试" scheme="https://hack-for.fun/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
-    
-    <category term="端口" scheme="https://hack-for.fun/tags/%E7%AB%AF%E5%8F%A3/"/>
     
   </entry>
   

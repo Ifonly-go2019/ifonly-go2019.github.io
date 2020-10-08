@@ -20,17 +20,25 @@
     <meta name="keywords" content="信息安全,CTF,攻防对抗,代码审计,安全研究,渗透测试">
     
     <meta name="description" content="">
-    <meta property="og:type" content="website">
-<meta property="og:title" content="可惜没如果、m0nk3y‘s Blog">
-<meta property="og:url" content="https://hack-for.fun/page/3/index.html">
+    <meta name="description" content="学业：学校的课程、我除了不能逃的课我几乎都在逃课。数据结构、Java、数据库我基本都逃了、只有英语和模电我逃不了。我担心挂科、担心逃课被抓、担心被禁考。每当看到同学完成数据结构左右，用C语言写了几百行代码的时候、去弄懂一个链表的顺序结构、删除之类的知识，我心里钦佩他们。看到同学用Java随便写就是几百行的代码、而我，就只会几个基本的代码。虽然我们是信息安全专业，但是编程能力确实是非常重要的，而我编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最近一点思考、也可以是杂谈">
+<meta property="og:url" content="https://hack-for.fun/3d90.html">
 <meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="学业：学校的课程、我除了不能逃的课我几乎都在逃课。数据结构、Java、数据库我基本都逃了、只有英语和模电我逃不了。我担心挂科、担心逃课被抓、担心被禁考。每当看到同学完成数据结构左右，用C语言写了几百行代码的时候、去弄懂一个链表的顺序结构、删除之类的知识，我心里钦佩他们。看到同学用Java随便写就是几百行的代码、而我，就只会几个基本的代码。虽然我们是信息安全专业，但是编程能力确实是非常重要的，而我编">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201008145223.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201008145930.png">
+<meta property="article:published_time" content="2020-10-08T06:30:18.000Z">
+<meta property="article:modified_time" content="2020-10-08T07:06:36.773Z">
 <meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="思考杂谈">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201008145223.png">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     
-    <title>m0nk3y&#39;s Blog</title>
+    <title>最近一点思考、也可以是杂谈 · m0nk3y&#39;s Blog</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -85,6 +93,8 @@
 
     <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     
     <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
 /* This file is meant as a standalone workflow for
@@ -210,14 +220,23 @@
 </head>
 
     
-        <body class="home-body">
+        <body class="post-body">
     
     
-<header class="header index-header">
+<header class="header">
 
     <div class="read-progress"></div>
     <div class="header-sidebar-menu">&#xe775;</div>
     <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >M0nk3y&#39;s Blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">最近一点思考、也可以是杂谈</a>
+            </div>
+    </div>
     
     <a class="home-link" href=/>M0nk3y's Blog</a>
 </header>
@@ -230,23 +249,23 @@
 
 
 
-height:40vh;
+height:50vh;
 ">
     
     <!-- 主页  -->
     
     
-    <!-- 文章页  -->
+    <!-- 404页  -->
             
     <div class="site-intro-placeholder"></div>
-    <div class="site-intro-img" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg)"></div>
+    <div class="site-intro-img" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"></div>
     <div class="site-intro-meta">
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            M0nk3y's Blog
-            <!-- 文章页  -->
+            最近一点思考、也可以是杂谈
+            <!-- 404 -->
             
         </h1>
         <!-- 副标题 -->
@@ -254,12 +273,49 @@ height:40vh;
             <!-- 主页副标题  -->
             
             
-                做人踏实，做事低调。仰望星空，专注脚下。
-            
-            <!-- 文章页  -->
+            <!-- 404 -->
             
         </p>
         <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "思考杂谈">思考杂谈</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>Word count: <span class="post-count word-count">1.5k</span>Reading time: <span class="post-count reading-time">4 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2020/10/08</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
         
     </div>
 </div>
@@ -360,231 +416,98 @@ height:40vh;
 </script>        
         <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
         <div class="container container-unloaded">
-            <main class="main index-page">
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/e42fccb.html" >
-            
-                <span>常见端口服务漏洞</span>
-        </a>
-        <div class="abstract-content">
-            列举21    ftp/tftp/vsftpd文件传输协议    爆破/嗅探/溢出/后门22    ssh远程连接    爆破/openssh漏洞23    Telnet远程连接    爆破/嗅探/弱口令25    SMTP邮件服务    邮件伪造53    DNS域名解析系统    域传送/劫持/缓存投毒/欺骗81    Ipcam    登陆绕过/远程代码执行110    pop3    爆破/嗅探139    Samba服务    爆破/未授权访问/远程命令执行143    Imap协议    爆破389    Ldap目录访问协议    注入/未授权访问/弱口令445    sm...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/26</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "端口">端口</a>
-    
-</div>
-            
-        </div>
+            <main class="main post-page">
+    <article class="article-entry">
+        <p>学业：学校的课程、我除了不能逃的课我几乎都在逃课。数据结构、Java、数据库我基本都逃了、只有英语和模电我逃不了。我担心挂科、担心逃课被抓、担心被禁考。每当看到同学完成数据结构左右，用C语言写了几百行代码的时候、去弄懂一个链表的顺序结构、删除之类的知识，我心里钦佩他们。看到同学用Java随便写就是几百行的代码、而我，就只会几个基本的代码。虽然我们是信息安全专业，但是编程能力确实是非常重要的，而我编程是真的垃圾。</p>
+<p>爱情：最近是周围同学们脱单的高峰期。好几个同学都脱单了，当然别人感情之旅说不定是从上学期或者什么不知道多早就已经开始了。身边也有同学在鼓励我去谈恋爱，去找一个合适的人，诚然，这里确实有一个我认为比较合适的人。但是我觉得还是算了，顺其自然。但是，确实，有点感觉就应该尝试，不是吗？</p>
+<p>事业：一句话，没技术没钱。技术太菜、打CTF打不出名次(虽然CTF不是一个人能决定的，但是我好已经好久没在CTF比赛中能输出很多分数了。)、SRC漏洞挖掘（这个是直接可以挖到💰的。，然而目前，我一毛钱都没挖到。）</p>
+<p>家庭：国庆节其实从家里走的时候，还和爸妈小吵了一下。还是那些小事，算了不说了。改变自己、提升自己，目前还不能改变的东西就先放着。</p>
+<p>学业、爱情、事业、家庭，何尝不是一个成年男人成家立业所考虑的事吗？我他妈还只是一个20出头的大学生，不过确实也该为未来考虑了，难道等以后毕业了再来规划？</p>
+<hr>
+<p>我常常认为我想到太多了，缺没有详细的规划，计划赶不上变化。</p>
+<p>距离今年结束还有84天、大二上学期结束还有110天。如何利用好这三个多月时间，非常关键。这直接决定了我后面接项目赚钱、SRC挖洞、CTF比赛、大二暑假实习。</p>
+<hr>
+<p>其实一个人的精力是有限的。不可能面面俱到、我暑假在长亭实习一个师傅CTF貌似就没得过多少奖，但是别人挖洞厉害，一样能进大厂实习、后来也转正的。我觉得我不适合搞安全研究、对一个过滤的绕过研究一两天、主要还是没耐心，但是安全这个行业要的就是有耐心、可能是看到太多人挣钱太容易，当然也只是看到他们的表面，本质上哪些人每天熬到凌晨两三点，都不容易。</p>
+<hr>
+<p>最近，也在运动，光国庆节期间不算今天，我累计跑步都20多公里了，跑了4次5公里，每次半个小时。身体明显感觉到更有精神了，但是我还是改不了熬夜和躺在床上玩手机，导致我的眼睛很疲惫、也在长痘痘。这个痘痘真他妈奇怪，每次在家不长，到学校就长痘痘。</p>
+<p>希望能坚持运动吧，每天就跑步半个小时，当然也不可能每天，中间休息一天还是可以的，下雨太热太冷都可以选择看看书。</p>
+<p>昨天晚上也弄了一个2020年年度清单、其实应该早点弄，2021年我要坚持下去。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201008145223.png" alt="image-20201008145222507"></p>
+<hr>
+<p>继续说上面说到的一个人的精力是有限的，选择一个方向就去死磕吧。CTF、我打算放弃了、有比赛就打，打不出来就算了。</p>
+<p>平时的主要精力还是放在渗透测试、内网渗透这边的学习和实践上：</p>
+<ul>
+<li>渗透靶机，至少一周打一个</li>
+<li>SRC挖洞、EDUSRC继续挖（挖有证书的）、然后慢慢去混点其他大型SRC、要有产出，一周不得低于2个漏洞。</li>
+<li>每周不少于三个知识点关于渗透测试的</li>
+</ul>
+<hr>
+<p>其实，这篇博客就是我发泄一下而已啦。西湖论剑又一次告诉我，专注于一个领域，并产出、一定要有产出。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201008145930.png" alt="image-20201008145928913"></p>
+<p>BTW，博客以后可能很少更新技术文章了。因为我用了Mweb，就难得发博客了。或许等我遇到了有趣的东西来分享给这个世界、或者我又想bb了就写一篇博客来骂我自己。</p>
+<hr>
+<p>最后，来点鸡汤？</p>
+<blockquote>
+<p>“有些人就是安安稳稳的读大学，上课，上完课就在宿舍躺着；</p>
+<p>毕业了就出去找一份安稳的工作，一做好几年。”</p>
+</blockquote>
+<blockquote>
+<p>这行很辛苦，一时的风光背后会有无数个夜晚的付出，如果你确认了的话，那就请学好；现在学计算机的遍地都是；知识时刻都在更新迭代，要不停的学习，没有能力的人注定被淘汰。</p>
+</blockquote>
+<blockquote>
+<p>安全学习很难，但，山顶很高，哪怕失败了，也证明你爬过了高山，而不是在土丘上登顶。土丘容易被铲平，而高山不会，你挑战的目标就是你挑战的见证。</p>
+<p>这是鸡汤还是警句，就取决于你有没有行动。让那些一笑而过的人成为历史的沙砾吧。你、我会书写历史。– 来自Toky师傅博客。</p>
+</blockquote>
+<p>哦，对了，我的究极目标是啥？</p>
+<blockquote>
+<p>基于灰黑产的APT对抗（人，还是要有点广大的目标，哪怕实现不了。。。。。。）</p>
+</blockquote>
+
     </article>
+    <!-- license  -->
     
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/d8714939.html" >
-            
-                <span>PHP以及MYSQL相关版本差异及对应的安全问</span>
-        </a>
-        <div class="abstract-content">
-            前言一直觉得自己对相关的漏洞学的马马虎虎，没有深入总结，最近几次CTF比赛中也吃了不少的亏。遂想花一两天的时间来好好总结一下各个版本之间的区别，漏洞利用方式的不同，于是有了这篇文章。
-PHPPHP 现在应该一般都升级为php7了吧，所以来学习一波php7的新特性。
-主要是参考这篇文章：http://www.php7.site/book/php7/variable-changes-22.html#0
-变量处理机制
-间接变量，属性和方法引用都按照 从作到右到顺序进行解释（如果想要改变顺序，可以使用大括号
-global 关键字只能引用简单变量
-无法将一个函数作为另一个函数的参数进行传递
-引用赋...
+        <div class="license-wrapper">
+            <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
+            <p>原文链接：<a href="https://hack-for.fun/3d90.html">https://hack-for.fun/3d90.html</a>
+            <p>发表日期：<a href="https://hack-for.fun/3d90.html">October 8th 2020, 2:30:18 pm</a>
+            <p>更新日期：<a href="https://hack-for.fun/3d90.html">October 8th 2020, 3:06:36 pm</a>
+            <p>版权声明：<b>原创文章转载时请注明出处</b></p>
         </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/25</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "PHP安全">PHP安全</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/56cfbe5.html" >
-            
-                <span>PHP CVE、ThinkPHP、PhpMyAdmin、PHP 安全学习笔记</span>
-        </a>
-        <div class="abstract-content">
-            [TOC]
-
-资料来源于网络, 仅用作学习记录。本笔记还未完成，正重新整理中。
-
-PHP CVE、ThinkPHP、PhpMyAdmin 、PHP安全学习ThinkPHP5 SQL注入漏洞(一) &amp;&amp; 敏感信息泄露https://github.com/vulhub/vulhub/tree/master/thinkphp/in-sqlinjectionhttps://xz.aliyun.com/t/125
-1http:&#x2F;&#x2F;your-ip&#x2F;index.php?ids[]&#x3D;1&amp;ids[]&#x3D;2
-
-
-
-PHP-FPM 远程代...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/25</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "PHP安全">PHP安全</a>
-    
-</div>
-            
-        </div>
-    </article>
     
     <!-- paginator  -->
-    
-    <nav class="page-nav">
-        <a class="extend prev" rel="prev" href="/page/2/">&lt; PREV</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
-    </nav>
-    
-</main>
-            <!-- profile -->
+    <ul class="post-paginator">
+        <li class="next">
             
-            <div class="profile">
-    <img class="profile-avatar" alt="avatar" src= https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825203605.JPG >
-    <div class="profile-name">m0nk3y</div>
-    
-    <div class="profile-signature">
-        一个不能孜孜不倦，始终处于新知识、新技术学习状态下的安全爱好者，必然会被超越和取代。
-    </div>
-    
-    
-    <div class="profile-social">
-        
-    
-        
+        </li>
+        <li class="previous">
             
-                <a href="mailto:ifonlysec@gmail.com" class="iconfont-archer email" title=email ></a>
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/a45.html" title= "ThinkPHP5漏洞学习-RCE">
+                    <div class="prevTitle">ThinkPHP5漏洞学习-RCE</div>
+                </a>
             
-        
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
     
-        
     
-        
+    <!-- gitalk评论 -->
+
+    <!-- utteranc评论 -->
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
     
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-            
-                <a href="/atom.xml" class="iconfont-archer rss" target="_blank" title=rss></a>
-            
-        
     
 
-    </div>
-    
-    
-        <div class="friends">
-            <div>FRIENDS</div>
-            
-                
-                    <span>
-                        <a href= http://pipinstall.cn target="_black">ttpfx</a>
-                    </span>
-                
-            
-                
-                    <span>
-                        <a href= https://www.hackyangtuo.top target="_black">V1cuna</a>
-                    </span>
-                
-            
-                
-                    <span>
-                        <a href= http://cyzcc.vip target="_black">Cyzcc</a>
-                    </span>
-                
-            
-                
-                    <span>
-                        <a href= http://xun9er.com/ target="_black">Xun9er</a>
-                    </span>
-                
-            
-                
-                    <span>
-                        <a href= https://y1ng.org/ target="_black">Toky</a>
-                    </span>
-                
-            
-                
-                    <span>
-                        <a href= http://i0gan.cn target="_black">I0gan</a>
-                    </span>
-                
-            
-        </div>
-    
-    
-        <div class="about-me">
-            <a href = "/about" >ABOUT ME</a>
-        </div>
-    
-</div>
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
             
         </div>
         <footer class="footer footer-unloaded">
@@ -660,6 +583,24 @@ PHP-FPM 远程代...
 </footer>
     </div>
     <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        
+    </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
     <div class="sidebar sidebar-hide">
@@ -1191,6 +1132,8 @@ jsonContent:
     
     </div>
     <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
      
     </body>
 </html>

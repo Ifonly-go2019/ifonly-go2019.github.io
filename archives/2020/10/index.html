@@ -22,7 +22,7 @@
     <meta name="description" content="">
     <meta property="og:type" content="website">
 <meta property="og:title" content="可惜没如果、m0nk3y‘s Blog">
-<meta property="og:url" content="https://hack-for.fun/page/3/index.html">
+<meta property="og:url" content="https://hack-for.fun/archives/2020/10/index.html">
 <meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="m0nk3y">
@@ -85,6 +85,8 @@
 
     <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     
     <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
 /* This file is meant as a standalone workflow for
@@ -210,10 +212,8 @@
 </head>
 
     
-        <body class="home-body">
     
-    
-<header class="header index-header">
+<header class="header">
 
     <div class="read-progress"></div>
     <div class="header-sidebar-menu">&#xe775;</div>
@@ -229,34 +229,21 @@
 
 
 
-
-height:40vh;
 ">
     
     <!-- 主页  -->
-    
-    
-    <!-- 文章页  -->
             
     <div class="site-intro-placeholder"></div>
-    <div class="site-intro-img" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg)"></div>
+    <div class="site-intro-img" style="background-image: url(/)"></div>
     <div class="site-intro-meta">
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            M0nk3y's Blog
-            <!-- 文章页  -->
-            
         </h1>
         <!-- 副标题 -->
         <p class="intro-subtitle">
             <!-- 主页副标题  -->
-            
-            
-                做人踏实，做事低调。仰望星空，专注脚下。
-            
-            <!-- 文章页  -->
             
         </p>
         <!-- 文章页meta -->
@@ -368,97 +355,24 @@ height:40vh;
     
     
     <article class="index-post">
-        <a class="abstract-title" href = "/e42fccb.html" >
+        <a class="abstract-title" href = "/3d90.html" >
             
-                <span>常见端口服务漏洞</span>
+                <span>最近一点思考、也可以是杂谈</span>
         </a>
         <div class="abstract-content">
-            列举21    ftp/tftp/vsftpd文件传输协议    爆破/嗅探/溢出/后门22    ssh远程连接    爆破/openssh漏洞23    Telnet远程连接    爆破/嗅探/弱口令25    SMTP邮件服务    邮件伪造53    DNS域名解析系统    域传送/劫持/缓存投毒/欺骗81    Ipcam    登陆绕过/远程代码执行110    pop3    爆破/嗅探139    Samba服务    爆破/未授权访问/远程命令执行143    Imap协议    爆破389    Ldap目录访问协议    注入/未授权访问/弱口令445    sm...
+            学业：学校的课程、我除了不能逃的课我几乎都在逃课。数据结构、Java、数据库我基本都逃了、只有英语和模电我逃不了。我担心挂科、担心逃课被抓、担心被禁考。每当看到同学完成数据结构左右，用C语言写了几百行代码的时候、去弄懂一个链表的顺序结构、删除之类的知识，我心里钦佩他们。看到同学用Java随便写就是几百行的代码、而我，就只会几个基本的代码。虽然我们是信息安全专业，但是编程能力确实是非常重要的，而我编程是真的垃圾。
+爱情：最近是周围同学们脱单的高峰期。好几个同学都脱单了，当然别人感情之旅说不定是从上学期或者什么不知道多早就已经开始了。身边也有同学在鼓励我去谈恋爱，去找一个合适的人，诚然，这里...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
             <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/26</span>
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/10/08</span>
             </div>
             <!-- tags  -->
             
             <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = "端口">端口</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/d8714939.html" >
-            
-                <span>PHP以及MYSQL相关版本差异及对应的安全问</span>
-        </a>
-        <div class="abstract-content">
-            前言一直觉得自己对相关的漏洞学的马马虎虎，没有深入总结，最近几次CTF比赛中也吃了不少的亏。遂想花一两天的时间来好好总结一下各个版本之间的区别，漏洞利用方式的不同，于是有了这篇文章。
-PHPPHP 现在应该一般都升级为php7了吧，所以来学习一波php7的新特性。
-主要是参考这篇文章：http://www.php7.site/book/php7/variable-changes-22.html#0
-变量处理机制
-间接变量，属性和方法引用都按照 从作到右到顺序进行解释（如果想要改变顺序，可以使用大括号
-global 关键字只能引用简单变量
-无法将一个函数作为另一个函数的参数进行传递
-引用赋...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/25</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "PHP安全">PHP安全</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/56cfbe5.html" >
-            
-                <span>PHP CVE、ThinkPHP、PhpMyAdmin、PHP 安全学习笔记</span>
-        </a>
-        <div class="abstract-content">
-            [TOC]
-
-资料来源于网络, 仅用作学习记录。本笔记还未完成，正重新整理中。
-
-PHP CVE、ThinkPHP、PhpMyAdmin 、PHP安全学习ThinkPHP5 SQL注入漏洞(一) &amp;&amp; 敏感信息泄露https://github.com/vulhub/vulhub/tree/master/thinkphp/in-sqlinjectionhttps://xz.aliyun.com/t/125
-1http:&#x2F;&#x2F;your-ip&#x2F;index.php?ids[]&#x3D;1&amp;ids[]&#x3D;2
-
-
-
-PHP-FPM 远程代...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/25</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "PHP安全">PHP安全</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "思考杂谈">思考杂谈</a>
     
 </div>
             
@@ -467,124 +381,8 @@ PHP-FPM 远程代...
     
     <!-- paginator  -->
     
-    <nav class="page-nav">
-        <a class="extend prev" rel="prev" href="/page/2/">&lt; PREV</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
-    </nav>
-    
 </main>
             <!-- profile -->
-            
-            <div class="profile">
-    <img class="profile-avatar" alt="avatar" src= https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825203605.JPG >
-    <div class="profile-name">m0nk3y</div>
-    
-    <div class="profile-signature">
-        一个不能孜孜不倦，始终处于新知识、新技术学习状态下的安全爱好者，必然会被超越和取代。
-    </div>
-    
-    
-    <div class="profile-social">
-        
-    
-        
-            
-                <a href="mailto:ifonlysec@gmail.com" class="iconfont-archer email" title=email ></a>
-            
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-            
-                <a href="/atom.xml" class="iconfont-archer rss" target="_blank" title=rss></a>
-            
-        
-    
-
-    </div>
-    
-    
-        <div class="friends">
-            <div>FRIENDS</div>
-            
-                
-                    <span>
-                        <a href= http://pipinstall.cn target="_black">ttpfx</a>
-                    </span>
-                
-            
-                
-                    <span>
-                        <a href= https://www.hackyangtuo.top target="_black">V1cuna</a>
-                    </span>
-                
-            
-                
-                    <span>
-                        <a href= http://cyzcc.vip target="_black">Cyzcc</a>
-                    </span>
-                
-            
-                
-                    <span>
-                        <a href= http://xun9er.com/ target="_black">Xun9er</a>
-                    </span>
-                
-            
-                
-                    <span>
-                        <a href= https://y1ng.org/ target="_black">Toky</a>
-                    </span>
-                
-            
-                
-                    <span>
-                        <a href= http://i0gan.cn target="_black">I0gan</a>
-                    </span>
-                
-            
-        </div>
-    
-    
-        <div class="about-me">
-            <a href = "/about" >ABOUT ME</a>
-        </div>
-    
-</div>
             
         </div>
         <footer class="footer footer-unloaded">
