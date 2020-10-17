@@ -355,23 +355,30 @@
     
     
     <article class="index-post">
-        <a class="abstract-title" href = "/936f84c6.html" >
+        <a class="abstract-title" href = "/d8714939.html" >
             
-                <span>CTF-SSTI</span>
+                <span>PHP以及MYSQL相关版本差异及对应的安全问</span>
         </a>
         <div class="abstract-content">
-            
+            前言一直觉得自己对相关的漏洞学的马马虎虎，没有深入总结，最近几次CTF比赛中也吃了不少的亏。遂想花一两天的时间来好好总结一下各个版本之间的区别，漏洞利用方式的不同，于是有了这篇文章。
+PHPPHP 现在应该一般都升级为php7了吧，所以来学习一波php7的新特性。
+主要是参考这篇文章：http://www.php7.site/book/php7/variable-changes-22.html#0
+变量处理机制
+间接变量，属性和方法引用都按照 从作到右到顺序进行解释（如果想要改变顺序，可以使用大括号
+global 关键字只能引用简单变量
+无法将一个函数作为另一个函数的参数进行传递
+引用赋...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
             <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/07</span>
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/25</span>
             </div>
             <!-- tags  -->
             
             <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = "SSTI">SSTI</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "PHP安全">PHP安全</a>
     
 </div>
             
@@ -384,323 +391,32 @@
     
     
     <article class="index-post">
-        <a class="abstract-title" href = "/54449ea6.html" >
+        <a class="abstract-title" href = "/56cfbe5.html" >
             
-                <span>Windows 服务器应急响应</span>
+                <span>PHP CVE、ThinkPHP、PhpMyAdmin、PHP 安全学习笔记</span>
         </a>
         <div class="abstract-content">
-            
+            [TOC]
+
+资料来源于网络, 仅用作学习记录。本笔记还未完成，正重新整理中。
+
+PHP CVE、ThinkPHP、PhpMyAdmin 、PHP安全学习ThinkPHP5 SQL注入漏洞(一) &amp;&amp; 敏感信息泄露https://github.com/vulhub/vulhub/tree/master/thinkphp/in-sqlinjectionhttps://xz.aliyun.com/t/125
+1http:&#x2F;&#x2F;your-ip&#x2F;index.php?ids[]&#x3D;1&amp;ids[]&#x3D;2
+
+
+
+PHP-FPM 远程代...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
             <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/07</span>
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/25</span>
             </div>
             <!-- tags  -->
             
             <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = "Linux应急响应">Linux应急响应</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/e312198e.html" >
-            
-                <span>Linux 服务器应急响应</span>
-        </a>
-        <div class="abstract-content">
-            
-前言：2020年期间有幸参加了护网，客户在演习阶段出现了一次应急事件，Windows的邮件服务器出现了一个隐藏用户异地登录…… 当时客户有点情绪，加之我们这边确实都是擅长渗透、挖洞的师傅们，所以应急的时候显得很陌生，手忙脚乱，甚至可以说很业余。于是打算认真的按照网上一些关于应急响应的资料来复现一下，熟悉一些基本的东西。算是掌握一下常识好了。
-
-
-所有参考资料仅用于学习
-
-Version1: 参考：Bypass 师傅的项目：https://bypass007.github.io/Emergency-Response-Notes/
-Linux 入侵排查0x00 前言当企业发生黑客入侵、系统...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/04</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "Linux应急响应">Linux应急响应</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/7881c78e.html" >
-            
-                <span>CTF - 文件包含</span>
-        </a>
-        <div class="abstract-content">
-            文件包含漏洞技术点多数情况此处只考虑php开发的后端网站、CTF 赛题。
-基础知识文件包含函数php 中，与文件包含相关的函数
-require()require_once()include()include_once()
-伪协议远程文件包含
-allow_url_open = on
-
-本地文件包含(反序列化)SSRF -&gt; 本地文件包含、读取日志文件包含临时文件包含session 文件包含Tomcat Ajp 文件包含、文件读取漏洞CTF
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/03</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/dbb484a9.html" >
-            
-                <span>CTF - RCE</span>
-        </a>
-        <div class="abstract-content">
-            [toc]
-RCE(远程代码\命令执行)漏洞技术点漏洞原理源码编写逻辑不严，参数入口过滤不严或者没过滤。
-利用条件
-存在操作者可控的输入
-存在可执行任意代码的危险函数（通过各种手段，包括不安全的反序列化。
-存在可执行远程命令操作的接口
-
-Linux 、Windows 管道符Windows 系统管道符
-
-“|” ：直接执行后面的语句。eg: ping 127.0.0.1|whoami
-“||”：前面执行的语句执行出错，则执行后面的语句。前面的语句只能为假，eg: ping 2||whoami
-
-
-
-“&amp;”：前面语句为假则直接执行后面的语句，前面的语句可真可假。eg: ping 12...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/30</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/103ec22a.html" >
-            
-                <span>CTF - 文件上传</span>
-        </a>
-        <div class="abstract-content">
-            文件上传漏洞技术点
-参考资料：http://gv7.me/articles/2018/make-upload-vul-fuzz-dic/
-
-CheckFile 分为C前端和S后端：
-
-前端绕过直接BP 抓包就可以了 、或者在浏览器的Console 里将CheckFile() 函数置空（相当于删除。
-后端检测主要针对文件后缀，文件内容，以及Content-Type，MIMI-Type ，较难的有二次渲染，数组绕过，通过修改配置文件绕过，畸形解析。
-
-可解析后缀CTF文件上传题中常用的php拓展名:
-
-
-利用中间件解析漏洞绕过检查，实战常用
-上传.user.ini或.htaccess将合法拓...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/30</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/bc077bb7.html" >
-            
-                <span>HTTP request smuggling(请求走私)</span>
-        </a>
-        <div class="abstract-content">
-            [toc]
-暂且咕咕咕。
-HTTP 协议请求走私概念例题详解总结参考文章HTTP request smuggling
-
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/29</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "协议层安全">协议层安全</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/a4738b93.html" >
-            
-                <span>CTF Tricks 总结</span>
-        </a>
-        <div class="abstract-content">
-            [toc]
-今天要回学校了，回学校也快考实验班了，我C 语言太菜，CTF 也很久没玩了。所以简单总结一下之前有遇到过的CTF 知识。慢慢补充细节和其他内容。
-脚本题(python、php)快速计算并发起HTTP 请求快速处理数据在大量数据中获取指定内容php 伪随机数安全比较常见的就是seed 爆破。
-https://www.anquanke.com/post/id/215349
-加密算法可破解XSS反射型XSS存储型XSSDOM-XSSXSS 打cookie的姿势bypassCSRFXXE有回显XXEblind XXEoobbypassSSISSI 注入全称Server-Side In...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/27</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/13bb2df2.html" >
-            
-                <span>iptables 学习</span>
-        </a>
-        <div class="abstract-content">
-            参考资料： 
-(内容和图片)
-全教程系列
-iptables 入门系列
-
-作为安全狗 ，自认为知道概念和基础操作就行了（搞安全的要学的东西真的太多了。
-
-原作者一开始讲了防火墙的知识，算不错的科普。
-防火墙
-从逻辑上讲。防火墙可以大体分为主机防火墙和网络防火墙。
-
-主机防火墙：针对于单个主机进行防护。
-网络防火墙：往往处于网络入口或边缘，针对于网络入口进行防护，服务于防火墙背后的本地局域网。
-网络防火墙和主机防火墙并不冲突，可以理解为，网络防火墙主外（集体）， 主机防火墙主内（个人）。
-
-
-从物理上讲，防火墙可以分为硬件防火墙和软件防火墙。
-
-硬件防火墙：在硬件级别实现部分防火墙功能，另一...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/26</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "iptables">iptables</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/c10c5ca9.html" >
-            
-                <span>Redis 安全学习笔记</span>
-        </a>
-        <div class="abstract-content">
-            最近放出来的文章都是以前早就总结好的了。
-Redis 安全学习笔记
-[TOC]
-实战环境下，感觉Redis 未授权非常常见，而我之前只知道怎么利用别人的写好的工具去解CTF，没有去研究过原理，遂在端午节来研究一波！
-Redis 介绍Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、 Key-Value数据库。和Memcached类似，它支持存储的value 类型相对更多，包括 string(字符串)、list ( 链表)、 set(集合)、zset(sorted set – 有序集合)和 hash（哈希类型）。这些数据类型都支持push/pop 、 ...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/26</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "Redis">Redis</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "PHP安全">PHP安全</a>
     
 </div>
             
@@ -710,7 +426,7 @@ Redis 介绍Redis是一个开源的使用ANSI C语言编写、支持网络、可
     <!-- paginator  -->
     
     <nav class="page-nav">
-        <a class="extend prev" rel="prev" href="/archives/2020/">&lt; PREV</a><a class="page-number" href="/archives/2020/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/2020/page/3/">3</a><a class="extend next" rel="next" href="/archives/2020/page/3/">NEXT &gt;</a>
+        <a class="extend prev" rel="prev" href="/archives/2020/">&lt; PREV</a><a class="page-number" href="/archives/2020/">1</a><span class="page-number current">2</span>
     </nav>
     
 </main>
@@ -925,166 +641,9 @@ Redis 介绍Redis是一个开源的使用ANSI C语言编写、支持网络、可
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 23
+        Total : 12
         </div>
         <!-- search  -->
         
@@ -1100,17 +659,7 @@ Redis 介绍Redis是一个开源的使用ANSI C语言编写、支持网络、可
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">10/08</span><a class="archive-post-title" href= "/3d90.html" >最近一点思考、也可以是杂谈</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
             <span class="archive-post-date">09/23</span><a class="archive-post-title" href= "/a45.html" >ThinkPHP5漏洞学习-RCE</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">09/22</span><a class="archive-post-title" href= "/5dcc.html" >CSS 注入学习笔记</a>
         </li>
     
     
@@ -1140,52 +689,7 @@ Redis 介绍Redis是一个开源的使用ANSI C语言编写、支持网络、可
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">09/11</span><a class="archive-post-title" href= "/66043e4c.html" >WAF Bypass 姿势总结</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">09/09</span><a class="archive-post-title" href= "/fb2051a0.html" >CTF-XSS</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">09/07</span><a class="archive-post-title" href= "/936f84c6.html" >CTF-SSTI</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">09/07</span><a class="archive-post-title" href= "/54449ea6.html" >Windows 服务器应急响应</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">09/04</span><a class="archive-post-title" href= "/e312198e.html" >Linux 服务器应急响应</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">09/03</span><a class="archive-post-title" href= "/7881c78e.html" >CTF - 文件包含</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/dbb484a9.html" >CTF - RCE</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
             <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/103ec22a.html" >CTF - 文件上传</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">08/29</span><a class="archive-post-title" href= "/bc077bb7.html" >HTTP request smuggling(请求走私)</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">08/27</span><a class="archive-post-title" href= "/a4738b93.html" >CTF Tricks 总结</a>
         </li>
     
     
@@ -1218,27 +722,17 @@ Redis 介绍Redis是一个开源的使用ANSI C语言编写、支持网络、可
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="SSTI"><span class="iconfont-archer">&#xe606;</span>SSTI</span>
-    
         <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
-    
-        <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
     
         <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
     
-        <span class="sidebar-tag-name" data-tags="协议层安全"><span class="iconfont-archer">&#xe606;</span>协议层安全</span>
-    
         <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
-    
-        <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
     
         <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
     
-        <span class="sidebar-tag-name" data-tags="思考杂谈"><span class="iconfont-archer">&#xe606;</span>思考杂谈</span>
+        <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
     
         <span class="sidebar-tag-name" data-tags="漏洞挖掘"><span class="iconfont-archer">&#xe606;</span>漏洞挖掘</span>
-    
-        <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
     
         <span class="sidebar-tag-name" data-tags="RCE"><span class="iconfont-archer">&#xe606;</span>RCE</span>
     
@@ -1283,11 +777,7 @@ jsonContent:
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
-        <span class="sidebar-category-name" data-categories="CTF"><span class="iconfont-archer">&#xe60a;</span>CTF</span>
-    
         <span class="sidebar-category-name" data-categories="渗透测试"><span class="iconfont-archer">&#xe60a;</span>渗透测试</span>
-    
-        <span class="sidebar-category-name" data-categories="思考杂谈"><span class="iconfont-archer">&#xe60a;</span>思考杂谈</span>
     
         <span class="sidebar-category-name" data-categories="运维知识"><span class="iconfont-archer">&#xe60a;</span>运维知识</span>
     
