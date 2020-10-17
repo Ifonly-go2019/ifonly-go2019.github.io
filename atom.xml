@@ -6,7 +6,7 @@
   <link href="https://hack-for.fun/atom.xml" rel="self"/>
   
   <link href="https://hack-for.fun/"/>
-  <updated>2020-09-27T13:39:21.764Z</updated>
+  <updated>2020-10-17T16:11:18.658Z</updated>
   <id>https://hack-for.fun/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MacOS 如何修改账户名</title>
+    <link href="https://hack-for.fun/63e5.html"/>
+    <id>https://hack-for.fun/63e5.html</id>
+    <published>2020-10-17T16:01:49.000Z</published>
+    <updated>2020-10-17T16:11:18.658Z</updated>
+    
+    <content type="html"><![CDATA[<p>之前激活MacBook Pro的时候，本来打算拿回家激活的，但是太古里Apple的人员太热情啦，我就在小姐姐哪里激活了，一顿下一步，导致了我的用户名是我的真名。有时候写笔记、文章啥的，总感觉不舒服。</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201018000438.png" alt="image-20201018000436765"></p><p>然后之前一直想修改，但是哪里是灰色的，无法修改。</p><p>修改后：</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201018000535.png" alt="image-20201018000534179"></p><p>修改方法：</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201018000610.png" alt="image-20201018000608993"></p><p>点击锁，输入密码之后就可以进行操作了。</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201018000635.png" alt="image-20201018000633434"></p><p>然后点击 + 号，新建一个管理员用户。</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201018000720.png" alt="image-20201018000719065"></p><ul><li>退出当前登录的用户（也是因为当前这个用户是处于登录状态，所以无法直接修改account name。</li><li>登录创建的test 管理员账号，直接跳过Apple ID 之类的设置，然后去修改account name。</li><li>切换回来就OK了。</li><li>删除创建的test 管理员用户。</li></ul><p>原来这样简单。</p><blockquote><p>其实很多事情，或许都简单，只是在于自己愿不愿意去做。</p></blockquote><p>最近也是心神不定的，好好学习嘛！Docker 逃逸好几种方法都没复现成功，淦。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;之前激活MacBook Pro的时候，本来打算拿回家激活的，但是太古里Apple的人员太热情啦，我就在小姐姐哪里激活了，一顿下一步，导致了我的用户名是我的真名。有时候写笔记、文章啥的，总感觉不舒服。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr</summary>
+      
+    
+    
+    
+    
+    <category term="杂碎" scheme="https://hack-for.fun/tags/%E6%9D%82%E7%A2%8E/"/>
+    
+  </entry>
   
   <entry>
     <title>ThinkPHP5漏洞学习-RCE</title>
