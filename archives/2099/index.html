@@ -22,7 +22,7 @@
     <meta name="description" content="">
     <meta property="og:type" content="website">
 <meta property="og:title" content="可惜没如果、m0nk3y‘s Blog">
-<meta property="og:url" content="https://hack-for.fun/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/index.html">
+<meta property="og:url" content="https://hack-for.fun/archives/2099/index.html">
 <meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="m0nk3y">
@@ -355,202 +355,27 @@
     
     
     <article class="index-post">
-        <a class="abstract-title" href = "/a45.html" >
+        <a class="abstract-title" href = "/2986.html" >
             
-                <span>ThinkPHP5漏洞学习-RCE</span>
+                <span>Recent arrangements</span>
         </a>
         <div class="abstract-content">
-            主要参考资料：
-https://github.com/Mochazz/ThinkPHP-Vuln/
-RCE1(利用缓存文件GetShell从而RCE)相关参考资料：https://www.cnblogs.com/zpchcbd/p/12546340.html
-POC1http:&#x2F;&#x2F;thinkphp5:8888&#x2F;public&#x2F;?username&#x3D;test%0d%0a@eval($_GET[_]);&#x2F;&#x2F;
-
-
-
-漏洞概述
-漏洞存在于 ThinkPHP 的缓存类中。该类会将缓存数据通过序列化的方式，直接存储在 .php 文件中...
+            前言​    一转眼，2020年已经接近尾声了。2020年这10个月来，要问我干了什么，没有checklist、没有arrangements，没有什么成果展示，博客之前也说过了，不会有太多技术文章更新，因为我的东西都放本地自己看了。技术文章，争取一个月一篇原创文章（当然能先投稿的先投稿）。似乎这十个月，都挺划水的，目标不明确，产出低。
+​    10个月来，先知社区总共投了5篇文章，过了3篇。安全客投稿一篇，没过。
+​    教育SRC，挖了几十个洞，混了一个没什么破用的证书。
+​    企业SRC，挖了几个垃圾洞，没有什么奖励，没有排名。
+​    补天平台，挖了几个垃圾洞，混了件衣服...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
             <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/23</span>
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2099/11/01</span>
             </div>
             <!-- tags  -->
             
             <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = "代码审计">代码审计</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "RCE">RCE</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/8d0f.html" >
-            
-                <span>ThinkPHP5漏洞学习-文件包含漏洞</span>
-        </a>
-        <div class="abstract-content">
-            [toc]
-ThinkPHP5文件包含漏洞POC1&#x2F;public&#x2F;index.php&#x2F;index&#x2F;index?cacheFile&#x3D;favicon.ico
-
-
-可配合文件上传图片马，GetShell。(PHP 文件包含都讲文件当做php后缀文件进行解析，与实际文件类型无关)
-漏洞概述漏洞存在于 ThinkPHP 模板引擎中，在加载模版解析变量时存在变量覆盖问题，而且程序没有对数据进行很好的过滤，最终导致 文件包含漏洞 的产生。
-
-变量覆盖漏洞
-
-https://www.cnblogs.com/wangtanzhi/p/12748967.ht...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/16</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "代码审计">代码审计</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "文件包含">文件包含</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/69fea760.html" >
-            
-                <span>ThinkPHP5漏洞学习-SQL注入</span>
-        </a>
-        <div class="abstract-content">
-            [toc]
-参考资料：https://github.com/Mochazz/ThinkPHP-Vuln
-环境准备：
-
-PHPStorm + MAMP PRO
-
-环境搭建可以看我前两篇文章。
-
-composer
-
-12brew install composercomposer config -g repo.packagist composer https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;composer&#x2F;
-
-
-获取复现代码
-
-1composer create-project --prefer-dist topthink&#x2F;think...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/13</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "代码审计">代码审计</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "SQL注入">SQL注入</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/844d1b07.html" >
-            
-                <span>新秀企业网站系统代码审计学习(复现)</span>
-        </a>
-        <div class="abstract-content">
-            [TOC]
-参考资料：
-代码审计常见的三种方法（PHP篇）
-PHP代码审计初次尝试之新秀企业网站系统
-审计思路通过脑图大概总结如下：
-
-了解系统CMS名称：新秀企业网站系统PHP版
-
-看着界面就知道是用于企业打广告(x)和发布信息，招聘等功能的系统。且存在前台用户登录和后台管理系统。存在搜索功能。
-防护策略IP登录限制 - 猜测伪造IP注入限制了前台、后台的登录次数限制、注册限制、可能会影响到后面SQL注入漏洞的测试。
-
-可能出现的漏洞：伪造IP进行注入攻击
-数据库监控，在注册的地方看看ip 是否被带入了数据库。
-
-1select * from php_shisiusafe where ...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/12</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "代码审计">代码审计</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "漏洞挖掘">漏洞挖掘</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/4fd81e40.html" >
-            
-                <span>MacOS 下配置PHP代码审计环境，PHP调试学习</span>
-        </a>
-        <div class="abstract-content">
-            [toc]
-环境搭建环境配置参考文章：https://www.sqlsec.com/2020/07/macphp.html#toc-heading-2
-
-所需App：
-MAMP PRO ，我是在Google 里找的Cracked Version
-PHPStorm / Vscode
-
-MAMP 中的 php.ini 设置
-在切换php版本时需添加如下内容，免得debug 环境出错。
-1234567xdebug.remote_enable&#x3D;1xdebug.remote_host&#x3D;localhostxdebug.remote_port&#x3D;9000xdebug.rem...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/09/11</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "代码审计">代码审计</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "杂碎">杂碎</a>
     
 </div>
             
