@@ -360,10 +360,16 @@
                 <span>Cobalt Strike</span>
         </a>
         <div class="abstract-content">
-            CS 派生 MSF![image-20201104213742247](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201104213742247.png)
-![image-20201104213816240](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201104213816240.png)
+            记录一些关于cs的东西~
+CS 派生 MSF
 
-通过powershell来增强cs的实用性在beacon shell中导入外部ps脚本到远程机器上1234...
+
+通过powershell来增强cs的实用性在beacon shell中导入外部ps脚本到远程机器上1234powershell-import &#x2F;root&#x2F;test.ps1 &#x2F;&#x2F;导入各种powershell脚本，这里可以导入nishang模块powershell  posershell脚本名
+
+在beacon shell中直接执行powershell代码1powerpick Get-Host
+
+
+
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
@@ -376,36 +382,9 @@
     
         <a class="post-tag" href="javascript:void(0);" data-tags = "渗透测试">渗透测试</a>
     
-</div>
-            
-        </div>
-    </article>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "CobaltStrike">CobaltStrike</a>
     
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/7394.html" >
-            
-                <span>CTF 2020 复现合集</span>
-        </a>
-        <div class="abstract-content">
-            博客里面关于CTF的文章额好像几乎都没了，之前的文章都放本地。感觉也不是特别好，还是复现下2020年的一些比赛。哈哈。
-WMCTF 2020[WMCTF2020]Web Check in学习资料：https://cyc1e183.github.io/2020/08/04/WMctf2020-Checkin%E5%87%BA%E9%A2%98%E6%83%B3%E6%B3%95-%E9%A2%98%E8%A7%A3/
-https://cyc1e183.github.io/2020/04/03/%E5%85%B3%E4%BA%8Efile_put_contents%E7%9A%84%E4%B...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/11/02</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = "渗透工具">渗透工具</a>
     
 </div>
             
@@ -746,6 +725,47 @@ MAMP 中的 php.ini 设置
         </div>
     </article>
     
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/103ec22a.html" >
+            
+                <span>CTF - 文件上传</span>
+        </a>
+        <div class="abstract-content">
+            文件上传漏洞技术点
+参考资料：http://gv7.me/articles/2018/make-upload-vul-fuzz-dic/
+
+CheckFile 分为C前端和S后端：
+
+前端绕过直接BP 抓包就可以了 、或者在浏览器的Console 里将CheckFile() 函数置空（相当于删除。
+后端检测主要针对文件后缀，文件内容，以及Content-Type，MIMI-Type ，较难的有二次渲染，数组绕过，通过修改配置文件绕过，畸形解析。
+
+可解析后缀CTF文件上传题中常用的php拓展名:
+
+
+利用中间件解析漏洞绕过检查，实战常用
+上传.user.ini或.htaccess将合法拓...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/08/30</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "CTF">CTF</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
     <!-- paginator  -->
     
     <nav class="page-nav">
@@ -1011,18 +1031,9 @@ MAMP 中的 php.ini 设置
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 16
+        Total : 15
         </div>
         <!-- search  -->
         
@@ -1053,11 +1064,6 @@ MAMP 中的 php.ini 设置
     
         <li class="archive-post-item">
             <span class="archive-post-date">11/04</span><a class="archive-post-title" href= "/558a.html" >Cobalt Strike</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">11/02</span><a class="archive-post-title" href= "/7394.html" >CTF 2020 复现合集</a>
         </li>
     
     
@@ -1130,27 +1136,31 @@ MAMP 中的 php.ini 设置
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
-    
-        <span class="sidebar-tag-name" data-tags="杂碎"><span class="iconfont-archer">&#xe606;</span>杂碎</span>
-    
         <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
+    
+        <span class="sidebar-tag-name" data-tags="CobaltStrike"><span class="iconfont-archer">&#xe606;</span>CobaltStrike</span>
+    
+        <span class="sidebar-tag-name" data-tags="渗透工具"><span class="iconfont-archer">&#xe606;</span>渗透工具</span>
     
         <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
     
-        <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
+        <span class="sidebar-tag-name" data-tags="杂碎"><span class="iconfont-archer">&#xe606;</span>杂碎</span>
     
-        <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
     
         <span class="sidebar-tag-name" data-tags="漏洞挖掘"><span class="iconfont-archer">&#xe606;</span>漏洞挖掘</span>
     
-        <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
+        <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
+    
+        <span class="sidebar-tag-name" data-tags="RCE"><span class="iconfont-archer">&#xe606;</span>RCE</span>
     
         <span class="sidebar-tag-name" data-tags="SQL注入"><span class="iconfont-archer">&#xe606;</span>SQL注入</span>
     
         <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
     
-        <span class="sidebar-tag-name" data-tags="RCE"><span class="iconfont-archer">&#xe606;</span>RCE</span>
+        <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
     
         <span class="sidebar-tag-name" data-tags="APT"><span class="iconfont-archer">&#xe606;</span>APT</span>
     
