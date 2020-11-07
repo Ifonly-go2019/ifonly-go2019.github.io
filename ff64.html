@@ -1,31 +1,359 @@
-extends includes/layout.pug
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>可惜没如果、m0nk3y‘s Blog | 可惜没如果、m0nk3y‘s Blog</title><meta name="keywords" content="Uoload-labs"><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="Upload-labs个人心得Pass-01:修改前端JS绕过检测function checkFile(){}&#x2F;&#x2F;使这个函数的参数为空,即让这个函数失效 然后访问图片地址,解析我们的一句话木马(webshell),在用蚁剑,发现连接成功 http:&#x2F;&#x2F;127.0.0.1&#x2F;upload-labs-master&#x2F;upload&#x2F;111.php 1234567891011121314151617fun">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:url" content="https://hack-for.fun/ff64.html">
+<meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="Upload-labs个人心得Pass-01:修改前端JS绕过检测function checkFile(){}&#x2F;&#x2F;使这个函数的参数为空,即让这个函数失效 然后访问图片地址,解析我们的一句话木马(webshell),在用蚁剑,发现连接成功 http:&#x2F;&#x2F;127.0.0.1&#x2F;upload-labs-master&#x2F;upload&#x2F;111.php 1234567891011121314151617fun">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-12-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-25T08:45:31.572Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="Uoload-labs">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://hack-for.fun/ff64"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
 
-block content
-  #post
-    if top_img === false
-      include includes/header/post-info.pug
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
 
-    article#article-container.post-content!=page.content
-    include includes/post/post-copyright.pug
-    .tag_share
-      if (theme.post_meta.post.tags)
-        .post-meta__tag-list
-          each item, index in page.tags.data
-            a(href=url_for(item.path)).post-meta__tags #[=item.name]
-      include includes/third-party/share/index.pug
-        
-    if theme.reward.enable
-      !=partial('includes/post/reward', {}, {cache:theme.fragment_cache})
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
 
-    //- ad
-    if theme.ad && theme.ad.post
-      .post-ad!=theme.ad.post
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
 
-    include includes/pagination.pug
-    if theme.related_post && theme.related_post.enable
-      != related_posts(page,site.posts)
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-08-25 16:45:31'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
 
-    if page.comments !== false && theme.comments && theme.comments.use
-      - var commentsJsLoad = true
-      !=partial('includes/third-party/comments/index', {}, {cache:theme.fragment_cache})
-      
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="可惜没如果、m0nk3y‘s Blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div></div><hr/></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">可惜没如果、m0nk3y‘s Blog</a></span><span id="menus"><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">No title</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2019-12-03T16:00:00.000Z" title="Created 2019-12-04 00:00:00">2019-12-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2020-08-25T08:45:31.572Z" title="Updated 2020-08-25 16:45:31">2020-08-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%BC%8F%E6%B4%9E%E9%9D%B6%E5%9C%BA/">漏洞靶场</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><a id="more"></a>
+
+<h1 id="Upload-labs个人心得"><a href="#Upload-labs个人心得" class="headerlink" title="Upload-labs个人心得"></a>Upload-labs个人心得</h1><h2 id="Pass-01-修改前端JS绕过检测"><a href="#Pass-01-修改前端JS绕过检测" class="headerlink" title="Pass-01:修改前端JS绕过检测"></a>Pass-01:修改前端JS绕过检测</h2><p>function checkFile(){}//使这个函数的参数为空,即让这个函数失效</p>
+<p>然后访问图片地址,解析我们的一句话木马(webshell),在用蚁剑,发现连接成功</p>
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1/upload-labs-master/upload/111.php">http://127.0.0.1/upload-labs-master/upload/111.php</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkFile</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> file = <span class="built_in">document</span>.getElementsByName(<span class="string">&#x27;upload_file&#x27;</span>)[<span class="number">0</span>].value;</span><br><span class="line">    <span class="keyword">if</span> (file == <span class="literal">null</span> || file == <span class="string">&quot;&quot;</span>) &#123;</span><br><span class="line">        alert(<span class="string">&quot;请选择要上传的文件!&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//定义允许上传的文件类型</span></span><br><span class="line">    <span class="keyword">var</span> allow_ext = <span class="string">&quot;.jpg|.png|.gif&quot;</span>;</span><br><span class="line">    <span class="comment">//提取上传文件的类型</span></span><br><span class="line">    <span class="keyword">var</span> ext_name = file.substring(file.lastIndexOf(<span class="string">&quot;.&quot;</span>));</span><br><span class="line">    <span class="comment">//判断上传文件类型是否允许上传</span></span><br><span class="line">    <span class="keyword">if</span> (allow_ext.indexOf(ext_name + <span class="string">&quot;|&quot;</span>) == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> errMsg = <span class="string">&quot;该文件不允许上传，请上传&quot;</span> + allow_ext + <span class="string">&quot;类型的文件,当前文件类型为：&quot;</span> + ext_name;</span><br><span class="line">        alert(errMsg);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pass-02-文件类型-后缀绕过-Content-Type"><a href="#Pass-02-文件类型-后缀绕过-Content-Type" class="headerlink" title="Pass-02:文件类型/后缀绕过(Content-Type)"></a>Pass-02:文件类型/后缀绕过(Content-Type)</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$is_upload = <span class="literal">false</span>;</span><br><span class="line">$msg = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_POST[<span class="string">&#x27;submit&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">if</span> (file_exists(UPLOAD_PATH)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (($_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;type&#x27;</span>] == <span class="string">&#x27;image/jpeg&#x27;</span>) || ($_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;type&#x27;</span>] == <span class="string">&#x27;image/png&#x27;</span>) || ($_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;type&#x27;</span>] == <span class="string">&#x27;image/gif&#x27;</span>)) &#123;</span><br><span class="line">            $temp_file = $_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;tmp_name&#x27;</span>];</span><br><span class="line">            $img_path = UPLOAD_PATH . <span class="string">&#x27;/&#x27;</span> . $_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;name&#x27;</span>]            </span><br><span class="line">            <span class="keyword">if</span> (move_uploaded_file($temp_file, $img_path)) &#123;</span><br><span class="line">                $is_upload = <span class="literal">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                $msg = <span class="string">&#x27;上传出错！&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            $msg = <span class="string">&#x27;文件类型不正确，请重新上传！&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        $msg = UPLOAD_PATH.<span class="string">&#x27;文件夹不存在,请手工创建！&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是一个白名单绕过的情况</p>
+<p>在不看源代码的情况下(黑盒),一般都是先传一个图片然后改为可以被执行的php后缀(phtml,php2,……)</p>
+<p>或者传一个PHP文件,改文件类型Content-Type</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191130232107434.png" alt="image-20191130232107434"></p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191130232134107.png" alt="image-20191130232134107"></p>
+<p>蚁剑能连接成功,就基本说明我们拿到shell了,pass</p>
+<h2 id="Pass-03-文件后缀绕过"><a href="#Pass-03-文件后缀绕过" class="headerlink" title="Pass-03 文件后缀绕过"></a>Pass-03 文件后缀绕过</h2><p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191130233331125.png" alt="image-20191130233331125"></p>
+<p>改文件后缀为php,发现不能穿asp,php,jsp,aspx文件</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">$is_upload = <span class="literal">false</span>;</span><br><span class="line">$msg = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_POST[<span class="string">&#x27;submit&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">if</span> (file_exists(UPLOAD_PATH)) &#123;</span><br><span class="line">        $deny_ext = <span class="keyword">array</span>(<span class="string">&#x27;.asp&#x27;</span>,<span class="string">&#x27;.aspx&#x27;</span>,<span class="string">&#x27;.php&#x27;</span>,<span class="string">&#x27;.jsp&#x27;</span>);</span><br><span class="line">        $file_name = trim($_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;name&#x27;</span>]);</span><br><span class="line">        $file_name = deldot($file_name);<span class="comment">//删除文件名末尾的点</span></span><br><span class="line">        $file_ext = strrchr($file_name, <span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">        $file_ext = strtolower($file_ext); <span class="comment">//转换为小写</span></span><br><span class="line">        $file_ext = str_ireplace(<span class="string">&#x27;::$DATA&#x27;</span>, <span class="string">&#x27;&#x27;</span>, $file_ext);<span class="comment">//去除字符串::$DATA</span></span><br><span class="line">        $file_ext = trim($file_ext); <span class="comment">//收尾去空</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!in_array($file_ext, $deny_ext)) &#123;</span><br><span class="line">            $temp_file = $_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;tmp_name&#x27;</span>];</span><br><span class="line">            $img_path = UPLOAD_PATH.<span class="string">&#x27;/&#x27;</span>.date(<span class="string">&quot;YmdHis&quot;</span>).rand(<span class="number">1000</span>,<span class="number">9999</span>).$file_ext;            </span><br><span class="line">            <span class="keyword">if</span> (move_uploaded_file($temp_file,$img_path)) &#123;</span><br><span class="line">                 $is_upload = <span class="literal">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                $msg = <span class="string">&#x27;上传出错！&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            $msg = <span class="string">&#x27;不允许上传.asp,.aspx,.php,.jsp后缀文件！&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        $msg = UPLOAD_PATH . <span class="string">&#x27;文件夹不存在,请手工创建！&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以通过修改文件后缀为.phtml或者php2,php3…..绕过</p>
+<p>然后这个代码里面的**::$DATA  php在window的时候如果文件名+”::$DATA”会把::$DATA之后的数据当成文件流处理,不会检测后缀名.且保持”::$DATA”之前的文件名** </p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201000400673.png" alt="image-20191201000400673"></p>
+<p>这里我不知道为什么我传上去看不到phpinfo的界面…</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> phpinfo(); <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Pass-04-传-htaccess利用Apache解析漏洞"><a href="#Pass-04-传-htaccess利用Apache解析漏洞" class="headerlink" title="Pass-04(传. htaccess利用Apache解析漏洞 )"></a>Pass-04(传. htaccess利用Apache解析漏洞 )</h2><p>这关,查看源代码,发现能过滤的基本都过滤了<br>.htaccess是Apache服务器的配置文件</p>
+<p><strong>.htaccess是什么</strong></p>
+<p>启用.htaccess，需要修改httpd.conf，启用AllowOverride，并可以用AllowOverride限制特定命令的使用。如果需要使用.htaccess以外的其他文件名，可以用AccessFileName指令来改变。例如，需要使用.config ，则可以在服务器配置文件中按以下方法配置：AccessFileName .config 。</p>
+<p>笼统地说，.htaccess可以帮我们实现包括：文件夹密码保护、用户自动重定向、自定义错误页面、改变你的文件扩展名、封禁特定IP地址的用户、只允许特定IP地址的用户、禁止目录列表，以及使用其他文件作为index文件等一些功能。</p>
+<p><strong>工作原理</strong></p>
+<p>.htaccess文件(或者”分布式配置文件”)提供了针对每个目录改变配置的方法，即在一个特定的目录中放置一个包含指令的文件，其中的指令作用于此目录及其所有子目录。<br> 说明：<br> 如果需要使用.htaccess以外的其他文件名，可以用AccessFileName指令来改变。例如，需要使用.config ，则可以在服务器配置文件中按以下方法配置：<br> AccessFileName .config<br> 通常，.htaccess文件使用的配置语法和主配置文件一样。AllowOverride指令按类别决定了.htaccess文件中哪些指令才是有效的。如果一个指令允许在.htaccess中使用，那么在本手册的说明中，此指令会有一个覆盖项段，其中说明了为使此指令生效而必须在AllowOverride指令中设置的值。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/cmzhuang/article/details/53537591">https://blog.csdn.net/cmzhuang/article/details/53537591</a></p>
+<blockquote>
+<p>payload: SetHandler application/x-httpd-php</p>
+<p>或者AddType application/x-httpd-php .jpg</p>
+</blockquote>
+<p>这样Apache就会把传的文件当做php解析,传个图片马就行</p>
+<h2 id="Pass-05-大小写Php绕过"><a href="#Pass-05-大小写Php绕过" class="headerlink" title="Pass-05(大小写Php绕过)"></a>Pass-05(大小写Php绕过)</h2><p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201152418017.png" alt="image-20191201152418017"></p>
+<p>发现Php是可以传上去的,如果打CTF的时候,肯定是黑盒情况,所以我觉得是可以写一个文件后缀的字典来爆破可以传上去的后缀</p>
+<p>查看源码发现没有      </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$file_ext = strtolower($file_ext);<span class="comment">//将文件后缀转为小写 </span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="E:\学习笔记总结\image-20191201153348214.png" alt="image-20191201153348214"></p>
+<p>成功了 </p>
+<h2 id="Pass-06-文件后缀名加空格绕过"><a href="#Pass-06-文件后缀名加空格绕过" class="headerlink" title="Pass-06(文件后缀名加空格绕过)"></a>Pass-06(文件后缀名加空格绕过)</h2><p>看源码发现没有去掉空格</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$file_ext = trim($file_ext); <span class="comment">//首尾去空</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201154821870.png" alt="image-20191201154821870"></p>
+<p>成功上传</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201155005069.png" alt="image-20191201155005069"></p>
+<p>访问文件地址,php代码被执行</p>
+<h2 id="Pass-07-利用Windows特性"><a href="#Pass-07-利用Windows特性" class="headerlink" title="Pass-07(利用Windows特性)"></a>Pass-07(利用Windows特性)</h2><p>Windows特性,自动去掉后缀名中最后的” . “ </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$file_name = deldot($file_name);<span class="comment">//删除文件名末尾的点</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201155456367.png" alt="image-20191201155456367"></p>
+<p>本来先开始想的用%00截断.jpg然后访问地址.但是没有传上去如上图</p>
+<p>正确姿势,如下图:</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201155853267.png" alt="image-20191201155853267"></p>
+<p>然后访问文件地址,PHP代码被执行,也是phpinfo的界面.</p>
+<h2 id="Pass-08-DATA数据流绕过"><a href="#Pass-08-DATA数据流绕过" class="headerlink" title="Pass-08(::$DATA数据流绕过)"></a>Pass-08(::$DATA数据流绕过)</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$file_ext = str_ireplace(<span class="string">&#x27;::$DATA&#x27;</span>, <span class="string">&#x27;&#x27;</span>, $file_ext);<span class="comment">//去除字符串::$DATA</span></span><br></pre></td></tr></table></figure>
+
+<p>在Pass-03中,这样写的**::$DATA  php在window的时候如果文件名+”::$DATA”会把::$DATA之后的数据当成文件流处理,不会检测后缀名.且保持”::$DATA”之前的文件名** </p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201161237426.png" alt="image-20191201161237426"></p>
+<p>然后访问上传文件的地址,但是要把::$DATA去掉</p>
+<p>在PHP中 ::</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191203003615111.png" alt="image-20191203003615111"></p>
+<h2 id="Pass-09-文件名拼接-这个在黑盒情况下可能会有点难…"><a href="#Pass-09-文件名拼接-这个在黑盒情况下可能会有点难…" class="headerlink" title="Pass-09(文件名拼接,这个在黑盒情况下可能会有点难…)"></a>Pass-09(文件名拼接,这个在黑盒情况下可能会有点难…)</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!in_array($file_ext, $deny_ext)) &#123;</span><br><span class="line">           $temp_file = $_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;tmp_name&#x27;</span>];</span><br><span class="line">           $img_path = UPLOAD_PATH.<span class="string">&#x27;/&#x27;</span>.$file_name;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$img_path = UPLOAD_PATH.<span class="string">&#x27;/&#x27;</span>.$file_name;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码告诉我们,返回的路径是UPLOAD_PATH + / + 被处理后的文件名</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$file_name = trim($_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;name&#x27;</span>]);</span><br><span class="line">        $file_name = deldot($file_name);<span class="comment">//删除文件名末尾的点</span></span><br><span class="line">        $file_ext = strrchr($file_name, <span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">        $file_ext = strtolower($file_ext); <span class="comment">//转换为小写</span></span><br><span class="line">        $file_ext = str_ireplace(<span class="string">&#x27;::$DATA&#x27;</span>, <span class="string">&#x27;&#x27;</span>, $file_ext);<span class="comment">//去除字符串::$DATA</span></span><br><span class="line">        $file_ext = trim($file_ext); <span class="comment">//首尾去空</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>于是构造文件名为 php. . 被构造的文件名经过处理后,就是php.   因此又可以利用Windows特性成功上传</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201162928226.png" alt="image-20191201162928226"></p>
+<h2 id="Pass-10-双写绕过"><a href="#Pass-10-双写绕过" class="headerlink" title="Pass-10(双写绕过)"></a>Pass-10(双写绕过)</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$file_name = str_ireplace($deny_ext,<span class="string">&quot;&quot;</span>, $file_name);</span><br><span class="line">       $temp_file = $_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;tmp_name&#x27;</span>];</span><br><span class="line">       $img_path = UPLOAD_PATH.<span class="string">&#x27;/&#x27;</span>.$file_name;        </span><br></pre></td></tr></table></figure>
+
+<p>可以看到,$file_name中的后缀只要是在$deny_ext中的,都会被空格替换</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201164020476.png" alt="image-20191201164020476"></p>
+<p>pphphphpp 双写即可绕过</p>
+<h2 id="Pass-11-文件路径可控-使用00截断绕过"><a href="#Pass-11-文件路径可控-使用00截断绕过" class="headerlink" title="Pass-11(文件路径可控,使用00截断绕过)"></a>Pass-11(文件路径可控,使用00截断绕过)</h2><p>查看提示,发现<strong>文件路径是可控的</strong>,于是可以使用00截断的方法来绕过</p>
+<blockquote>
+<p>常见的截断有0x00，%00，/00</p>
+<p>00截断的原理:截断的核心，就是chr(0)这个字符</p>
+<p>先说一下这个字符，这个字符不为空(Null)，也不是空字符(“”)，更不是空格！</p>
+<p>当程序在输出含有chr(0)变量时，chr(0)后面的数据会被停止，换句话说，就是误把它当成结束符，后面的数据直接忽略，这就导致漏洞产生</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/30005652">https://zhuanlan.zhihu.com/p/30005652</a></p>
+<p>第二篇文章讲的更好</p>
+<p><a target="_blank" rel="noopener" href="http://www.admintony.com/%E5%85%B3%E4%BA%8E%E4%B8%8A%E4%BC%A0%E4%B8%AD%E7%9A%8400%E6%88%AA%E6%96%AD%E5%88%86%E6%9E%90.html">http://www.admintony.com/%E5%85%B3%E4%BA%8E%E4%B8%8A%E4%BC%A0%E4%B8%AD%E7%9A%8400%E6%88%AA%E6%96%AD%E5%88%86%E6%9E%90.html</a></p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$img_path = $_GET[<span class="string">&#x27;save_path&#x27;</span>].<span class="string">&quot;/&quot;</span>.rand(<span class="number">10</span>, <span class="number">99</span>).date(<span class="string">&quot;YmdHis&quot;</span>).<span class="string">&quot;.&quot;</span>.$file_ext;</span><br></pre></td></tr></table></figure>
+
+<p>看源码,发现是通过<strong>GET方法</strong>将路径和文件名拼接在一起的,我们可以在get的文件路径中使用截断绕过,然后在filename中上传合法的文件</p>
+<p><strong>能够利用截断这一漏洞必须使magic_quotes_gpc=off,并且PHP版本小于5.3.29</strong></p>
+<p><a target="_blank" rel="noopener" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-7243">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-7243</a></p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201234516228.png" alt="image-20191201234516228"></p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191201234648070.png" alt="image-20191201234648070"></p>
+<p>然后访问src属性中的文件地址,可以看到phpinfo界面,说明文件上传成功,并且PHP代码被执行</p>
+<h2 id="Pass-12-POST方式的00截断"><a href="#Pass-12-POST方式的00截断" class="headerlink" title="Pass-12(POST方式的00截断)"></a>Pass-12(POST方式的00截断)</h2><p>POST方式的00截断需要在HEX中在上传的文件后缀php后面的hex值改为00</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202002116344.png" alt="image-20191202002116344"></p>
+<h2 id="Pass-13-图片马绕过检测-文件包含执行webshell"><a href="#Pass-13-图片马绕过检测-文件包含执行webshell" class="headerlink" title="Pass-13(图片马绕过检测,文件包含执行webshell)"></a>Pass-13(图片马绕过检测,文件包含执行webshell)</h2><h3 id="图片马的制作"><a href="#图片马的制作" class="headerlink" title="图片马的制作:"></a>图片马的制作:</h3><p>方法一:cmd中输入命令 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copy 源图片.jpg&#x2F;b+源php文件.php  图片马.jpg</span><br></pre></td></tr></table></figure>
+
+<p>图片马.jpg 就是我们想要的</p>
+<p>方法二:用misc隐写软件010editor</p>
+<p>将图片拖进去,然后在底部添加webshell</p>
+<p>本地文件包含,直接在file的参数后写入文件名</p>
+<p>远程文件包含(RFI)必须 </p>
+<p>allow_url_fopen=on</p>
+<p>allow_url_include=on</p>
+<p><a target="_blank" rel="noopener" href="https://chybeta.github.io/2017/10/08/php%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/">https://chybeta.github.io/2017/10/08/php%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/</a></p>
+<p>传好了之后,利用文件包含,?file=../upload/文件名执行里面的PHP代码</p>
+<h2 id="Pass-14-文件头绕过"><a href="#Pass-14-文件头绕过" class="headerlink" title="Pass-14(文件头绕过)"></a>Pass-14(文件头绕过)</h2><p>源代码调用了<strong>getimagesize()函数来判断文件类型</strong></p>
+<p>因此只需要传一个图片马 </p>
+<p><strong>GIF89a</strong>文件头 来绕过</p>
+<h2 id="Pass-15"><a href="#Pass-15" class="headerlink" title="Pass-15"></a>Pass-15</h2><p><strong>exif_imagetype()</strong> 读取一个图像的第一个字节并检查其签名。需要开启php_exif模块</p>
+<p>GIF89a 文件头绕过</p>
+<h2 id="Pass-16-二次渲染绕过"><a href="#Pass-16-二次渲染绕过" class="headerlink" title="Pass-16(二次渲染绕过)"></a>Pass-16(二次渲染绕过)</h2><p>第一次我们将PHP代码插到图片的内容底部</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202151754861.png" alt="image-20191202151754861"></p>
+<p>上传成功后,访问新生成的路径,将图片保存下来</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202151855235.png" alt="image-20191202151855235"></p>
+<p>发现我们的PHP代码被二次渲染了</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202152111594.png" alt="image-20191202152111594"></p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202152122095.png" alt="image-20191202152122095"></p>
+<p>对比上传前和上传后的两张图片,发现没有被渲染的部分,也就是内容前部分(到00000180)都没变化,于是把PHP代码写进去,就不会被渲染了,然后成功传上去,访问这个图片地址,使其执行我们的PHP代码</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202152443977.png" alt="image-20191202152443977"></p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202152523604.png" alt="image-20191202152523604"></p>
+<p>然后把新传上去的图片报错,查看一下</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202153122170.png" alt="image-20191202153122170"></p>
+<p>PHP代码正常,成功了</p>
+<h2 id="Pass-17-条件竞争"><a href="#Pass-17-条件竞争" class="headerlink" title="Pass-17(条件竞争)"></a>Pass-17(条件竞争)</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$is_upload = <span class="literal">false</span>;</span><br><span class="line">$msg = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($_POST[<span class="string">&#x27;submit&#x27;</span>]))&#123;</span><br><span class="line">    $ext_arr = <span class="keyword">array</span>(<span class="string">&#x27;jpg&#x27;</span>,<span class="string">&#x27;png&#x27;</span>,<span class="string">&#x27;gif&#x27;</span>);</span><br><span class="line">    $file_name = $_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;name&#x27;</span>];</span><br><span class="line">    $temp_file = $_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;tmp_name&#x27;</span>];</span><br><span class="line">    $file_ext = substr($file_name,strrpos($file_name,<span class="string">&quot;.&quot;</span>)+<span class="number">1</span>);</span><br><span class="line">    $upload_file = UPLOAD_PATH . <span class="string">&#x27;/&#x27;</span> . $file_name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(move_uploaded_file($temp_file, $upload_file))&#123;</span><br><span class="line">        <span class="keyword">if</span>(in_array($file_ext,$ext_arr))&#123;</span><br><span class="line">             $img_path = UPLOAD_PATH . <span class="string">&#x27;/&#x27;</span>. rand(<span class="number">10</span>, <span class="number">99</span>).date(<span class="string">&quot;YmdHis&quot;</span>).<span class="string">&quot;.&quot;</span>.$file_ext;</span><br><span class="line">             rename($upload_file, $img_path);</span><br><span class="line">             $is_upload = <span class="literal">true</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            $msg = <span class="string">&quot;只允许上传.jpg|.png|.gif类型文件！&quot;</span>;</span><br><span class="line">            unlink($upload_file);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        $msg = <span class="string">&#x27;上传出错！&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中的这一行代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rename($upload_file, $img_path);</span><br></pre></td></tr></table></figure>
+
+<p>把文件路径重命名了</p>
+<p>然后通过</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unlink($upload_file);</span><br></pre></td></tr></table></figure>
+
+<p>unlink删除我们传上去的文件</p>
+<p>条件竞争漏洞(<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_26406447/article/details/90749288">https://blog.csdn.net/qq_26406447/article/details/90749288</a>)</p>
+<p>简单来说:就是先检查安全性,如果不安全就把删除了,所以这里就可以利用,我们在**<em>服务器在把文件删除之前把webshell传上去**</em>,然后就成功了</p>
+<p>有两种方法,一种是用python写脚本,由于我python还是小白,我遇到这种点,都是用bp的intruder发起两次attack…..一个是不断的上传webshell,另一个是不断的访问含有上传文件的路径使其执行里面的PHP代码</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202223415201.png" alt="image-20191202223415201"></p>
+<p>这里payload设置的是不影响执行结果的UA</p>
+<p>然后payload设置为Null,因为这样更快,然后线程要大.更能抓住服务器处理不安全文件的间隙</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202223534535.png" alt="image-20191202223534535"></p>
+<h2 id="Pass-18-上传压缩文件-条件竞争"><a href="#Pass-18-上传压缩文件-条件竞争" class="headerlink" title="Pass-18(上传压缩文件+条件竞争)"></a>Pass-18(上传压缩文件+条件竞争)</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require_once</span>(<span class="string">&quot;./myupload.php&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>看到这里存在文件包含</p>
+<p>这关并且对文件的大小做出了限制,定义了一个MyUpload()类,里面定义了可以上传的文件类型</p>
+<p>类里面的方法设置了文件路径,检查扩展名,检查文件的大小.,检查文件是否存在</p>
+<p>我们看白名单有哪些内容</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> $cls_arr_ext_accepted = <span class="keyword">array</span>(</span><br><span class="line">      <span class="string">&quot;.doc&quot;</span>, <span class="string">&quot;.xls&quot;</span>, <span class="string">&quot;.txt&quot;</span>, <span class="string">&quot;.pdf&quot;</span>, <span class="string">&quot;.gif&quot;</span>, <span class="string">&quot;.jpg&quot;</span>, <span class="string">&quot;.zip&quot;</span>, <span class="string">&quot;.rar&quot;</span>, <span class="string">&quot;.7z&quot;</span>,<span class="string">&quot;.ppt&quot;</span>,</span><br><span class="line">      <span class="string">&quot;.html&quot;</span>, <span class="string">&quot;.xml&quot;</span>, <span class="string">&quot;.tiff&quot;</span>, <span class="string">&quot;.jpeg&quot;</span>, <span class="string">&quot;.png&quot;</span> );</span><br></pre></td></tr></table></figure>
+
+<p>发现除了常见的图片后缀等,但是多了zip,rar压缩文件.</p>
+<p>这里可以传一个php文件,然后改后缀为111.php.zip 或者 111.php.rar ,  111.php.7z</p>
+<p>然后去访问含有这个文件的路径去执行</p>
+<p>因为存在重命名,并且在代码的最后部分</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>( <span class="keyword">$this</span>-&gt;cls_rename_file == <span class="number">1</span> )&#123;</span><br><span class="line">  $ret = <span class="keyword">$this</span>-&gt;renameFile();</span><br><span class="line">  <span class="keyword">if</span>( $ret != <span class="number">1</span> )&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;resultUpload( $ret );    </span><br></pre></td></tr></table></figure>
+
+<p>因此我传一个压缩文件,里面含有PHP代码,然后在重命名之前去访问执行,然后就成功了</p>
+<h2 id="Pass-19-多种方式都可以绕过"><a href="#Pass-19-多种方式都可以绕过" class="headerlink" title="Pass-19(多种方式都可以绕过)"></a>Pass-19(多种方式都可以绕过)</h2><blockquote>
+<p>查看题目提示,本pass的取文件名通过$_POST来获取。</p>
+</blockquote>
+<p>然后就上传一个php文件</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202234450479.png" alt="image-20191202234450479"></p>
+<p>访问上传的图片</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202234528115.png" alt="image-20191202234528115"></p>
+<p>PHP代码被执行了</p>
+<p>成功了</p>
+<p>然后做出来了之后,看了一下源码,发现这道题过滤设置的好简单,还可以用大小写绕过</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191202234907256.png" alt="image-20191202234907256"></p>
+<p>最致命的一个点就是直接把文件名称拼接在文件路径中了,没有重命名,也没有过滤特殊(Windows特性”.” 和 $::DATA 加空格 都可以绕过</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$img_path = UPLOAD_PATH . <span class="string">&#x27;/&#x27;</span> .$file_name;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pass-20"><a href="#Pass-20" class="headerlink" title="Pass-20"></a>Pass-20</h2><p>查看提示发现要代码审计,那就审吧</p>
+<p>是POST方法,于是可以改文件名</p>
+<p>先检查MIME 头,也就是媒体文件类型检查</p>
+<p>发现只能上传图片类型的image/jpeg’,’image/png’,’image/gif</p>
+<p>然后检查文件名,把文件后缀进行统一小写处理</p>
+<p>其中有一个reset()</p>
+<p><img src="C:\Users\32028\AppData\Roaming\Typora\typora-user-images\image-20191203000410194.png" alt="image-20191203000410194"></p>
+<p>count()函数返回数组中元素的个数</p>
+<p>end() 函数将内部指针指向数组中的最后一个元素，并输出。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$file_name = reset($file) . <span class="string">&#x27;.&#x27;</span> . $file[count($file) - <span class="number">1</span>];</span><br></pre></td></tr></table></figure>
+
+<p>这里把元素的个数进行了-1处理</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">$is_upload = <span class="literal">false</span>;</span><br><span class="line">$msg = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">empty</span>($_FILES[<span class="string">&#x27;upload_file&#x27;</span>]))&#123;</span><br><span class="line">    <span class="comment">//检查MIME</span></span><br><span class="line">    $allow_type = <span class="keyword">array</span>(<span class="string">&#x27;image/jpeg&#x27;</span>,<span class="string">&#x27;image/png&#x27;</span>,<span class="string">&#x27;image/gif&#x27;</span>);  <span class="comment">//允许上传的媒体类型</span></span><br><span class="line">    <span class="keyword">if</span>(!in_array($_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;type&#x27;</span>],$allow_type))&#123;</span><br><span class="line">        $msg = <span class="string">&quot;禁止上传该类型文件!&quot;</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//检查文件名</span></span><br><span class="line">        $file = <span class="keyword">empty</span>($_POST[<span class="string">&#x27;save_name&#x27;</span>]) ? $_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;name&#x27;</span>] : $_POST[<span class="string">&#x27;save_name&#x27;</span>];</span><br><span class="line">        <span class="keyword">if</span> (!is_array($file)) &#123;               <span class="comment">//检查是否为数组,如果不是,就用explode打撒</span></span><br><span class="line">            $file = explode(<span class="string">&#x27;.&#x27;</span>, strtolower($file));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        $ext = end($file);</span><br><span class="line">        $allow_suffix = <span class="keyword">array</span>(<span class="string">&#x27;jpg&#x27;</span>,<span class="string">&#x27;png&#x27;</span>,<span class="string">&#x27;gif&#x27;</span>);</span><br><span class="line">        <span class="keyword">if</span> (!in_array($ext, $allow_suffix)) &#123;</span><br><span class="line">            $msg = <span class="string">&quot;禁止上传该后缀文件!&quot;</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            $file_name = reset($file) . <span class="string">&#x27;.&#x27;</span> . $file[count($file) - <span class="number">1</span>];</span><br><span class="line">            $temp_file = $_FILES[<span class="string">&#x27;upload_file&#x27;</span>][<span class="string">&#x27;tmp_name&#x27;</span>];</span><br><span class="line">            $img_path = UPLOAD_PATH . <span class="string">&#x27;/&#x27;</span> .$file_name;</span><br><span class="line">            <span class="keyword">if</span> (move_uploaded_file($temp_file, $img_path)) &#123;</span><br><span class="line">                $msg = <span class="string">&quot;文件上传成功！&quot;</span>;</span><br><span class="line">                $is_upload = <span class="literal">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                $msg = <span class="string">&quot;文件上传失败！&quot;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    $msg = <span class="string">&quot;请选择要上传的文件！&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里因为对文件名进行了数组化并用了explode()函数,于是可以把文件名数组化绕过</p>
+<blockquote>
+<p>这道题也是看了WP…第一次遇到,没思路只能怪自己PHP学的不够好</p>
+</blockquote>
+<h1 id="文件上传漏洞总结"><a href="#文件上传漏洞总结" class="headerlink" title="文件上传漏洞总结"></a>文件上传漏洞总结</h1><p>检测文件类型分两种,一种是客户端通过Javascrip检测,第二种是在服务器端检测</p>
+<h2 id="客户端检测"><a href="#客户端检测" class="headerlink" title="客户端检测"></a>客户端检测</h2><p>找到检测文件类型的JS函数,在控制台中把函数里面的代码块设置为空,使这个函数失效</p>
+<p>另一种方式就是传一个允许上传的文件上去,通过bp抓包然后改回来就成功了</p>
+<h2 id="服务器端检测"><a href="#服务器端检测" class="headerlink" title="服务器端检测"></a>服务器端检测</h2><p>服务器端检测分为:content-type检测,MIME头检测,后缀检测,内容检测,二次渲染,用explode函数把文件名打散</p>
+<p>绕过方式:改为允许的conten-type</p>
+<p>服务器端检测后缀名:分为白名单检测和黑名单检测</p>
+<p>改为可执行的其他后缀(大写,双写,加空格,文件名拼接绕过,Windows特性,00截断(文件路径可控))</p>
+<p>Apache解析漏洞:如果没有限制上传.htaccess文件.[<strong>SetHandler application/x-httpd-php</strong>]可以上传一个上去,然后我们传一个白名单中允许的文件进去,就成功了</p>
+<p>图片马:一种可以加GIF头 GIF89a</p>
+<p>另一种是制作图片马,即在真的一张图片中写入webshell</p>
+<p>二次渲染: 二次顾名思义,把第一次传上去的文件经过服务器的一系列处理后,然后再下载到本地,对比前后哪些地方没有发生改变的部分,在这部分内容中继续写人php代码,再第二次传上去,访问这张图片,执行,就成功了</p>
+<p>条件竞争(逻辑漏洞):在服务器还未来得及处理危险文件之前,就成功访问了危险文件,执行了webshell</p>
+<p>数组绕过:把文件名在响应头中以数组的方式,分解传上去,数组中最后一个为白名单中可以上传的文件后缀</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://hack-for.fun/ff64.html">https://hack-for.fun/ff64.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Uoload-labs/">Uoload-labs</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/aff1.html"><img class="prev-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info"></div></div></a></div><div class="next-post pull-right"><a href="/4b54.html"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info"></div></div></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">m0nk3y</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Upload-labs%E4%B8%AA%E4%BA%BA%E5%BF%83%E5%BE%97"><span class="toc-number">1.</span> <span class="toc-text">Upload-labs个人心得</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-01-%E4%BF%AE%E6%94%B9%E5%89%8D%E7%AB%AFJS%E7%BB%95%E8%BF%87%E6%A3%80%E6%B5%8B"><span class="toc-number">1.1.</span> <span class="toc-text">Pass-01:修改前端JS绕过检测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-02-%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B-%E5%90%8E%E7%BC%80%E7%BB%95%E8%BF%87-Content-Type"><span class="toc-number">1.2.</span> <span class="toc-text">Pass-02:文件类型&#x2F;后缀绕过(Content-Type)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-03-%E6%96%87%E4%BB%B6%E5%90%8E%E7%BC%80%E7%BB%95%E8%BF%87"><span class="toc-number">1.3.</span> <span class="toc-text">Pass-03 文件后缀绕过</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-04-%E4%BC%A0-htaccess%E5%88%A9%E7%94%A8Apache%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.4.</span> <span class="toc-text">Pass-04(传. htaccess利用Apache解析漏洞 )</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-05-%E5%A4%A7%E5%B0%8F%E5%86%99Php%E7%BB%95%E8%BF%87"><span class="toc-number">1.5.</span> <span class="toc-text">Pass-05(大小写Php绕过)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-06-%E6%96%87%E4%BB%B6%E5%90%8E%E7%BC%80%E5%90%8D%E5%8A%A0%E7%A9%BA%E6%A0%BC%E7%BB%95%E8%BF%87"><span class="toc-number">1.6.</span> <span class="toc-text">Pass-06(文件后缀名加空格绕过)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-07-%E5%88%A9%E7%94%A8Windows%E7%89%B9%E6%80%A7"><span class="toc-number">1.7.</span> <span class="toc-text">Pass-07(利用Windows特性)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-08-DATA%E6%95%B0%E6%8D%AE%E6%B5%81%E7%BB%95%E8%BF%87"><span class="toc-number">1.8.</span> <span class="toc-text">Pass-08(::$DATA数据流绕过)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-09-%E6%96%87%E4%BB%B6%E5%90%8D%E6%8B%BC%E6%8E%A5-%E8%BF%99%E4%B8%AA%E5%9C%A8%E9%BB%91%E7%9B%92%E6%83%85%E5%86%B5%E4%B8%8B%E5%8F%AF%E8%83%BD%E4%BC%9A%E6%9C%89%E7%82%B9%E9%9A%BE%E2%80%A6"><span class="toc-number">1.9.</span> <span class="toc-text">Pass-09(文件名拼接,这个在黑盒情况下可能会有点难…)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-10-%E5%8F%8C%E5%86%99%E7%BB%95%E8%BF%87"><span class="toc-number">1.10.</span> <span class="toc-text">Pass-10(双写绕过)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-11-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E5%8F%AF%E6%8E%A7-%E4%BD%BF%E7%94%A800%E6%88%AA%E6%96%AD%E7%BB%95%E8%BF%87"><span class="toc-number">1.11.</span> <span class="toc-text">Pass-11(文件路径可控,使用00截断绕过)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-12-POST%E6%96%B9%E5%BC%8F%E7%9A%8400%E6%88%AA%E6%96%AD"><span class="toc-number">1.12.</span> <span class="toc-text">Pass-12(POST方式的00截断)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-13-%E5%9B%BE%E7%89%87%E9%A9%AC%E7%BB%95%E8%BF%87%E6%A3%80%E6%B5%8B-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%89%A7%E8%A1%8Cwebshell"><span class="toc-number">1.13.</span> <span class="toc-text">Pass-13(图片马绕过检测,文件包含执行webshell)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E9%A9%AC%E7%9A%84%E5%88%B6%E4%BD%9C"><span class="toc-number">1.13.1.</span> <span class="toc-text">图片马的制作:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-14-%E6%96%87%E4%BB%B6%E5%A4%B4%E7%BB%95%E8%BF%87"><span class="toc-number">1.14.</span> <span class="toc-text">Pass-14(文件头绕过)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-15"><span class="toc-number">1.15.</span> <span class="toc-text">Pass-15</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-16-%E4%BA%8C%E6%AC%A1%E6%B8%B2%E6%9F%93%E7%BB%95%E8%BF%87"><span class="toc-number">1.16.</span> <span class="toc-text">Pass-16(二次渲染绕过)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-17-%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89"><span class="toc-number">1.17.</span> <span class="toc-text">Pass-17(条件竞争)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-18-%E4%B8%8A%E4%BC%A0%E5%8E%8B%E7%BC%A9%E6%96%87%E4%BB%B6-%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89"><span class="toc-number">1.18.</span> <span class="toc-text">Pass-18(上传压缩文件+条件竞争)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-19-%E5%A4%9A%E7%A7%8D%E6%96%B9%E5%BC%8F%E9%83%BD%E5%8F%AF%E4%BB%A5%E7%BB%95%E8%BF%87"><span class="toc-number">1.19.</span> <span class="toc-text">Pass-19(多种方式都可以绕过)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pass-20"><span class="toc-number">1.20.</span> <span class="toc-text">Pass-20</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93"><span class="toc-number">2.</span> <span class="toc-text">文件上传漏洞总结</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.</span> <span class="toc-text">客户端检测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E6%A3%80%E6%B5%8B"><span class="toc-number">2.2.</span> <span class="toc-text">服务器端检测</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2986.html" title="Recent arrangements"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Recent arrangements"/></a><div class="content"><a class="title" href="/2986.html" title="Recent arrangements">Recent arrangements</a><time datetime="2099-11-01T04:00:00.000Z" title="Created 2099-11-01 12:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/9b1d.html" title="No title"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="No title"/></a><div class="content"><a class="title" href="/9b1d.html" title="No title">No title</a><time datetime="2099-10-31T16:00:00.000Z" title="Created 2099-11-01 00:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/62d1.html" title="Chrome 浏览器扩展开发初试"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Chrome 浏览器扩展开发初试"/></a><div class="content"><a class="title" href="/62d1.html" title="Chrome 浏览器扩展开发初试">Chrome 浏览器扩展开发初试</a><time datetime="2020-11-07T05:04:25.000Z" title="Created 2020-11-07 13:04:25">2020-11-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/558a.html" title="Cobalt Strike"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cobalt Strike"/></a><div class="content"><a class="title" href="/558a.html" title="Cobalt Strike">Cobalt Strike</a><time datetime="2020-11-04T13:33:44.000Z" title="Created 2020-11-04 21:33:44">2020-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/abc8.html" title="2020小组招新有感"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2020小组招新有感"/></a><div class="content"><a class="title" href="/abc8.html" title="2020小组招新有感">2020小组招新有感</a><time datetime="2020-10-23T16:56:04.000Z" title="Created 2020-10-24 00:56:04">2020-10-24</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 By m0nk3y</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>

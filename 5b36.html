@@ -1,31 +1,674 @@
-extends includes/layout.pug
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>一篇文章深入学习SQL注入漏洞 | 可惜没如果、m0nk3y‘s Blog</title><meta name="keywords" content="SQL,SQL注入,CTF"><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="0x00    前言之前折腾了好久的博客,这里打算学一学一个比较大,比较难利用的点,SQL注入.为什么这么说呢,因为SQL注入,不仅仅只是MYSQL 的数据库,还有很多数据库, 虽然他们的语法都大同小异, 但是细分下来又有很多可以利用的点, 利用的点也不一定只是在登录框框里面利用, 比如 Redis 数据库的未授权访问这个漏洞 ,等等. 这是一个大点,只能整理出一个大概吧, 理出大概的框架,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一篇文章深入学习SQL注入漏洞">
+<meta property="og:url" content="https://hack-for.fun/5b36.html">
+<meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="0x00    前言之前折腾了好久的博客,这里打算学一学一个比较大,比较难利用的点,SQL注入.为什么这么说呢,因为SQL注入,不仅仅只是MYSQL 的数据库,还有很多数据库, 虽然他们的语法都大同小异, 但是细分下来又有很多可以利用的点, 利用的点也不一定只是在登录框框里面利用, 比如 Redis 数据库的未授权访问这个漏洞 ,等等. 这是一个大点,只能整理出一个大概吧, 理出大概的框架,">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://hack-for.fun/null">
+<meta property="article:published_time" content="2020-02-15T07:39:50.000Z">
+<meta property="article:modified_time" content="2020-08-25T08:45:43.978Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="sqli">
+<meta property="article:tag" content="代码审计">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="漏扫工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hack-for.fun/null"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://hack-for.fun/5b36"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
 
-block content
-  #post
-    if top_img === false
-      include includes/header/post-info.pug
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
 
-    article#article-container.post-content!=page.content
-    include includes/post/post-copyright.pug
-    .tag_share
-      if (theme.post_meta.post.tags)
-        .post-meta__tag-list
-          each item, index in page.tags.data
-            a(href=url_for(item.path)).post-meta__tags #[=item.name]
-      include includes/third-party/share/index.pug
-        
-    if theme.reward.enable
-      !=partial('includes/post/reward', {}, {cache:theme.fragment_cache})
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
 
-    //- ad
-    if theme.ad && theme.ad.post
-      .post-ad!=theme.ad.post
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
 
-    include includes/pagination.pug
-    if theme.related_post && theme.related_post.enable
-      != related_posts(page,site.posts)
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-08-25 16:45:43'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
 
-    if page.comments !== false && theme.comments && theme.comments.use
-      - var commentsJsLoad = true
-      !=partial('includes/third-party/comments/index', {}, {cache:theme.fragment_cache})
-      
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="可惜没如果、m0nk3y‘s Blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div></div><hr/></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">可惜没如果、m0nk3y‘s Blog</a></span><span id="menus"><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">一篇文章深入学习SQL注入漏洞</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2020-02-15T07:39:50.000Z" title="Created 2020-02-15 15:39:50">2020-02-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2020-08-25T08:45:43.978Z" title="Updated 2020-08-25 16:45:43">2020-08-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/TOP10%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">TOP10基础漏洞</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><a id="more"></a>
+
+<h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00    前言"></a>0x00    前言</h1><p>之前折腾了好久的博客,这里打算学一学一个比较大,比较难利用的点,SQL注入.为什么这么说呢,因为SQL注入,不仅仅只是MYSQL 的数据库,还有很多数据库, 虽然他们的语法都大同小异, 但是细分下来又有很多可以利用的点, 利用的点也不一定只是在登录框框里面利用, 比如 Redis 数据库的未授权访问这个漏洞 ,等等. 这是一个大点,只能整理出一个大概吧, 理出大概的框架, 知道有什么, 知道该怎么做.</p>
+<p>SQLi 不管是以前, 还是现在, 都是一个热门的漏洞.OWASP top 10 多次都有这个漏洞的身影 </p>
+<p><a target="_blank" rel="noopener" href="https://owasp.org/www-community/attacks/SQL_Injection">SQL Injecton | OWASP</a> </p>
+<h1 id="0x01-基础知识"><a href="#0x01-基础知识" class="headerlink" title="0x01    基础知识"></a>0x01    基础知识</h1><h2 id="什么是SQL"><a href="#什么是SQL" class="headerlink" title="什么是SQL"></a>什么是SQL</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><blockquote>
+<p>结构化查询语言(Structured Query Language)简称SQL，是一种特殊目的的编程语言，是一种数据库查询和<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E8%AF%AD%E8%A8%80/2317999">程序设计语言</a>，用于存取数据以及查询、更新和管理<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F">关系数据库系统</a>。</p>
+<p>百度百科</p>
+</blockquote>
+<h3 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h3><p>SQL语言1974年由Boyce和Chamberlin提出，并首先在IBM公司研制的<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93/1237340">关系数据库</a>系统SystemR上实现。由于它具有功能丰富、使用方便灵活、语言简洁易学等突出的优点，深受计算机工业界和计算机用户的欢迎。1980年10月，经<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%BE%8E%E5%9B%BD%E5%9B%BD%E5%AE%B6%E6%A0%87%E5%87%86%E5%B1%80/3350884">美国国家标准局</a>(ANSI)的数据库委员会X3H2批准，将SQL作为关系数据库语言的美国标准，同年公布了标准SQL，此后不久，<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86%E5%8C%96%E7%BB%84%E7%BB%87/779832">国际标准化组织</a>(ISO)也作出了同样的决定。</p>
+<h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><p>主要有 数据定义, 数据操作, 数据控制</p>
+<ol>
+<li>SQL数据定义功能：能够定义数据库的三级模式结构，即外模式、全局模式和内模式结构。在SQL中，外模式有叫做视图(View)，全局模式简称模式( Schema)，内模式由系统根据数据库模式自动实现，一般无需用户过问。</li>
+<li>SQL数据操纵功能：包括对基本表和视图的数据<strong>插入、删除和修改</strong>，特别是具有很强的数据<strong>查询</strong>功能。</li>
+</ol>
+<p>注意我加粗的部分, 我们利用或者说挖掘SQLi 的时候就是通过数据库的<strong>增删改查</strong>来进行的</p>
+<ol start="3">
+<li>SQL 的数据控制功能: 主要是对用户的<strong>访问权限</strong>加以控制, 保证系统的安全性</li>
+</ol>
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p>SQL 中 数字是不需要用单引号闭合起来的,字符串需要用单引号闭合</p>
+<p>SQL 查询由一条或者多条语句构成, 在SQL 注入的时候,常见的有</p>
+ <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>, <span class="keyword">insert</span>, <span class="keyword">update</span>, <span class="keyword">create</span>, <span class="keyword">union</span> <span class="keyword">select</span>, <span class="keyword">delete</span></span><br><span class="line"><span class="comment"># 注意 SQL 语法不区分大小写</span></span><br></pre></td></tr></table></figure>
+
+<p>用于读取,删除或者更新表数据的 SQL 查询通常有<strong>条件子句</strong>, 用来筛选表中特定的数据行</p>
+<p><strong>条件子句</strong>从<code>where</code> 关键字开始,后面跟的是筛选条件,用于评测条件可以使用<code>or</code> 和 <code>and</code> 运算符;下面说说表的结构吧</p>
+<p><code>表</code> ,类似下面这张情况,我们为这个表取个名字就叫做电话号码查询表(telUsers)</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>username</th>
+<th>password</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10086</td>
+<td>admin</td>
+<td>admin10086</td>
+</tr>
+<tr>
+<td>1</td>
+<td>user</td>
+<td>user123456</td>
+</tr>
+<tr>
+<td>2</td>
+<td>user2</td>
+<td>user2admin</td>
+</tr>
+</tbody></table>
+<p>然后就是介绍一下这几种语句</p>
+<ol>
+<li>select 语句</li>
+</ol>
+<p><code>select</code> 语句用于从一个或者多个表中检索信息, 至少需要给出的信息有<code>想选择什么</code> 和 <code>从哪里选择</code> </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> telUsers</span><br></pre></td></tr></table></figure>
+
+<p>通配符 <code>*</code> ,表示数据库服务器返回所有的表; 如果只需要检索特定的<code>列</code> ,可以用所需的列名替换通配符 </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> username <span class="keyword">from</span> telUsers <span class="comment">#从表中返回用户名这一列的内容</span></span><br></pre></td></tr></table></figure>
+
+<p>想要根据条件返回特定的行, 只需添加 <code>where</code> 子句并跟上所需的条件</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> username <span class="keyword">form</span> telUsers <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span> <span class="comment"># 返回id=1 这一行的内容</span></span><br><span class="line">或者</span><br><span class="line"><span class="keyword">select</span> username <span class="keyword">form</span> telUsers <span class="keyword">where</span> username = <span class="string">&#x27;admin&#x27;</span> <span class="keyword">and</span> <span class="keyword">password</span>= <span class="string">&#x27;admin10086&#x27;</span> <span class="comment"># 返回指定用户的数</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>Microsoft SQL Server</code> 支持从一张表中读取数据并将数据结果插入到另一张表中</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">into</span> hackertable <span class="keyword">form</span> telUsers</span><br></pre></td></tr></table></figure>
+
+<p> 查询语句中你可以使用一个或者多个表，表之间使用<strong>逗号, 分割</strong>，并使用WHERE语句来设定查询条件</p>
+<p>你可以使用 <strong>AND 或者 OR</strong> 指定一个或多个条件</p>
+<blockquote>
+<p><code>like</code> 子句</p>
+</blockquote>
+<p>like 子句的作用有点像 <code>=</code> 的作用,来设定获取数据的数据, 在like 子句中可以使用<code>%</code> 来表示任意字符,如果没用使用<code>%</code> ,like子句与等号的作用效果是一样的</p>
+<ol start="2">
+<li>union 运算符</li>
+</ol>
+<p>union 运算符用于合并两条或多条 select 语句的结果集, 注意: <code>参与union 运算的所有 select 语句必须返回相同的列数, 对应列的数据类型必须相互兼容</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> username,<span class="keyword">password</span> <span class="keyword">from</span> telUsers <span class="keyword">union</span> <span class="keyword">select</span> username,<span class="keyword">password</span> <span class="keyword">from</span> telAdmins</span><br></pre></td></tr></table></figure>
+
+<p>这段代码从telUsers 和 telAdmins 表中查询 username 和 password 列 并和并在一起</p>
+<p><code>union select</code> 会自动比较每条select 语句返回的值,只返回不重复的值 ( 如果要返回重复的值,使用<code>union all select</code> </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> username,<span class="keyword">password</span> <span class="keyword">from</span> telUsers <span class="keyword">union</span> <span class="keyword">all</span> <span class="keyword">select</span> username,<span class="keyword">password</span> <span class="keyword">from</span> telAdmins</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>insert 语句</li>
+</ol>
+<p>insert 语句用于向表中插入数据.</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> telUsers <span class="keyword">values</span> (<span class="number">5</span>,<span class="string">&#x27;jjj&#x27;</span>,<span class="string">&#x27;sss&#x27;</span>,<span class="number">0</span>) <span class="comment"># 插入的值与表的数据一一对应</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> telUsers(<span class="keyword">id</span>,username,<span class="keyword">password</span>) <span class="keyword">values</span> (<span class="number">5</span>,<span class="string">&#x27;jjj&#x27;</span>,<span class="string">&#x27;sss&#x27;</span>) <span class="comment"># 将数据插入到列出的目标列中</span></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>update 语句</li>
+</ol>
+<p><code>update</code> 语句用于修改数据库表中以及存在的数据, <code>update</code> 语句后面 必须跟一条 <code>where</code> 子句,指出应该更新的行,如果不指出,所有行都会受到影响</p>
+<ol start="5">
+<li>delete 语句</li>
+</ol>
+<p><code>delete</code> 语句用于从表中删除行.和update 语句一样,必须有where子句,指出要删除的行,如果不指出,那么全部都会被删除</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> telUsers <span class="keyword">where</span> username = <span class="string">&#x27;admin&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>drop 语句</li>
+</ol>
+<p><code>drop</code> 语句用来删除数据库对象,比如 表,视图,索引,某些情况还可以是数据库本身</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">drop</span> <span class="keyword">table</span> telUsers <span class="comment"># 删除telUsers 表</span></span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>create table 语句</li>
+</ol>
+<p><code>create table</code> 语句用于在当前数据库或模式( <strong>schema</strong> )中创建新的表,可在表名后面的括号中传递列明及数据类型</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> shoppinglist(item <span class="built_in">int</span>, <span class="keyword">name</span> <span class="built_in">varchar</span>(<span class="number">100</span>))</span><br><span class="line"><span class="keyword">Oracle</span> 支持创建一张表并使用另一张表或视图的数据来填充</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> shoppinglist <span class="keyword">as</span> <span class="keyword">select</span> * <span class="keyword">from</span> tb_users</span><br></pre></td></tr></table></figure>
+
+<ol start="8">
+<li>alter table 语句</li>
+</ol>
+<p>该语句用于添加,删除或修改现有表中的某列</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> telUsers <span class="keyword">add</span> comments <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="comment"># 向telUsers 表中添加一列,名为comments</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> telUsers <span class="keyword">alter</span> <span class="keyword">column</span> comments <span class="built_in">varchar</span>(<span class="number">500</span>) <span class="comment"># 将comments的数据类型,由varchar(100)修改为varchar(500)</span></span><br></pre></td></tr></table></figure>
+
+<ol start="9">
+<li>group by 语句</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200219002230.png"></p>
+<p>GROUP BY 语句根据一个或多个列对结果集进行分组。</p>
+<ol start="10">
+<li>order by 语句</li>
+</ol>
+<p><code>order by </code> 子句对<code>select</code> 语句的查询结果按照特定列进行排序,接收<code>列名或数字</code>作为强制参数,<code>asc</code>和<code>desc</code> 关键字将结果进行<code>升序</code>和<code>降序</code></p>
+<ul>
+<li>如果是使用的 UTF-8 编码,则需要对字段进行转码后再排序</li>
+<li>如果是gbk 汉字编码字符集,则直接加在order by 后面.</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">cost</span>,product <span class="keyword">from</span> orders <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">desc</span> <span class="comment"># 从orders表中选择cost和product并将结果进行降序排列</span></span><br></pre></td></tr></table></figure>
+
+<ol start="11">
+<li>限制结果集</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200219002804.png"></p>
+<p><strong>注释</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">数据库</th>
+<th align="center">注释</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">SQL Server,Oracle,PostgreSQL</td>
+<td align="center">– 和 /* */</td>
+<td align="left">单行注释和多行注释</td>
+</tr>
+<tr>
+<td align="left">MySQL</td>
+<td align="center">– , # , /* */</td>
+<td align="left">1.用于单行注释,要求第二个连字符后面跟一个空格或控制字符(如制表符,换行符) 2. 用于单行注释 3. 用于多行注释</td>
+</tr>
+</tbody></table>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200222101aas715.png"></p>
+<h2 id="SQL-分类"><a href="#SQL-分类" class="headerlink" title="SQL 分类"></a>SQL 分类</h2><h3 id="MYSQL"><a href="#MYSQL" class="headerlink" title="MYSQL"></a>MYSQL</h3><h4 id="管理MySQL的命令"><a href="#管理MySQL的命令" class="headerlink" title="管理MySQL的命令"></a>管理MySQL的命令</h4><p><code>show databases;</code> 列出MySQL 数据库管理系统的数据库列表</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200219011151.png"></p>
+<p><code>use 数据库名;</code></p>
+<p><code>MySQL [(none)]&gt; use test; Database changed</code></p>
+<p><code>show tables from 数据库;</code> 显示选择的数据库的所有表</p>
+<p><code>show columns from 数据表;</code> 显示数据表的属性,属性类型,主键类型,是否为NULL</p>
+<blockquote>
+<p>这里会在堆叠注入的时候用到</p>
+</blockquote>
+<p><code>create database 数据库名;</code>  创建数据库</p>
+<p><code>drop database 数据库名;</code> 删除数据库表,必须定义表<strong>字段</strong>(column)</p>
+<h4 id="MySQL-PHP-语法"><a href="#MySQL-PHP-语法" class="headerlink" title="MySQL PHP 语法"></a>MySQL PHP 语法</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqli_connect($connect); <span class="comment">// 连接数据库</span></span><br><span class="line">mysqli_query($connect,<span class="string">&quot;SQL 语句&quot;</span>); </span><br><span class="line">mysqli_fetch_array()</span><br><span class="line">mysqli_close() <span class="comment">// 断开连接</span></span><br><span class="line">mysqli_select_db(connection,dbname); <span class="comment">// 选择数据库</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="MySQL-数据类型"><a href="#MySQL-数据类型" class="headerlink" title="MySQL 数据类型"></a>MySQL 数据类型</h4><p>MySQL支持多种类型，大致可以分为三类：数值、日期/时间和字符串(字符)类型</p>
+<p>其中字符串类型中的,</p>
+<table>
+<thead>
+<tr>
+<th>CHAR</th>
+<th>0-255字节</th>
+<th>定长字符串</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VARCHAR</td>
+<td>0-65535 字节</td>
+<td>变长字符串</td>
+</tr>
+</tbody></table>
+<p>CHAR 和 VARCHAR 类型类似，但它们保存和检索的方式不同。它们的最大长度和是否尾部空格被保留等方面也不同。在存储或检索过程中<strong>不进行大小写转换</strong>。</p>
+<h4 id="MySQL-元数据"><a href="#MySQL-元数据" class="headerlink" title="MySQL 元数据"></a>MySQL 元数据</h4><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SELECT VERSION( )</td>
+<td>服务器版本信息</td>
+</tr>
+<tr>
+<td>SELECT DATABASE( )</td>
+<td>当前数据库名 (或者返回空)</td>
+</tr>
+<tr>
+<td>SELECT USER( )</td>
+<td>当前用户名</td>
+</tr>
+<tr>
+<td>SHOW STATUS</td>
+<td>服务器状态</td>
+</tr>
+<tr>
+<td>SHOW VARIABLES</td>
+<td>服务器配置变量</td>
+</tr>
+</tbody></table>
+<h4 id="MySQL-导出-插入数据"><a href="#MySQL-导出-插入数据" class="headerlink" title="MySQL 导出,插入数据"></a>MySQL 导出,插入数据</h4><p><code>select .. into outfile</code> 导出数据到文本文件中,必须拥有</p>
+<p>将文件读回数据库使用 <code>load data infile</code> file 权限,才能使用这个语法</p>
+<ul>
+<li>输出不能是已近存在的文件</li>
+<li>在UNIX只不过,文件创建后是可读的,权限由MySQL服务器所有</li>
+</ul>
+<p><code>load data infile</code> 语句用来插入数据</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">load</span> <span class="keyword">data</span> <span class="keyword">local</span> <span class="keyword">infile</span> <span class="string">&#x27;dump.txt&#x27;</span> <span class="keyword">into</span> <span class="keyword">table</span> mytbl;</span><br><span class="line"><span class="comment"># 指定LOCAL关键词，则表明从客户主机上按路径读取文件。如果没有指定，则文件在服务器上按路径读取文件</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="MySQL函数"><a href="#MySQL函数" class="headerlink" title="MySQL函数"></a>MySQL函数</h4><p><a target="_blank" rel="noopener" href="https://www.runoob.com/mysql/mysql-functions.html">https://www.runoob.com/mysql/mysql-functions.html</a></p>
+<p><code>ascii(s)</code> 返回字符串s 的<code>第一个字符</code>的ASCII 码 , 这个函数会在盲注的时候用到</p>
+<p><code>char_length(s)</code> 返回字符串 s 的字符数 <code>character_length(s)</code> 返回字符串 s 的字符数</p>
+<p><code>concat(s1,s2,...,sn)</code> 将字符串 s1, s2 等<strong>多个字符串合并为一个字符串</strong></p>
+<p><code>concat_ws(x,s1,s2,...sn)</code> 作用和上一个相同,只不过每个字符串之间要加上x, x可以是分隔符</p>
+<p><code>mid(s,n,len)</code> 从字符串s的n位置,截取长度为len的子字符串</p>
+<p><code>space(n)</code> 返回n个空格,<code>trim(s)</code> 去掉字符串 s 开始和结尾处的空格</p>
+<p><code>substr(s,start,length)</code> 从字符串 s 的start 位置截取长度为 length 的子字符串</p>
+<p><code>ABS(x)</code> 返回 x 的绝对值　<code>EXP(x)</code> 返回 e 的 x 次方　</p>
+<p><code>FLOOR(x)</code> 返回小于或等于 x 的最大整数　<code>RAND()</code> 返回 0 到 1 的随机数</p>
+<p>(会在<strong>报错注入</strong>用到)</p>
+<p><strong>位运算</strong></p>
+<table>
+<thead>
+<tr>
+<th>运算符号</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&amp;</td>
+<td>按位与</td>
+</tr>
+<tr>
+<td>|</td>
+<td>按位或</td>
+</tr>
+<tr>
+<td>^</td>
+<td>按位异或</td>
+</tr>
+<tr>
+<td>!</td>
+<td>取反</td>
+</tr>
+<tr>
+<td>&lt;&lt;</td>
+<td>左移</td>
+</tr>
+<tr>
+<td>&gt;&gt;</td>
+<td>右移</td>
+</tr>
+</tbody></table>
+<h3 id="PostgreSql"><a href="#PostgreSql" class="headerlink" title="PostgreSql"></a>PostgreSql</h3><p>PostgreSQL(post-gress-Q-L) 是一个免费的<strong>对象-关系</strong>数据库服务器(ORDBMS)，在灵活的BSD许可证下发行。OODBMS 面向对象数据库管理系统,将所有实体都看着对象,并将这些对象类进行封装,对象之间的通信通过消息 OODBMS 对象关系数据库在实质上还是关系数据库 。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200219143145.png"></p>
+<h4 id="语法-1"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h4><p>一个 SQL 语句通常包含了关键字、标识符（字段）、常量、特殊符号等，下面是一个简单的 SQL 语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">id</span>, <span class="keyword">name</span> <span class="keyword">FROM</span> runoob</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th align="center">SELECT</th>
+<th align="center">id, name</th>
+<th align="center">FROM</th>
+<th align="center">runoob</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>符号类型</td>
+<td align="center">关键字</td>
+<td align="center">标识符（字段）</td>
+<td align="center">关键字</td>
+<td align="center">标识符</td>
+</tr>
+<tr>
+<td>描述</td>
+<td align="center">命令</td>
+<td align="center">id 和 name 字段</td>
+<td align="center">语句，用于设置条件规则等</td>
+<td align="center">表名</td>
+</tr>
+</tbody></table>
+<p><strong>PostgreSQL 命令</strong></p>
+<p><code>abort</code> 用于退出当前事务, <code>alter</code> 用于修改定义,<code>analyze</code> 收集与数据库有关的统计</p>
+<p><code>begin</code> 开始一个事务块</p>
+<p><strong>创建数据库</strong> <code>create database dbname;</code> </p>
+<p>因为语法和MYSQL 差别不大.不再多重复了,只是个别细节,遇到了加以修正即可.</p>
+<p><strong>子查询</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> AGE <span class="keyword">FROM</span> COMPANY</span><br><span class="line">        <span class="keyword">WHERE</span> <span class="keyword">EXISTS</span> (<span class="keyword">SELECT</span> AGE <span class="keyword">FROM</span> COMPANY <span class="keyword">WHERE</span> SALARY &gt; <span class="number">65000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>有点像嵌套if的味道…</p>
+<p><strong>更新</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> COMPANY <span class="keyword">SET</span> SALARY = <span class="number">15000</span> <span class="keyword">WHERE</span> <span class="keyword">ID</span> = <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>删除</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> table_name <span class="keyword">WHERE</span> [condition];</span><br></pre></td></tr></table></figure>
+
+<p><strong>limit 子句</strong></p>
+<p><strong>limit</strong> 子句用于限制 SELECT 语句中查询的数据的数量。</p>
+<p><strong>order by 子句</strong></p>
+<p><strong>ORDER BY</strong> 用于对一列或者多列数据进行升序（ASC）或者降序（DESC）排列。</p>
+<p><strong>group by 子句</strong></p>
+<p><strong>GROUP BY</strong> 语句和 SELECT 语句一起使用，用来<strong>对相同的数据进行分组</strong>。</p>
+<p>GROUP BY 在一个 SELECT 语句中，放在 WHRER 子句的后面，ORDER BY 子句的前面。</p>
+<h3 id="SQLite"><a href="#SQLite" class="headerlink" title="SQLite"></a>SQLite</h3><p>SQLite 是一个软件库，实现了自给自足的、无服务器的、零配置的、事务性的 SQL 数据库引擎。SQLite 是在世界上最广泛部署的 SQL 数据库引擎。SQLite 源代码不受版权限制。</p>
+<p>有个重要的点值得注意，SQLite 是<strong>不区分大小写</strong>的，但也有一些命令是大小写敏感的，比如 <strong>GLOB</strong> 和 <strong>glob</strong> 在 SQLite 的语句中有不同的含义。</p>
+<p>注释,可以是<code>--</code>或者<code>/* */</code>, 所有语句都必须以分号结束</p>
+<p>通过SQLite 创建的数据库后缀名为 : <code>.db</code> </p>
+<p>SQLite 分离数据库, 通过<code> detach database</code> 语句</p>
+<p>如果数据库是在内存中或者是临时数据库，则该数据库将被摧毁，且内容将会丢失。</p>
+<p><strong>SQLite Glob 子句</strong></p>
+<p>SQLite 的 <strong>GLOB</strong> 运算符是用来匹配通配符指定模式的文本值。如果搜索表达式与模式表达式匹配，GLOB 运算符将返回真（true），也就是 1。与 LIKE 运算符不同的是，GLOB 是大小写敏感的，对于下面的通配符，它遵循 UNIX 的语法。</p>
+<ul>
+<li>星号 （*）</li>
+<li>问号 （?）</li>
+</ul>
+<p>星号（*）代表零个、一个或多个数字或字符。问号（?）代表一个单一的数字或字符。这些符号可以被组合使用。</p>
+<h3 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h3><h3 id="Microsoft-SQL-Server"><a href="#Microsoft-SQL-Server" class="headerlink" title="Microsoft SQL Server"></a>Microsoft SQL Server</h3><h3 id="DB2"><a href="#DB2" class="headerlink" title="DB2"></a>DB2</h3><h3 id="MongoDB"><a href="#MongoDB" class="headerlink" title="MongoDB"></a>MongoDB</h3><p>MongoDB 是一个基于分布式文件存储的数据库。由 C++ 语言编写。旨在为 WEB 应用提供可扩展的高性能数据存储解决方案。</p>
+<p>MongoDB 是一个介于关系数据库和非关系数据库之间的产品，是非关系数据库当中功能最丰富，最像关系数据库的。</p>
+<p>MongoDB 将数据存储为一个文档，数据结构由<strong>键值(key=&gt;value)对</strong>组成。MongoDB 文档类似于 JSON 对象。字段值可以包含其他文档，数组及文档数组。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200219225057.png"></p>
+<p>MongoDB区分类型和大小写</p>
+<p>MonggoDB 的语法有点类似python 中的函数方法<code>db.col.insert</code> 诸如这样的</p>
+<h4 id="NoSQL"><a href="#NoSQL" class="headerlink" title="NoSQL"></a>NoSQL</h4><p>NoSQL(not only sql),不仅仅是sql</p>
+<p>NoSQL，指的是非关系型的数据库。NoSQL有时也称作Not Only SQL的缩写，是对不同于传统的关系型数据库的数据库管理系统的统称。NoSQL用于超大规模数据的存储.</p>
+<p>NoSQL的优点</p>
+<ul>
+<li>高可扩展性,分布式计算,低成本,架构灵活,半结构数据,没有复杂的关系</li>
+</ul>
+<p>缺点</p>
+<ul>
+<li>没有标准化,有限的查询功能,不直观</li>
+</ul>
+<h3 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h3><p>REmote DIctionary Server(Redis) 是一个由Salvatore Sanfilippo写的key-value存储系统。</p>
+<p>Redis是一个开源的使用ANSI C语言编写、遵守BSD协议、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。</p>
+<p>它通常被称为数据结构服务器，因为值（value）可以是 字符串(String), 哈希(Hash), 列表(list), 集合(sets) 和 有序集合(sorted sets)等类型。</p>
+<h4 id="Redis-数据类型"><a href="#Redis-数据类型" class="headerlink" title="Redis 数据类型"></a>Redis 数据类型</h4><p>Redis支持五种数据类型：string（字符串），hash（哈希），list（列表），set（集合）及zset(sorted set：有序集合)。</p>
+<p>Redis 更多的是命令, 需要的时候去网上找,知道怎么使用即可.</p>
+<h3 id="LDAP"><a href="#LDAP" class="headerlink" title="LDAP"></a>LDAP</h3><p>中文名叫<code> 轻型目录访问协议</code> (Lightweight Directory Access Protocol),简写为LDAP.是一个开放的，中立的，工业标准的<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%BA%94%E7%94%A8%E5%8D%8F%E8%AE%AE">应用协议</a>，通过<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/IP%E5%8D%8F%E8%AE%AE">IP协议</a>提供访问控制和维护分布式信息的目录信息。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/quiet_girl/article/details/50716312">LDAP注入</a></p>
+<h1 id="0x02-什么是SQLi"><a href="#0x02-什么是SQLi" class="headerlink" title="0x02    什么是SQLi"></a>0x02    什么是SQLi</h1><h2 id="SQLi-简介"><a href="#SQLi-简介" class="headerlink" title="SQLi 简介"></a>SQLi 简介</h2><blockquote>
+<p>所谓SQL注入，就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。</p>
+</blockquote>
+<p>应用程序在向后台数据库传递SQL(Structured Query Language, 结构化查询语言)查询时, 如果为攻击者<strong>提供了影响该查询的能力</strong>,就会引发SQL注入.</p>
+<p>SQLi 漏洞是由<code>Rain Forest Puppy</code>首次发现于1998年.( 可能更早就有人发现了 )</p>
+<h3 id="关于架构"><a href="#关于架构" class="headerlink" title="关于架构"></a>关于架构</h3><p>数据库驱动的 Web 应用通常包含三层: 表示层(Web 浏览器或呈现引擎),逻辑层(如 C#,ASP, .NET,PHP,JSP等编程语言) 和存储层(MSSQL,MYSQL,Oracle)等数据库.</p>
+<p>这三层架构用图片更加直观</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200220151730.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200221004135.png"></p>
+<p>由于三层解决方案不具有扩展性,因此在可扩展性和可维护性的基础上创建了 <code>n 层应用程序开发范式</code> n 层架构中的应用服务器负责将 API 提供给业务逻辑和业务流程以供程序使用</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200220153101.png"></p>
+<p><strong>分层架构的基本思想是将应用分解成多个逻辑块/层,其中每一层都分配有通用或特定的角色.</strong></p>
+<ul>
+<li>提高应用的可读性和组件的可复用性</li>
+<li>消除单点失败来提高应用的健壮性</li>
+</ul>
+<h3 id="CMS"><a href="#CMS" class="headerlink" title="CMS"></a>CMS</h3><p>CMS (Content Management System), 内容管理系统.CMS 是一种Web应用,用于为站点创建,编辑,管理,和发布内容.</p>
+<h3 id="SQL注入的产生过程"><a href="#SQL注入的产生过程" class="headerlink" title="SQL注入的产生过程"></a>SQL注入的产生过程</h3><p><strong>关于单引号</strong></p>
+<p><code>&#39;</code> 在SQL 中是代码与数据间的分界线(字符串分隔符),如果多了一个<code>&#39;</code> 就会导致SQL 语法错误,这也是测试是否存在SQL注入和利用报错注入的判断标准之一.</p>
+<p><strong><code>load_file()</code> 函数</strong></p>
+<p>MYSQL中这个函数能够<strong>读取文件并将文件内容作为字符串返回</strong>,读取的文件必须位于数据库服务器主机上,必须将文件的完整路径作为参数传递给函数,调用该函数的用户必须用有<code>FILE</code> 权限,</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">union all <span class="keyword">select</span> <span class="keyword">load_file</span>(<span class="string">&#x27;/etc/passwd&#x27;</span>)<span class="comment">-- </span></span><br><span class="line"><span class="comment"># 如果作为输入并成功执行, 攻击者就可以读取/etc/passwd 文件中的内容</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>利用MySQL 内置命令写入文件</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">union <span class="keyword">select</span> <span class="string">&quot;&lt;? system($_REQUEST[&#x27;cmd&#x27;]); ?&gt;&quot;</span> <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">&quot;/var/www/html/victim.com/cmd.php&quot;</span> <span class="comment">-- </span></span><br><span class="line"><span class="comment"># 写入一个RCE代码到cmd.php, 必须有FILE权限(是一种管理员权限)</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>查询语句组装不当</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$SQL = <span class="string">&quot;select&quot;</span>.$_GET[<span class="string">&#x27;column1&#x27;</span>].<span class="string">&quot;.&quot;</span>.$_GET[<span class="string">&#x27;column2&#x27;</span>].<span class="string">&quot;,&quot;</span>$_GET[<span class="string">&#x27;column3&#x27;</span>].<span class="string">&quot;from&quot;</span>.$_GET[<span class="string">&#x27;table&#x27;</span>];</span><br></pre></td></tr></table></figure>
+
+<p>因为是通过GET 方式,攻击者可以使用自己的表和字段数据来替换应用产生的值</p>
+<p><strong>错误处理不当</strong></p>
+<p>将详细的内部错误详细显示给用户/攻击者</p>
+<p><strong>多个提交处理不当</strong></p>
+<p>比如提交表单的时候,需要输入3次,第一次判断了,但是攻击者可在第二次或者第二次表单输入的时候进行SQL注入攻击</p>
+<p><strong>不安全的数据库配置</strong></p>
+<table>
+<thead>
+<tr>
+<th>数据库</th>
+<th align="center">管理员</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SQL Server</td>
+<td align="center">sa</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td align="center">root 和 anonymous</td>
+</tr>
+<tr>
+<td>Oracle</td>
+<td align="center">SYS,SYSTEM,DBSNMP,OUTLN</td>
+</tr>
+</tbody></table>
+<p>Web 应用开发人员应该和数据库管理员协同,保证程序的数据库访问是在最低权限模型下进行,并进行权限分离.</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Oracle 列出当前用户可访问的所有表</span></span><br><span class="line"><span class="keyword">select</span> owner, table_name <span class="keyword">from</span> all_tables <span class="keyword">order</span> <span class="keyword">by</span> table_name; </span><br><span class="line"><span class="comment"># MySQL 列举当前用户可访问的所有表和数据库</span></span><br><span class="line"><span class="keyword">select</span> table_schema, table_name <span class="keyword">from</span> informaiton_schema.tables;</span><br><span class="line"><span class="comment"># MSSQL 使用系统表列举所有可访问的表</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">name</span> <span class="keyword">from</span> sysobjects <span class="keyword">where</span> xtype = <span class="string">&#x27;u&#x27;</span>;</span><br><span class="line"><span class="comment"># MSSQL 使用目录视图列举所有可访问的表</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">name</span> <span class="keyword">from</span> sys.tables;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>注: 单引号并不是唯一引起SQL注入的字符,在某些情况下还有<code>||</code> 和 <code>&quot;</code> </p>
+<h2 id="SQLi-分类和利用方式"><a href="#SQLi-分类和利用方式" class="headerlink" title="SQLi 分类和利用方式"></a>SQLi 分类和利用方式</h2><p>SQLi 的分类的话, 比较常见的分类方法就是通过有没有错误回显来进行判断, 分为有回显的注入和没有回显的注入</p>
+<p>更进一步的细分, 便是通过不同的数据库类型来分, 具体利用还是一样, 只是语法上有一点区别</p>
+<p>当然有一些 数据库, 可能存在的CVE 可以去了解一下, 必要时可以搭一波环境来进行复现</p>
+<p>还可以根据注入发生的位置来区分. 如</p>
+<ul>
+<li>cookie</li>
+<li>UA头</li>
+<li>HOST</li>
+<li>Referer</li>
+<li>XFF</li>
+<li>PORT</li>
+</ul>
+<p>等<strong>都可能</strong>存在sql注入</p>
+<h3 id="有错误回显"><a href="#有错误回显" class="headerlink" title="有错误回显"></a>有错误回显</h3><ul>
+<li>Microsoft SQL Server 错误</li>
+</ul>
+<p>比如: <code>http://www.victiom.com/show.php?id=attacker&#39;</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Server Error in &#39;&#x2F;&#39; Application.</span><br><span class="line">Unclosed quotation mark before the charachter string &#39;attacker;&#39;.</span><br><span class="line">Description: An unhandled exception occurred during the execution of the 		current web request. Please review the stack trace for more information about the error and where it originated in the code.</span><br><span class="line">Exception Details: System.Data.SqlClient.SqlException: Unclosed quotation mark before the character string &#39;attack;&#39;</span><br></pre></td></tr></table></figure>
+
+<p>当然这个报错不需要我们记住,我们需要做的是从报错中猜测SQL语句大概是什么样的</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">union <span class="keyword">select</span> * <span class="keyword">from</span> tvshows <span class="keyword">where</span> <span class="keyword">id</span> = <span class="string">&#x27;attack&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>SQL Server 中存在<strong>类型转换功能</strong>,要求前后必须为数字,将0@@version 转换为数字时,失败了就会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">url?id&#x3D;1&#39; and 1&#x2F;0@@version;--</span><br><span class="line"># 注入代码为 0@@version</span><br><span class="line"># 注入类型 报错注入</span><br></pre></td></tr></table></figure>
+
+<p><code>group by</code> 要求select 语句选择的字段是某个聚合函数的结构或者包含在 group by 子句中,如果条件不满足,数据库就会返回一个错误,显示出现问题的第一列</p>
+<p>利用这一条件,就可以报错注入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">url?id&#x3D;1&#39; group by id having 1&#39;&#x3D;&#39;1</span><br><span class="line"># 注入出 column 为 tel</span><br><span class="line">url?id&#x3D;1&#39; group by id, tel having 1&#39;&#x3D;&#39;1</span><br><span class="line"># 注入出列名</span><br><span class="line"># 然后可以利用数据转换的特性来检索相应的值</span><br><span class="line">url?id&#x3D;1&#39; and 1&#x2F;0tel;--</span><br></pre></td></tr></table></figure>
+
+<p>修复, <code>customErrors mode=&quot;Off&quot;</code> ,进行错误页面重定向</p>
+<ul>
+<li>MySQL 错误</li>
+</ul>
+<p>MySQL 中存在内置函数<code>mysql_error()</code> 当查询失败时,会将错误信息输出到HTML页面</p>
+<p>常见的配置是在装有 Liunx 系统操作系统的 Apache Web 服务器上运行 PHP </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Warning: mysql_fetch_array(): ....</span><br><span class="line">....&#x2F;xx.php on line ..</span><br></pre></td></tr></table></figure>
+
+<p>如果注入的参数不是一个字符串(不需要包含在单引号中)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error: Unknown column &#39;attacker&#39; in &#39;where clause&#39;</span><br></pre></td></tr></table></figure>
+
+<p>由于这个值没有包含在引号中,因此MySQL将它看作一个<strong>列名</strong> , 由于MYSQL 找不到这个列,故返回错误</p>
+<ul>
+<li>Oracle 错误</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 当执行不正确的语法时</span><br><span class="line">java.sql.SQLException: ORA-00933: SQL command not properly ended at oracle.jdbc.dbaccess.DBError.throwSqlEception(DBError.java:180) at oracle.jdbc.ttc7.TTIoer.processError(TTIoer.java:208)</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 当注入一个单引号时</span><br><span class="line">Error: SQLExceptionjava.sql.SQLException: ORA-01756: quoted string not properly terminated</span><br><span class="line"># 表示SQL 语句中有一个使用单引号引起来的字符串未被正确结束</span><br></pre></td></tr></table></figure>
+
+<p>PHP 中的 <code>ociparse()</code>函数用于准备用执行的Oracle 语句</p>
+<ul>
+<li>PostgreSQL 错误</li>
+</ul>
+<p>PHP 中 <code>pg_last_error</code> 函数输出数据库连接的最新出错消息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 注入一个单引号</span><br><span class="line">Query failed: ERROR: unterminated quoted string at or near &quot;&#39;&#39;&#39;&quot;&quot;</span><br><span class="line"># 开始或结束的圆括号,子查询等错误</span><br><span class="line">Query failed: ERROR: syntax error at or near &quot;&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<ul>
+<li>恒真构造</li>
+</ul>
+<p>1’ or ‘1’=’1</p>
+<ul>
+<li>恒假构造</li>
+</ul>
+<p>1’ or ‘1’=’2</p>
+<p><code>and</code> 的优先级大于<code>or</code> </p>
+<p>然后来观察页面的不同响应, 布尔盲注的原理也是基于此</p>
+<p>利用错误的HTTP状态码, 常见的有 500(服务器向Web端呈现内容出错), 302(重定向跳转到特定页面)</p>
+<hr>
+<blockquote>
+<p>最重要的一点就是能够在心中重建开发人员在Web 应用中编写的代码以及设想远程SQL 代码的内容</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200222092845.png" alt="字符串内联注入"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200222094701.png" alt="数字型内联注入"></p>
+<h4 id="构造万能密码"><a href="#构造万能密码" class="headerlink" title="构造万能密码"></a>构造万能密码</h4><h4 id="构造查询语句"><a href="#构造查询语句" class="headerlink" title="构造查询语句"></a>构造查询语句</h4><h4 id="利用报错注入"><a href="#利用报错注入" class="headerlink" title="利用报错注入"></a>利用报错注入</h4><h4 id="堆叠注入"><a href="#堆叠注入" class="headerlink" title="堆叠注入"></a>堆叠注入</h4><h3 id="无错误回显"><a href="#无错误回显" class="headerlink" title="无错误回显"></a>无错误回显</h3><h4 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h4><p>所谓盲注,  就是看不到返回信息的注入,看不到报错信息的注入, 我们只能<strong>通过观察页面的差异</strong>来验证是否存在注入</p>
+<p>Microsoft SQL Server 中提供了查询延迟的内置命令: <code>WAITFOR DELAY &#39;hours:minutes:seconds&#39;  </code></p>
+<p>MySQL 中可以使用 <code>BENCHMARK()</code> 函数, 该函数的作用是执行某个表达式多少次</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">benchmark</span>(<span class="number">100000</span>,<span class="keyword">encode</span>(<span class="string">&#x27;hello&#x27;</span>,<span class="string">&#x27;mom&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>Oracle PL/SQL 中,<code>DBMS_LOCK.SLEEP()</code>函数可以让一个过程休眠很多秒,但是不能直接将给函数注入子查询中,因为Oracle 不支持堆叠查询(stacked query),并且只用数据库管理员才能使用DBMS_LOCK 包</p>
+<p>静态代码分析: 在分析源代码的过程中并不真正执行代码</p>
+<p>动态代码分析: 在代码运行过程找那个对其进行分析</p>
+<p>朔源分析: 找到存在漏洞的语句,返回去找参数入口点有没有进行处理</p>
+<p>跟踪: 找到进行限制的函数,对函数进行分析</p>
+<h5 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h5><h5 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h5><h3 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h3><h3 id="预编译"><a href="#预编译" class="headerlink" title="预编译"></a>预编译</h3><h3 id="UDF"><a href="#UDF" class="headerlink" title="UDF"></a>UDF</h3><h1 id="0x03-漏洞挖掘"><a href="#0x03-漏洞挖掘" class="headerlink" title="0x03    漏洞挖掘"></a>0x03    漏洞挖掘</h1><h2 id="自动化挖掘"><a href="#自动化挖掘" class="headerlink" title="自动化挖掘"></a>自动化挖掘</h2><h3 id="SQLmap"><a href="#SQLmap" class="headerlink" title="SQLmap"></a>SQLmap</h3><h3 id="AWVS"><a href="#AWVS" class="headerlink" title="AWVS"></a>AWVS</h3><h3 id="Brupsuite-Scanner"><a href="#Brupsuite-Scanner" class="headerlink" title="Brupsuite Scanner"></a>Brupsuite Scanner</h3><h3 id="Nikto"><a href="#Nikto" class="headerlink" title="Nikto"></a>Nikto</h3><h3 id="Wfuzz"><a href="#Wfuzz" class="headerlink" title="Wfuzz"></a>Wfuzz</h3><h3 id="OWASP-ZAP"><a href="#OWASP-ZAP" class="headerlink" title="OWASP ZAP"></a>OWASP ZAP</h3><h3 id="SQL-注入超级工具"><a href="#SQL-注入超级工具" class="headerlink" title="SQL 注入超级工具"></a>SQL 注入超级工具</h3><h2 id="手工挖掘"><a href="#手工挖掘" class="headerlink" title="手工挖掘"></a>手工挖掘</h2><h3 id="Google-Hacking"><a href="#Google-Hacking" class="headerlink" title="Google Hacking"></a>Google Hacking</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">inurl: ?id&#x3D;1</span><br><span class="line">inrul: &#x2F;login</span><br><span class="line">inurl: &#x2F;admin?login&#x3D;1&#x2F;0</span><br><span class="line">等等</span><br></pre></td></tr></table></figure>
+
+<h3 id="网站业务核心功能点"><a href="#网站业务核心功能点" class="headerlink" title="网站业务核心功能点"></a>网站业务核心功能点</h3><p>比如, 常见的登录处,表单提交,cookie等</p>
+<h3 id="黑盒"><a href="#黑盒" class="headerlink" title="黑盒"></a>黑盒</h3><p>黑盒挖掘手段</p>
+<h3 id="白盒"><a href="#白盒" class="headerlink" title="白盒"></a>白盒</h3><p>白盒又该怎么挖</p>
+<h1 id="0x04-如何防御SQL-注入"><a href="#0x04-如何防御SQL-注入" class="headerlink" title="0x04    如何防御SQL 注入"></a>0x04    如何防御SQL 注入</h1><h2 id="参数过滤"><a href="#参数过滤" class="headerlink" title="参数过滤"></a>参数过滤</h2><p>mysqli_real_escape_string()函数来转义特殊的输入字符</p>
+<p>addcslashes()函数</p>
+<p><code>magic_quotes()_gpc</code>  为POST,GET,COOKIE传递过来的参数增加转义字符<code>&quot;\&quot;</code></p>
+<h2 id="参数化查询"><a href="#参数化查询" class="headerlink" title="参数化查询"></a>参数化查询</h2><p>SQL 语句中包含一个或多个嵌入参数的查询,在运行过程中奖参数传递给这些查询,包含的嵌入到用户输入中的参数不会被解析成命令执行.</p>
+<h2 id="核心功能处禁止登陆"><a href="#核心功能处禁止登陆" class="headerlink" title="核心功能处禁止登陆"></a>核心功能处禁止登陆</h2><h2 id="关闭报错"><a href="#关闭报错" class="headerlink" title="关闭报错"></a>关闭报错</h2><p>关于<code>mysql_error()</code> 即使查询错误,也不输出任何错误消息</p>
+<p>发生错误时,进行重定向</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!result) &#123; <span class="comment">// 如果查询存在错误</span></span><br><span class="line">    <span class="comment">// 检查错误并重定向</span></span><br><span class="line">    header(<span class="string">&quot;Location: http://www.test.com/error.html&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="一定要和数据库交互时"><a href="#一定要和数据库交互时" class="headerlink" title="一定要和数据库交互时"></a>一定要和数据库交互时</h2><p>先检查用户输入, 进行过滤后, 数据干净再进行交互</p>
+<h1 id="0x05-bypass-防御"><a href="#0x05-bypass-防御" class="headerlink" title="0x05    bypass 防御"></a>0x05    bypass 防御</h1><h1 id="0x06-总结"><a href="#0x06-总结" class="headerlink" title="0x06    总结"></a>0x06    总结</h1><h1 id="0x07-参考资料"><a href="#0x07-参考资料" class="headerlink" title="0x07    参考资料"></a>0x07    参考资料</h1><ul>
+<li>&lt;&lt;SQL 注入攻击与防御&gt;&gt;(第二版)</li>
+<li><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%BB%93%E6%9E%84%E5%8C%96%E6%9F%A5%E8%AF%A2%E8%AF%AD%E8%A8%80/10450182?fromtitle=sql&fromid=86007&fr=aladdin">百度百科</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://hack-for.fun/5b36.html">https://hack-for.fun/5b36.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/sqli/">sqli</a><a class="post-meta__tags" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/tags/%E6%BC%8F%E6%89%AB%E5%B7%A5%E5%85%B7/">漏扫工具</a></div><div class="post_share"><div class="social-share" data-image="/null" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/fb23.html"><img class="prev-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info"></div></div></a></div><div class="next-post pull-right"><a href="/a04d.html"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info"></div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> Related Articles</span></div><div class="relatedPosts-list"><div><a target="_blank" rel="noopener" href="//a31e.html" title=""><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-24</div><div class="title"></div></div></a></div><div><a target="_blank" rel="noopener" href="//aaf5.html" title="SQLi-labs less 1-5"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-25</div><div class="title">SQLi-labs less 1-5</div></div></a></div><div><a target="_blank" rel="noopener" href="//4fd81e40.html" title="MacOS 下配置PHP代码审计环境，PHP调试学习"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-11</div><div class="title">MacOS 下配置PHP代码审计环境，PHP调试学习</div></div></a></div><div><a target="_blank" rel="noopener" href="//8d0f.html" title="ThinkPHP5漏洞学习-文件包含漏洞"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-16</div><div class="title">ThinkPHP5漏洞学习-文件包含漏洞</div></div></a></div><div><a target="_blank" rel="noopener" href="//877.html" title=""><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-18</div><div class="title"></div></div></a></div><div><a target="_blank" rel="noopener" href="//844d1b07.html" title="新秀企业网站系统代码审计学习(复现)"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-12</div><div class="title">新秀企业网站系统代码审计学习(复现)</div></div></a></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">m0nk3y</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0x00    前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">0x01    基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFSQL"><span class="toc-number">2.1.</span> <span class="toc-text">什么是SQL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">2.1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%86%E5%8F%B2"><span class="toc-number">2.1.2.</span> <span class="toc-text">历史</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD"><span class="toc-number">2.1.3.</span> <span class="toc-text">功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95"><span class="toc-number">2.1.4.</span> <span class="toc-text">语法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL-%E5%88%86%E7%B1%BB"><span class="toc-number">2.2.</span> <span class="toc-text">SQL 分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MYSQL"><span class="toc-number">2.2.1.</span> <span class="toc-text">MYSQL</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%A1%E7%90%86MySQL%E7%9A%84%E5%91%BD%E4%BB%A4"><span class="toc-number">2.2.1.1.</span> <span class="toc-text">管理MySQL的命令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MySQL-PHP-%E8%AF%AD%E6%B3%95"><span class="toc-number">2.2.1.2.</span> <span class="toc-text">MySQL PHP 语法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MySQL-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.2.1.3.</span> <span class="toc-text">MySQL 数据类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MySQL-%E5%85%83%E6%95%B0%E6%8D%AE"><span class="toc-number">2.2.1.4.</span> <span class="toc-text">MySQL 元数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MySQL-%E5%AF%BC%E5%87%BA-%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">2.2.1.5.</span> <span class="toc-text">MySQL 导出,插入数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MySQL%E5%87%BD%E6%95%B0"><span class="toc-number">2.2.1.6.</span> <span class="toc-text">MySQL函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PostgreSql"><span class="toc-number">2.2.2.</span> <span class="toc-text">PostgreSql</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95-1"><span class="toc-number">2.2.2.1.</span> <span class="toc-text">语法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQLite"><span class="toc-number">2.2.3.</span> <span class="toc-text">SQLite</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Oracle"><span class="toc-number">2.2.4.</span> <span class="toc-text">Oracle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Microsoft-SQL-Server"><span class="toc-number">2.2.5.</span> <span class="toc-text">Microsoft SQL Server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DB2"><span class="toc-number">2.2.6.</span> <span class="toc-text">DB2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MongoDB"><span class="toc-number">2.2.7.</span> <span class="toc-text">MongoDB</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NoSQL"><span class="toc-number">2.2.7.1.</span> <span class="toc-text">NoSQL</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis"><span class="toc-number">2.2.8.</span> <span class="toc-text">Redis</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Redis-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.2.8.1.</span> <span class="toc-text">Redis 数据类型</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LDAP"><span class="toc-number">2.2.9.</span> <span class="toc-text">LDAP</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-%E4%BB%80%E4%B9%88%E6%98%AFSQLi"><span class="toc-number">3.</span> <span class="toc-text">0x02    什么是SQLi</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SQLi-%E7%AE%80%E4%BB%8B"><span class="toc-number">3.1.</span> <span class="toc-text">SQLi 简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E6%9E%B6%E6%9E%84"><span class="toc-number">3.1.1.</span> <span class="toc-text">关于架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CMS"><span class="toc-number">3.1.2.</span> <span class="toc-text">CMS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E4%BA%A7%E7%94%9F%E8%BF%87%E7%A8%8B"><span class="toc-number">3.1.3.</span> <span class="toc-text">SQL注入的产生过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQLi-%E5%88%86%E7%B1%BB%E5%92%8C%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">3.2.</span> <span class="toc-text">SQLi 分类和利用方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%89%E9%94%99%E8%AF%AF%E5%9B%9E%E6%98%BE"><span class="toc-number">3.2.1.</span> <span class="toc-text">有错误回显</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E4%B8%87%E8%83%BD%E5%AF%86%E7%A0%81"><span class="toc-number">3.2.1.1.</span> <span class="toc-text">构造万能密码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E6%9F%A5%E8%AF%A2%E8%AF%AD%E5%8F%A5"><span class="toc-number">3.2.1.2.</span> <span class="toc-text">构造查询语句</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">3.2.1.3.</span> <span class="toc-text">利用报错注入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A0%86%E5%8F%A0%E6%B3%A8%E5%85%A5"><span class="toc-number">3.2.1.4.</span> <span class="toc-text">堆叠注入</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A0%E9%94%99%E8%AF%AF%E5%9B%9E%E6%98%BE"><span class="toc-number">3.2.2.</span> <span class="toc-text">无错误回显</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B2%E6%B3%A8"><span class="toc-number">3.2.2.1.</span> <span class="toc-text">盲注</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8"><span class="toc-number">3.2.2.1.1.</span> <span class="toc-text">布尔盲注</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8"><span class="toc-number">3.2.2.1.2.</span> <span class="toc-text">时间盲注</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5"><span class="toc-number">3.2.3.</span> <span class="toc-text">宽字节注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">3.2.4.</span> <span class="toc-text">预编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UDF"><span class="toc-number">3.2.5.</span> <span class="toc-text">UDF</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98"><span class="toc-number">4.</span> <span class="toc-text">0x03    漏洞挖掘</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E6%8C%96%E6%8E%98"><span class="toc-number">4.1.</span> <span class="toc-text">自动化挖掘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SQLmap"><span class="toc-number">4.1.1.</span> <span class="toc-text">SQLmap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AWVS"><span class="toc-number">4.1.2.</span> <span class="toc-text">AWVS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Brupsuite-Scanner"><span class="toc-number">4.1.3.</span> <span class="toc-text">Brupsuite Scanner</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nikto"><span class="toc-number">4.1.4.</span> <span class="toc-text">Nikto</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Wfuzz"><span class="toc-number">4.1.5.</span> <span class="toc-text">Wfuzz</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OWASP-ZAP"><span class="toc-number">4.1.6.</span> <span class="toc-text">OWASP ZAP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQL-%E6%B3%A8%E5%85%A5%E8%B6%85%E7%BA%A7%E5%B7%A5%E5%85%B7"><span class="toc-number">4.1.7.</span> <span class="toc-text">SQL 注入超级工具</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%8B%E5%B7%A5%E6%8C%96%E6%8E%98"><span class="toc-number">4.2.</span> <span class="toc-text">手工挖掘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Google-Hacking"><span class="toc-number">4.2.1.</span> <span class="toc-text">Google Hacking</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%AB%99%E4%B8%9A%E5%8A%A1%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%E7%82%B9"><span class="toc-number">4.2.2.</span> <span class="toc-text">网站业务核心功能点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%BB%91%E7%9B%92"><span class="toc-number">4.2.3.</span> <span class="toc-text">黑盒</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%99%BD%E7%9B%92"><span class="toc-number">4.2.4.</span> <span class="toc-text">白盒</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x04-%E5%A6%82%E4%BD%95%E9%98%B2%E5%BE%A1SQL-%E6%B3%A8%E5%85%A5"><span class="toc-number">5.</span> <span class="toc-text">0x04    如何防御SQL 注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E8%BF%87%E6%BB%A4"><span class="toc-number">5.1.</span> <span class="toc-text">参数过滤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E5%8C%96%E6%9F%A5%E8%AF%A2"><span class="toc-number">5.2.</span> <span class="toc-text">参数化查询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%E5%A4%84%E7%A6%81%E6%AD%A2%E7%99%BB%E9%99%86"><span class="toc-number">5.3.</span> <span class="toc-text">核心功能处禁止登陆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E6%8A%A5%E9%94%99"><span class="toc-number">5.4.</span> <span class="toc-text">关闭报错</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%AE%9A%E8%A6%81%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%A4%E4%BA%92%E6%97%B6"><span class="toc-number">5.5.</span> <span class="toc-text">一定要和数据库交互时</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x05-bypass-%E9%98%B2%E5%BE%A1"><span class="toc-number">6.</span> <span class="toc-text">0x05    bypass 防御</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x06-%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">0x06    总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x07-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">8.</span> <span class="toc-text">0x07    参考资料</span></a></li></ol></div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2986.html" title="Recent arrangements"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Recent arrangements"/></a><div class="content"><a class="title" href="/2986.html" title="Recent arrangements">Recent arrangements</a><time datetime="2099-11-01T04:00:00.000Z" title="Created 2099-11-01 12:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/9b1d.html" title="No title"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="No title"/></a><div class="content"><a class="title" href="/9b1d.html" title="No title">No title</a><time datetime="2099-10-31T16:00:00.000Z" title="Created 2099-11-01 00:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/62d1.html" title="Chrome 浏览器扩展开发初试"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Chrome 浏览器扩展开发初试"/></a><div class="content"><a class="title" href="/62d1.html" title="Chrome 浏览器扩展开发初试">Chrome 浏览器扩展开发初试</a><time datetime="2020-11-07T05:04:25.000Z" title="Created 2020-11-07 13:04:25">2020-11-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/558a.html" title="Cobalt Strike"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cobalt Strike"/></a><div class="content"><a class="title" href="/558a.html" title="Cobalt Strike">Cobalt Strike</a><time datetime="2020-11-04T13:33:44.000Z" title="Created 2020-11-04 21:33:44">2020-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/abc8.html" title="2020小组招新有感"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2020小组招新有感"/></a><div class="content"><a class="title" href="/abc8.html" title="2020小组招新有感">2020小组招新有感</a><time datetime="2020-10-23T16:56:04.000Z" title="Created 2020-10-24 00:56:04">2020-10-24</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 By m0nk3y</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>

