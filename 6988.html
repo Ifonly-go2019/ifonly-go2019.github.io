@@ -1,0 +1,243 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>某市HW2020心得总结 | M0nk3y‘s Blog</title><meta name="keywords" content="红蓝对抗"><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="说在前面 首先，菜鸡道歉，DBQ另一位大师傅！我太菜了，没能拿到第一。最终拿了第三，二等奖，本地厂商第一。  这次公鸡队比较少，7支队伍，4支本地厂商，3支大厂。大厂是奇安信、天融信、安恒。 该市参演单位覆盖了媒体、学校、医院、能源、交通、银行(金融)、政府系统。但是互联网区的资产相对较少，甚至有的目标直接给的是内网靶标。 这是此次攻防的背景介绍吧。 红队视角下的攻防演练攻防演练之前参加过，国家级">
+<meta property="og:type" content="article">
+<meta property="og:title" content="某市HW2020心得总结">
+<meta property="og:url" content="https://hack-for.fun/6988.html">
+<meta property="og:site_name" content="M0nk3y‘s Blog">
+<meta property="og:description" content="说在前面 首先，菜鸡道歉，DBQ另一位大师傅！我太菜了，没能拿到第一。最终拿了第三，二等奖，本地厂商第一。  这次公鸡队比较少，7支队伍，4支本地厂商，3支大厂。大厂是奇安信、天融信、安恒。 该市参演单位覆盖了媒体、学校、医院、能源、交通、银行(金融)、政府系统。但是互联网区的资产相对较少，甚至有的目标直接给的是内网靶标。 这是此次攻防的背景介绍吧。 红队视角下的攻防演练攻防演练之前参加过，国家级">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg">
+<meta property="article:published_time" content="2020-12-04T16:31:53.000Z">
+<meta property="article:modified_time" content="2020-12-04T17:34:18.181Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="红蓝对抗">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201102172212.JPG"><link rel="canonical" href="https://hack-for.fun/6988"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-12-05 01:34:18'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="M0nk3y‘s Blog" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201203114330.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">20</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">M0nk3y‘s Blog</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">某市HW2020心得总结</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-12-04T16:31:53.000Z" title="发表于 2020-12-05 00:31:53">2020-12-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-12-04T17:34:18.181Z" title="更新于 2020-12-05 01:34:18">2020-12-05</time></span></div><div class="meta-secondline"> </div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="说在前面"><a href="#说在前面" class="headerlink" title="说在前面"></a>说在前面</h1><blockquote>
+<p>首先，菜鸡道歉，DBQ另一位大师傅！我太菜了，没能拿到第一。最终拿了第三，二等奖，本地厂商第一。</p>
+</blockquote>
+<p>这次公鸡队比较少，7支队伍，4支本地厂商，3支大厂。大厂是<strong>奇安信、天融信、安恒。</strong></p>
+<p>该市参演单位覆盖了媒体、学校、医院、能源、交通、银行(金融)、政府系统。但是互联网区的资产相对较少，甚至有的目标直接给的是内网靶标。</p>
+<p>这是此次攻防的背景介绍吧。</p>
+<h1 id="红队视角下的攻防演练"><a href="#红队视角下的攻防演练" class="headerlink" title="红队视角下的攻防演练"></a>红队视角下的攻防演练</h1><p>攻防演练之前参加过，国家级、省级都参加过，只不过是蓝队，做防守的。</p>
+<p>蓝队的话，前期的攻击面分析、资产表整理比较麻烦。还有正式行动前的模拟对抗也是蓝队做的。等正式开始后，主要是就是安全设备的监控、策略分发、应急响应、公鸡者溯源。</p>
+<p>红队的话，这次算第一次实地作战，之前远程支援过某直辖市的演练，体验不是很明显。</p>
+<p>我认为，攻防中红队的目的非常明确：</p>
+<ul>
+<li>权限</li>
+<li>权限</li>
+<li>权限</li>
+</ul>
+<p>对，没有错，就是shell、权限（Web应用管理员、超级管理员、系统管理员权限、主机权限、数据库权限、路由器、防火墙等设备权限）。</p>
+<p>之前，也说</p>
+<ul>
+<li>数据</li>
+<li>数据</li>
+<li>数据</li>
+</ul>
+<p>对，也没有错，但是要获取大量数据，主要是大量，至少也得几万几十万那种吧。不打到内网核心区，肯定是拿不到的。除非DMZ区的数据库 就很大，并且都是一些重要的数据。</p>
+<p>并且，获取WebShell，才是开始。也就是入口权限。</p>
+<ul>
+<li>某系统弱口令后台修改模板GetShell-&gt;内网漫游</li>
+<li>某系统目标同IP其他端口是Tomcat、弱口令+部署WAR包GetShell，双网卡，192段和172段、192段出网-&gt;内网漫游</li>
+</ul>
+<p>因为是红队，不同于常规的安服、渗透。是肯定要打内网的。所以这时候能拿下一台边界主机，存在双网卡机器的或者存在内网ip的机器权限，就可以上冰蝎，冰蝎主要是动态二进制加密，可以绕过一些安全设备的检测，当然也可以用哥斯拉。做权限维持，这里一定要拿到入口权限后做权限维持，因为一开始我们拿到一个webshell之后，被另一个公鸡队给删了。</p>
+<p>权限维持做好后，要么弹shell到MSF上，进行横向移动，mimikataz抓密码，或者哈希。或者直接弄一个上线CS的简单免杀马，这次另一个大师傅就是在他们团队负责搞免杀的。Orz。上线CS后，也方便协同作战，并且高度自定义的CS，有很多自动化插件，一键信息搜集，当然前提是目标机器安全性很低，没有装太多杀软，要么就绕。</p>
+<p>横向会遇到隔离问题</p>
+<ul>
+<li>逻辑隔离</li>
+<li>物理隔离</li>
+<li>强制物理隔离（有待研究是否和物理隔离有区别，记不清了）</li>
+</ul>
+<p>这也是第一次听这个术语，大概意思就是网络不互通，要通过跳板机流量一台一台跳。之后听奇安信的一个师傅说，有一台机器他跳了很多台，最后查看一个文件都要花一分钟。np。</p>
+<p>说道这里，就不得不说内网穿透的问题。</p>
+<ul>
+<li>frp</li>
+<li>nps</li>
+</ul>
+<p>流量进的去，数据出的来。</p>
+<p>我这次在某目标翻文件的时候，删了不知道是哪个公鸡队的frp哈哈。</p>
+<p>有的机器，拿下权限之后，不能直接托文件。只能自己下载（远程加载）：</p>
+<ul>
+<li>powershell</li>
+<li>net use</li>
+<li>……</li>
+</ul>
+<p>最后就说下分工吧，打红队分工真的是很重要的，如果是混战模式，即所有公鸡队的目标都是一样的，那就是比谁先发现漏洞了，谁发现的早，谁报告交的早，分就能拿到，发现的晚了，要么目标被打出局，要么洞就被修了。</p>
+<blockquote>
+<p>这次就是因为我们觉得某系统不好打，晚点看，等去看发现是shiro的时候，已经打不了shiro550了。因为奇安信的人打了，并且通过这个打进去了，拿了1W+分。后面目标那边把shiro升级了，我们就没办法了，在这里失分了。所以 说，还是信息搜集不到位。</p>
+</blockquote>
+<p>这里提到了信息搜集，就说下攻防时信息搜集的问题：</p>
+<ul>
+<li>很多目标没有域名</li>
+<li>域名基本没有或者很少子域名</li>
+<li>没有SSL证书</li>
+<li>备案号查询甚至差不多历史域名</li>
+<li>企查查基本没啥用</li>
+<li>fofa都没收录这些站点</li>
+<li>某些站点纯静态</li>
+<li>目标系统上云</li>
+<li>目标只是当地系统，但是托管是全国范围的</li>
+<li>目标系统IP为供应商IP，统一管理</li>
+</ul>
+<p>一些方法来扩大资产：</p>
+<ul>
+<li>C段扫描，Goby推荐，扫的快，还能探测一些洞，估计缺点就是可能会遗漏，我还没研究为什么goby能扫的这么快。</li>
+<li>单一IP全端口扫描</li>
+<li>旁站（拿下旁站WebShell可以试着跳目录过去，去读、下载源码啥的，但是一般不可行</li>
+<li>IP查历史域名</li>
+<li>目录扫描推荐白名单目录，不要去探测一些信息泄露的目录，容易被WAF阻断</li>
+<li>指纹识别，不要过度依赖插件或者简单凭借经验。一定要去抓包看看，看清楚了</li>
+</ul>
+<p>一些突破点：</p>
+<ul>
+<li>还是攻防神器，fastjson、shiro、Weblogic（这次没有能打的），Spring。的，一定要重点去试试，不能放过任何一个</li>
+<li>弱口令永远的神</li>
+<li>历史漏洞</li>
+<li>当然有0day，我也没话说</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>心得体会就说这么多咯。暴露的我问题我内心也清楚了，要想成为RedTeam还有很长的路要走~</p>
+<p><strong>一定要多实战！</strong></p>
+<hr>
+<p>推荐一些资料：github yyds</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/fengjixuchui/RedTeamer">https://github.com/fengjixuchui/RedTeamer</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/bluscreenofjeff/Red-Team-Infrastructure-Wiki">https://github.com/bluscreenofjeff/Red-Team-Infrastructure-Wiki</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/yeyintminthuhtut/Awesome-Red-Teaming">https://github.com/yeyintminthuhtut/Awesome-Red-Teaming</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/foobarto/redteam-notebook">https://github.com/foobarto/redteam-notebook</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/k8gege/K8tools">https://github.com/k8gege/K8tools</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Lucifer1993/SatanSword">https://github.com/Lucifer1993/SatanSword</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/enaqx/awesome-pentest">https://github.com/enaqx/awesome-pentest</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/TideSec/BypassAntiVirus">https://github.com/TideSec/BypassAntiVirus</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://hack-for.fun/6988.html">https://hack-for.fun/6988.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://hack-for.fun" target="_blank">M0nk3y‘s Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BA%A2%E8%93%9D%E5%AF%B9%E6%8A%97/">红蓝对抗</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2986.html"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Recent arrangements</div></div></a></div><div class="next-post pull-right"><a href="/995.html"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">针对几个典型问题的回答</div></div></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201203114330.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">m0nk3y</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">20</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ifonly-go2019"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">Hack for fun，红蓝对抗学习ing，代码审计学习ing，SRC挖洞学习ing,前复现型CTFer，最近开始回归CTF赛场。力求在不挂科的前提下，提升自己。</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%B4%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">说在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BA%A2%E9%98%9F%E8%A7%86%E8%A7%92%E4%B8%8B%E7%9A%84%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83"><span class="toc-number">2.</span> <span class="toc-text">红队视角下的攻防演练</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2020 By m0nk3y</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/fireworks.min.js"></script></div></body></html>
