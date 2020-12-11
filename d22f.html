@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2020 December Metasploit community CTF | M0nk3y‘s Blog</title><meta name="keywords" content="CTF"><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="环境准备两台靶机：    2020-12-07 10:51:45.687490 Ubuntu Target 185.245.3.246 m0nk3y    2020-12-07 10:51:45.679223 Kali Jump Host 185.245.3.246 m0nk3y    Kali 作为跳板机去打 内网Ubuntu。 Kali : 3.85.234.26 Ubuntu: 172.15">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2020 December Metasploit community CTF">
+<meta property="og:url" content="https://hack-for.fun/d22f.html">
+<meta property="og:site_name" content="M0nk3y‘s Blog">
+<meta property="og:description" content="环境准备两台靶机：    2020-12-07 10:51:45.687490 Ubuntu Target 185.245.3.246 m0nk3y    2020-12-07 10:51:45.679223 Kali Jump Host 185.245.3.246 m0nk3y    Kali 作为跳板机去打 内网Ubuntu。 Kali : 3.85.234.26 Ubuntu: 172.15">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg">
+<meta property="article:published_time" content="2020-12-07T10:52:30.000Z">
+<meta property="article:modified_time" content="2020-12-08T12:16:24.131Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201102172212.JPG"><link rel="canonical" href="https://hack-for.fun/d22f"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-12-08 20:16:24'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="M0nk3y‘s Blog" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201203114330.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">23</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">M0nk3y‘s Blog</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">2020 December Metasploit community CTF</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-12-07T10:52:30.000Z" title="发表于 2020-12-07 18:52:30">2020-12-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-12-08T12:16:24.131Z" title="更新于 2020-12-08 20:16:24">2020-12-08</time></span></div><div class="meta-secondline"> </div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><p>两台靶机：</p>
+<table>
+<thead>
+<tr>
+<th>2020-12-07 10:51:45.687490</th>
+<th>Ubuntu Target</th>
+<th><code>185.245.3.246</code></th>
+<th><a target="_blank" rel="noopener" href="https://metasploitctf.com/users/1875">m0nk3y</a></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2020-12-07 10:51:45.679223</td>
+<td>Kali Jump Host</td>
+<td><code>185.245.3.246</code></td>
+<td><a target="_blank" rel="noopener" href="https://metasploitctf.com/users/1875">m0nk3y</a></td>
+</tr>
+</tbody></table>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201207185354.png" alt="image-20201207185351417"></p>
+<p>Kali 作为跳板机去打 内网Ubuntu。</p>
+<p>Kali : <code>3.85.234.26</code></p>
+<p>Ubuntu: <code>172.15.53.85</code></p>
+<p>题目如下：</p>
+<p>![image-20201207190045534](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201207190045534.png)</p>
+<p>ssh 登录 kali</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -i metasploit_ctf_kali_ssh_key.pem kali@3.85.234.26</span><br></pre></td></tr></table></figure>
+
+<p>![](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201207190722932.png)</p>
+<h1 id="直接开淦"><a href="#直接开淦" class="headerlink" title="直接开淦"></a>直接开淦</h1><blockquote>
+<p>When you find a challenge flag, calculate and submit the MD5 checksum of the PNG image to receive points! Hashes are <em>not</em> case sensitive.</p>
+</blockquote>
+<p>说人话，flag就是找到的图片的 md5值，忽略大小写。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">kali@kali:~$ ifconfig</span><br><span class="line">eth0: flags&#x3D;4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 9001</span><br><span class="line">        inet 172.15.53.84  netmask 255.255.255.240  broadcast 172.15.53.95</span><br><span class="line">        inet6 fe80::866:3aff:fe77:1953  prefixlen 64  scopeid 0x20&lt;link&gt;</span><br><span class="line">        ether 0a:66:3a:77:19:53  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 686  bytes 70099 (68.4 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 767  bytes 81674 (79.7 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">lo: flags&#x3D;73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536</span><br><span class="line">        inet 127.0.0.1  netmask 255.0.0.0</span><br><span class="line">        inet6 ::1  prefixlen 128  scopeid 0x10&lt;host&gt;</span><br><span class="line">        loop  txqueuelen 1000  (Local Loopback)</span><br><span class="line">        RX packets 413  bytes 123225 (120.3 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 413  bytes 123225 (120.3 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br></pre></td></tr></table></figure>
+
+<p>ifconfig, 可以看到内网ip为 172.15.53.84， 而Ubuntu 目标ip为 172.15.53.85 。为同一个内网ip中。</p>
+<p>nmap 扫端口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">kali@kali:~$ nmap -v 172.15.53.85</span><br><span class="line">Starting Nmap 7.80 ( https:&#x2F;&#x2F;nmap.org ) at 2020-12-07 11:17 UTC</span><br><span class="line">Initiating Ping Scan at 11:17</span><br><span class="line">Scanning 172.15.53.85 [2 ports]</span><br><span class="line">Completed Ping Scan at 11:17, 0.01s elapsed (1 total hosts)</span><br><span class="line">Initiating Parallel DNS resolution of 1 host. at 11:17</span><br><span class="line">Completed Parallel DNS resolution of 1 host. at 11:17, 0.00s elapsed</span><br><span class="line">Initiating Connect Scan at 11:17</span><br><span class="line">Scanning 172.15.53.85 [1000 ports]</span><br><span class="line">Discovered open port 8080&#x2F;tcp on 172.15.53.85</span><br><span class="line">Discovered open port 80&#x2F;tcp on 172.15.53.85</span><br><span class="line">Discovered open port 8888&#x2F;tcp on 172.15.53.85</span><br><span class="line">Discovered open port 8200&#x2F;tcp on 172.15.53.85</span><br><span class="line">Discovered open port 9000&#x2F;tcp on 172.15.53.85</span><br><span class="line">Discovered open port 9009&#x2F;tcp on 172.15.53.85</span><br><span class="line">Discovered open port 5555&#x2F;tcp on 172.15.53.85</span><br><span class="line">Discovered open port 9001&#x2F;tcp on 172.15.53.85</span><br><span class="line">Discovered open port 9010&#x2F;tcp on 172.15.53.85</span><br><span class="line">Discovered open port 1080&#x2F;tcp on 172.15.53.85</span><br><span class="line">Completed Connect Scan at 11:17, 0.03s elapsed (1000 total ports)</span><br><span class="line">Nmap scan report for 172.15.53.85</span><br><span class="line">Host is up (0.0014s latency).</span><br><span class="line">Not shown: 990 closed ports</span><br><span class="line">PORT     STATE SERVICE</span><br><span class="line">80&#x2F;tcp   open  http</span><br><span class="line">1080&#x2F;tcp open  socks</span><br><span class="line">5555&#x2F;tcp open  freeciv</span><br><span class="line">8080&#x2F;tcp open  http-proxy</span><br><span class="line">8200&#x2F;tcp open  trivnet1</span><br><span class="line">8888&#x2F;tcp open  sun-answerbook</span><br><span class="line">9000&#x2F;tcp open  cslistener</span><br><span class="line">9001&#x2F;tcp open  tor-orport</span><br><span class="line">9009&#x2F;tcp open  pichat</span><br><span class="line">9010&#x2F;tcp open  sdr</span><br></pre></td></tr></table></figure>
+
+<p>开启了80端口，先不忙搭nps隧道啥的，我直接curl 请求一下这个 http web服务。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">kali@kali:~$ curl 172.15.53.85</span><br><span class="line">&lt;!doctype html&gt;</span><br><span class="line"></span><br><span class="line">&lt;html lang&#x3D;&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">  &lt;meta charset&#x3D;&quot;utf-8&quot;&gt;</span><br><span class="line"></span><br><span class="line">  &lt;title&gt;Metasploit CTF&lt;&#x2F;title&gt;</span><br><span class="line">  &lt;link rel&#x3D;&quot;stylesheet&quot; href&#x3D;&quot;css&#x2F;styles.css?v&#x3D;1.0&quot;&gt;</span><br><span class="line"></span><br><span class="line">  &lt;style&gt;</span><br><span class="line">    body &#123;</span><br><span class="line">        margin: 0;</span><br><span class="line">        font-family: sans-serif;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    .h2 &#123;</span><br><span class="line">        font-size: 2em;</span><br><span class="line">        color: #222;</span><br><span class="line">        margin-bottom: 0.2em;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    .container &#123;</span><br><span class="line">        text-align: center;</span><br><span class="line">        display: flex;</span><br><span class="line">        align-items: center;</span><br><span class="line">        justify-content: center;</span><br><span class="line">        flex-direction: column;</span><br><span class="line">        height: 100vh;</span><br><span class="line">    &#125;</span><br><span class="line">  &lt;&#x2F;style&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line"></span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;div class&#x3D;&quot;container&quot;&gt;</span><br><span class="line">        &lt;div&gt;</span><br><span class="line">            &lt;h2&gt;Welcome!&lt;&#x2F;h2&gt;</span><br><span class="line">            &lt;img src&#x3D;&quot;4_of_hearts.png&quot; &#x2F;&gt;</span><br><span class="line">            &lt;p&gt;Your remaining challenges are on other ports&lt;&#x2F;p&gt;</span><br><span class="line">        &lt;&#x2F;div&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>curl 下载一下这个图片。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">kali@kali:~$ curl -O 172.15.53.85&#x2F;4_of_hearts.png</span><br><span class="line">  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current</span><br><span class="line">                                 Dload  Upload   Total   Spent    Left  Speed</span><br><span class="line">100 94015  100 94015    0     0  12.8M      0 --:--:-- --:--:-- --:--:-- 12.8M</span><br><span class="line">kali@kali:~$ ls</span><br><span class="line">4_of_hearts.png  configure_kali.sh</span><br><span class="line">kali@kali:~$ md5sum 4_of_hearts.png</span><br><span class="line">776d1d5ecfb91f71aecad71cb3c7c9d1  4_of_hearts.png</span><br></pre></td></tr></table></figure>
+
+<p>得到这个flag：776d1d5ecfb91f71aecad71cb3c7c9d1。并且给了hint，Your remaining challenges are on other ports。那就再来一个全端口扫描吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">kali@kali:~$ nmap -p 1-65535 172.15.53.85</span><br><span class="line">Starting Nmap 7.80 ( https:&#x2F;&#x2F;nmap.org ) at 2020-12-07 11:34 UTC</span><br><span class="line">Nmap scan report for 172.15.53.85</span><br><span class="line">Host is up (0.0037s latency).</span><br><span class="line">Not shown: 65515 closed ports</span><br><span class="line">PORT     STATE SERVICE</span><br><span class="line">80&#x2F;tcp   open  http</span><br><span class="line">1080&#x2F;tcp open  socks</span><br><span class="line">1337&#x2F;tcp open  waste</span><br><span class="line">4545&#x2F;tcp open  worldscores</span><br><span class="line">5555&#x2F;tcp open  freeciv</span><br><span class="line">6868&#x2F;tcp open  acctopus-cc</span><br><span class="line">8080&#x2F;tcp open  http-proxy</span><br><span class="line">8092&#x2F;tcp open  unknown</span><br><span class="line">8101&#x2F;tcp open  ldoms-migr</span><br><span class="line">8123&#x2F;tcp open  polipo</span><br><span class="line">8200&#x2F;tcp open  trivnet1</span><br><span class="line">8201&#x2F;tcp open  trivnet2</span><br><span class="line">8202&#x2F;tcp open  aesop</span><br><span class="line">8888&#x2F;tcp open  sun-answerbook</span><br><span class="line">9000&#x2F;tcp open  cslistener</span><br><span class="line">9001&#x2F;tcp open  tor-orport</span><br><span class="line">9007&#x2F;tcp open  ogs-client</span><br><span class="line">9008&#x2F;tcp open  ogs-server</span><br><span class="line">9009&#x2F;tcp open  pichat</span><br><span class="line">9010&#x2F;tcp open  sdr	</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>有点疑问，有些端口，用浏览器无法正常，curl却能返回一些信息。（原来是有联系的。</p>
+</blockquote>
+<p>因为搞其他8080端口需要交互了，所以得弄个转发，在本机操作一下。</p>
+<p><strong>nps可以不落地配置文件启动：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;npc -server&#x3D;ip:port -vkey&#x3D;web界面中显示的密钥</span><br></pre></td></tr></table></figure>
+
+<p>nps建立成功后创建隧道。http 和 socks 代理就行啦。(这个时候可以把kali这台机器当做是我们已经GetShell 后的一台边界主机，因为kali 能出网，也能访问内网应用)，kali 机器上安装 npc。</p>
+<p>浏览器和proxychains4设置成nps 代理，这样就能在浏览器和 工具都在代理了。(或者直接用Proxifier</p>
+<p>![image-20201207210033802](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201207210033802.png)</p>
+<p>![image-20201207210239170](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201207210239170.png)</p>
+<hr>
+<p>OK, 代理问题解决好了后，就继续淦。</p>
+<h2 id="80端口-4-of-Hearts"><a href="#80端口-4-of-Hearts" class="headerlink" title="80端口 4 of Hearts"></a>80端口 4 of Hearts</h2><p>80端口访问的那张图片的md5.</p>
+<h2 id="8080端口"><a href="#8080端口" class="headerlink" title="8080端口"></a>8080端口</h2><h2 id="4545端口"><a href="#4545端口" class="headerlink" title="4545端口"></a>4545端口</h2><p>![image-20201208003754322](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201208003754322.png)</p>
+<p>看到simplehttp  和 python，用curl请求一下果然有类似flag的文件，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE HTML PUBLIC &quot;-&#x2F;&#x2F;W3C&#x2F;&#x2F;DTD HTML 4.01&#x2F;&#x2F;EN&quot; &quot;http:&#x2F;&#x2F;www.w3.org&#x2F;TR&#x2F;html4&#x2F;strict.dtd&quot;&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta http-equiv&#x3D;&quot;Content-Type&quot; content&#x3D;&quot;text&#x2F;html; charset&#x3D;utf-8&quot;&gt;</span><br><span class="line">&lt;title&gt;Directory listing for &#x2F;&lt;&#x2F;title&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;h1&gt;Directory listing for &#x2F;&lt;&#x2F;h1&gt;</span><br><span class="line">&lt;hr&gt;</span><br><span class="line">&lt;ul&gt;</span><br><span class="line">&lt;li&gt;&lt;a href&#x3D;&quot;8_of_hearts.elf&quot;&gt;8_of_hearts.elf&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">&lt;li&gt;&lt;a href&#x3D;&quot;8_of_hearts.enc&quot;&gt;8_of_hearts.enc&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">&lt;&#x2F;ul&gt;</span><br><span class="line">&lt;hr&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>用curl -o 这次好像不能下载了， 用wget下载就可以了。</p>
+<pre><code>8_of_hearts.elf
+8_of_hearts.enc</code></pre>
+<p>得到这两个二进制文件。</p>
+<p>xxd 查看一下</p>
+<p>![image-20201208004140345](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201208004140345.png)</p>
+<p>拖入IDA，F5一波（x），查看字符串：</p>
+<p>![image-20201208005344308](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201208005344308.png)</p>
+<p>F5一下 main函数：</p>
+<p>![image-20201208005832787](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201208005832787.png)</p>
+<h2 id="6868端口"><a href="#6868端口" class="headerlink" title="6868端口"></a>6868端口</h2><h2 id="8092端口"><a href="#8092端口" class="headerlink" title="8092端口"></a>8092端口</h2><p>![image-20201208011629368](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201208011629368.png)</p>
+<h2 id="8101端口"><a href="#8101端口" class="headerlink" title="8101端口"></a>8101端口</h2><p>![image-20201207221508164](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201207221508164.png)</p>
+<h2 id="8200-文件上传GetShell"><a href="#8200-文件上传GetShell" class="headerlink" title="8200 文件上传GetShell"></a>8200 文件上传GetShell</h2><p>BP 要先设置 socks ，然后才能正常的抓包和重放。</p>
+<p>![image-20201207215251038](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201207215251038.png)</p>
+<p>有两种错误：</p>
+<ul>
+<li>Unsupported mime type (文件上传的后缀和content-type 不对应)</li>
+<li>Unsupported file format(gif以及其他后缀，只能传 jpg 和  png)</li>
+</ul>
+<p>![image-20201208000008329](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201208000008329.png)</p>
+<h2 id="8202端口"><a href="#8202端口" class="headerlink" title="8202端口"></a>8202端口</h2><p>![image-20201208012652639](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201208012652639.png)</p>
+<h2 id="8888端口"><a href="#8888端口" class="headerlink" title="8888端口"></a>8888端口</h2><p>![image-20201208012835327](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201208012835327.png)</p>
+<h2 id="9000端口"><a href="#9000端口" class="headerlink" title="9000端口"></a>9000端口</h2><p>![image-20201208013004434](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201208013004434.png)</p>
+<h2 id="9001端口"><a href="#9001端口" class="headerlink" title="9001端口"></a>9001端口</h2><p>![image-20201208013102209](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201208013102209.png)</p>
+<h2 id="9010端口-Queen-of-Hearts"><a href="#9010端口-Queen-of-Hearts" class="headerlink" title="9010端口 Queen of Hearts"></a>9010端口 Queen of Hearts</h2><p>直接访问，给了一个jar包。</p>
+<p>![image-20201207211819717](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201207211819717.png)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">──&gt; java -jar QOH_Client.jar                        ──(一,1207)─┘</span><br><span class="line">Usage:</span><br><span class="line">	java -jar QOH_Client.jar &lt;ip&gt; &lt;port&gt;</span><br><span class="line"></span><br><span class="line">	where port is generally 9008</span><br><span class="line">──&gt; proxychains4 java -jar QOH_Client.jar 172.15.53.85 9008</span><br></pre></td></tr></table></figure>
+
+
+
+<p>[proxychains] Strict chain  …  xx.xx.xxx.116:6443  …  xx.xx.xxx.116:6080  …  172.15.53.85:9008  …  OK<br>Successfully connected to the server!<br>Please select an available action from the list below:<br>[1] Lists available files on the server<br>[2] Download available files from the server<br>[3] Authenticate to the server</p>
+<p>1<br>Executing action…<br>Listing available files to download:</p>
+<p>test.txt<br>queen_of_hearts.png<br>todo.md</p>
+<p>Please select an available action from the list below:<br>[1] Lists available files on the server<br>[2] Download available files from the server<br>[3] Authenticate to the server</p>
+<p>2<br>Executing action…<br>Checking authentication status…<br>You are not authenticated. Please authenticate before attempting to download from the server</p>
+<p>要拿Queen of Hearts这个题的flag，要知道密码，em，好像不能暴破，先放一下。</p>
+<h2 id="9007端口-Red-Joker"><a href="#9007端口-Red-Joker" class="headerlink" title="9007端口 Red Joker"></a>9007端口 Red Joker</h2><p>![image-20201207212225564](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201207212225564.png)</p>
+<p>下载里面就有一个图片，直接 md5 filename 获取flag</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">┌─(~&#x2F;CTF&#x2F;metasploit_ctf&#x2F;red_joker)─────────────────────────────────────────────────────────────────────────────────────────────────(m0nk3y@RedTeaming:s000)─┐</span><br><span class="line">└─(21:24:29)──&gt; md5 joker_red.png                                                                                                               ──(一,1207)─┘</span><br><span class="line">MD5 (joker_red.png) &#x3D; ded8965ad103400300b7180b42f55e28</span><br></pre></td></tr></table></figure>
+
+<h2 id="9009"><a href="#9009" class="headerlink" title="9009"></a>9009</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">└─(01:32:22)──&gt; proxychains4 curl http:&#x2F;&#x2F;172.15.53.85:9009                                                                                      ──(二,1208)─┘</span><br><span class="line">[proxychains] config file found: &#x2F;usr&#x2F;local&#x2F;etc&#x2F;proxychains.conf</span><br><span class="line">[proxychains] preloading &#x2F;usr&#x2F;local&#x2F;Cellar&#x2F;proxychains-ng&#x2F;4.14&#x2F;lib&#x2F;libproxychains4.dylib</span><br><span class="line">[proxychains] DLL init: proxychains-ng 4.14</span><br><span class="line">[proxychains] Strict chain  ...  45.76.110.116:6443  ...  45.76.110.116:6080  ...  172.15.53.85:9009  ...  OK</span><br><span class="line">SSH-2.0-OpenSSH_7.6p1 Ubuntu-4ubuntu0.3</span><br><span class="line">Protocol mismatch.</span><br></pre></td></tr></table></figure>
+
+<h1 id="国外友人的WP"><a href="#国外友人的WP" class="headerlink" title="国外友人的WP"></a>国外友人的WP</h1><p><a target="_blank" rel="noopener" href="https://rushisec.net/metasploit-ctf-2020-writeup/#9ofheartsport53">https://rushisec.net/metasploit-ctf-2020-writeup/#9ofheartsport53</a></p>
+<p><a target="_blank" rel="noopener" href="https://ctftime.org/event/1200/tasks/">https://ctftime.org/event/1200/tasks/</a></p>
+<p>挺不错的，就是发现比赛有点晚了，就打了一会儿就给停了vps。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://hack-for.fun/d22f.html">https://hack-for.fun/d22f.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://hack-for.fun" target="_blank">M0nk3y‘s Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CTF/">CTF</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2986.html"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Recent arrangements</div></div></a></div><div class="next-post pull-right"><a href="/4ca3.html"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">备战祥云杯总决赛</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a target="_blank" rel="noopener" href="//d3b1.html" title="2020年网鼎杯总决赛复现"><img class="cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-06</div><div class="title">2020年网鼎杯总决赛复现</div></div></a></div><div><a target="_blank" rel="noopener" href="//103ec22a.html" title="CTF - 文件上传"><img class="cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-30</div><div class="title">CTF - 文件上传</div></div></a></div><div><a target="_blank" rel="noopener" href="//d554.html" title="CTFer 从0到1配套题目刷题题解"><img class="cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-06</div><div class="title">CTFer 从0到1配套题目刷题题解</div></div></a></div><div><a target="_blank" rel="noopener" href="//4ca3.html" title="备战祥云杯总决赛"><img class="cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-07</div><div class="title">备战祥云杯总决赛</div></div></a></div><div><a target="_blank" rel="noopener" href="//6ebd.html" title="2020年网鼎杯半决赛复现"><img class="cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-05</div><div class="title">2020年网鼎杯半决赛复现</div></div></a></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201203114330.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">m0nk3y</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">23</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ifonly-go2019"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">Hack for fun，红蓝对抗学习ing，代码审计学习ing，SRC挖洞学习ing,前复现型CTFer，最近开始回归CTF赛场。力求在不挂科的前提下，提升自己。</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">1.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E5%BC%80%E6%B7%A6"><span class="toc-number">2.</span> <span class="toc-text">直接开淦</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#80%E7%AB%AF%E5%8F%A3-4-of-Hearts"><span class="toc-number">2.1.</span> <span class="toc-text">80端口 4 of Hearts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8080%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.2.</span> <span class="toc-text">8080端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4545%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.3.</span> <span class="toc-text">4545端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6868%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.4.</span> <span class="toc-text">6868端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8092%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.5.</span> <span class="toc-text">8092端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8101%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.6.</span> <span class="toc-text">8101端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8200-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0GetShell"><span class="toc-number">2.7.</span> <span class="toc-text">8200 文件上传GetShell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8202%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.8.</span> <span class="toc-text">8202端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8888%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.9.</span> <span class="toc-text">8888端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9000%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.10.</span> <span class="toc-text">9000端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9001%E7%AB%AF%E5%8F%A3"><span class="toc-number">2.11.</span> <span class="toc-text">9001端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9010%E7%AB%AF%E5%8F%A3-Queen-of-Hearts"><span class="toc-number">2.12.</span> <span class="toc-text">9010端口 Queen of Hearts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9007%E7%AB%AF%E5%8F%A3-Red-Joker"><span class="toc-number">2.13.</span> <span class="toc-text">9007端口 Red Joker</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9009"><span class="toc-number">2.14.</span> <span class="toc-text">9009</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%BD%E5%A4%96%E5%8F%8B%E4%BA%BA%E7%9A%84WP"><span class="toc-number">3.</span> <span class="toc-text">国外友人的WP</span></a></li></ol></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2020 By m0nk3y</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/fireworks.min.js"></script></div></body></html>
