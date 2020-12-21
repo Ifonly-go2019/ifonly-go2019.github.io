@@ -1,0 +1,183 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MacOS 上使用Docker操作mssql-server | M0nk3y‘s Blog</title><meta name="keywords" content="杂碎"><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="马上期末考试了，和一个乖妹妹一起备战期末（算是吧哈哈哈）。虽然我书本上的东西不会，但是用手敲的东西，比如数据库和java，不能太拉胯，嘿嘿嘿。所以来好好学一下吧，虽然期末仍然可以操作，懂的都懂。   下载Docker 镜像  1docker pull microsoft&#x2F;mssql-server-linux   创建并运行容器  1docker run --name mssql -m">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MacOS 上使用Docker操作mssql-server">
+<meta property="og:url" content="https://hack-for.fun/5880.html">
+<meta property="og:site_name" content="M0nk3y‘s Blog">
+<meta property="og:description" content="马上期末考试了，和一个乖妹妹一起备战期末（算是吧哈哈哈）。虽然我书本上的东西不会，但是用手敲的东西，比如数据库和java，不能太拉胯，嘿嘿嘿。所以来好好学一下吧，虽然期末仍然可以操作，懂的都懂。   下载Docker 镜像  1docker pull microsoft&#x2F;mssql-server-linux   创建并运行容器  1docker run --name mssql -m">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg">
+<meta property="article:published_time" content="2020-12-17T13:27:26.000Z">
+<meta property="article:modified_time" content="2020-12-17T15:16:44.599Z">
+<meta property="article:author" content="m0nk3y">
+<meta property="article:tag" content="杂碎">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201102172212.JPG"><link rel="canonical" href="https://hack-for.fun/5880"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2020-12-17 23:16:44'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="M0nk3y‘s Blog" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201203114330.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">M0nk3y‘s Blog</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">MacOS 上使用Docker操作mssql-server</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-12-17T13:27:26.000Z" title="发表于 2020-12-17 21:27:26">2020-12-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-12-17T15:16:44.599Z" title="更新于 2020-12-17 23:16:44">2020-12-17</time></span></div><div class="meta-secondline"> </div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>马上期末考试了，和一个乖妹妹一起备战期末（算是吧哈哈哈）。虽然我书本上的东西不会，但是用手敲的东西，比如数据库和java，不能太拉胯，嘿嘿嘿。所以来好好学一下吧，虽然期末仍然可以操作，懂的都懂。</p>
+</blockquote>
+<ul>
+<li>下载Docker 镜像</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull microsoft&#x2F;mssql-server-linux</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建并运行容器</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name mssql -m 512m -e &#39;ACCEPT_EULA&#x3D;Y&#39;  -e &#39;SA_PASSWORD&#x3D;PassW@rd123&#39; -p 1433:1433 -d microsoft&#x2F;mssql-server-linux</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>进入容器</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">┌─(~)────────────────────────────────────────────────(m0nk3y@RedTeaming:s009)─┐</span><br><span class="line">└─(22:46:24)──&gt; docker rm 808165fefc8f66c26ef70ffb64282f4ca0c745e73fc4a2c3584c8fef583742cf</span><br><span class="line">808165fefc8f66c26ef70ffb64282f4ca0c745e73fc4a2c3584c8fef583742cf</span><br><span class="line">┌─(~)────────────────────────────────────────────────(m0nk3y@RedTeaming:s009)─┐</span><br><span class="line">└─(22:47:11)──&gt; docker run --name mssql -m 512m -e &#39;ACCEPT_EULA&#x3D;Y&#39;  -e &#39;SA_PASSWORD&#x3D;PassW@rd123&#39; --net&#x3D;host -d microsoft&#x2F;mssql-server-linux</span><br><span class="line">ecce2771ff2b6f42b8bb5aa7fd2a7127403268a632edc091df049ff730249387</span><br><span class="line">┌─(~)────────────────────────────────────────────────(m0nk3y@RedTeaming:s009)─┐</span><br><span class="line">└─(22:47:18)──&gt; docker ps                                         ──(四,1217)─┘</span><br><span class="line">CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS              PORTS               NAMES</span><br><span class="line">ecce2771ff2b        microsoft&#x2F;mssql-server-linux   &quot;&#x2F;opt&#x2F;mssql&#x2F;bin&#x2F;sqls…&quot;   2 seconds ago       Up 1 second                             mssql</span><br><span class="line">┌─(~)────────────────────────────────────────────────(m0nk3y@RedTeaming:s009)─┐</span><br><span class="line">└─(22:47:20)──&gt; docker ps                                         ──(四,1217)─┘</span><br><span class="line">CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS              PORTS               NAMES</span><br><span class="line">ecce2771ff2b        microsoft&#x2F;mssql-server-linux   &quot;&#x2F;opt&#x2F;mssql&#x2F;bin&#x2F;sqls…&quot;   5 seconds ago       Up 4 seconds                            mssql</span><br><span class="line">┌─(~)────────────────────────────────────────────────(m0nk3y@RedTeaming:s009)─┐</span><br><span class="line">└─(22:47:23)──&gt; docker exec -it mssql &#x2F;bin&#x2F;bash                   ──(四,1217)─┘</span><br><span class="line">root@docker-desktop:&#x2F;# id</span><br><span class="line">uid&#x3D;0(root) gid&#x3D;0(root) groups&#x3D;0(root)</span><br><span class="line">root@docker-desktop:&#x2F;#</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>进入容器连接sql server</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@docker-desktop:&#x2F;# &#x2F;opt&#x2F;mssql-tools&#x2F;bin&#x2F;sqlcmd -S localhost -U SA -P &quot;PassW@rd123&quot;</span><br><span class="line">1&gt;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>如果成功，应会显示 sqlcmd 命令提示符：1&gt;。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">└─(22:59:47)──&gt; docker exec -it mssql &#x2F;bin&#x2F;bash             137 ↵ ──(四,1217)─┘</span><br><span class="line">root@30138a7c92f6:&#x2F;# &#x2F;opt&#x2F;mssql-tools&#x2F;bin&#x2F;sqlcmd -S localhost -U SA -P &quot;PassW@rd123&quot;</span><br><span class="line">1&gt; SELECT Name from sys.Databases</span><br><span class="line">2&gt; GO</span><br><span class="line">Name</span><br><span class="line">--------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line">master</span><br><span class="line">tempdb</span><br><span class="line">model</span><br><span class="line">msdb</span><br><span class="line"></span><br><span class="line">(4 rows affected)</span><br><span class="line">1&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>![image-20201217231622608](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20201217231622608.png)</p>
+<p>OK。</p>
+<p>然后就是学习SqlServer的理论加实操了。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://hack-for.fun/5880.html">https://hack-for.fun/5880.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://hack-for.fun" target="_blank">M0nk3y‘s Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9D%82%E7%A2%8E/">杂碎</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/773c.html"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">NSSC 2020 9th Final</div></div></a></div><div class="next-post pull-right"><a href="/b878.html"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">第一届&quot;祥云杯&quot;网络安全大赛总决赛</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a target="_blank" rel="noopener" href="//abc8.html" title="2020小组招新有感"><img class="cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-24</div><div class="title">2020小组招新有感</div></div></a></div><div><a target="_blank" rel="noopener" href="//63e5.html" title="MacOS 如何修改账户名"><img class="cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-18</div><div class="title">MacOS 如何修改账户名</div></div></a></div><div><a target="_blank" rel="noopener" href="//2986.html" title="Recent arrangements"><img class="cover" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825210300.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2099-11-01</div><div class="title">Recent arrangements</div></div></a></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201203114330.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">m0nk3y</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ifonly-go2019"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">Hack for fun，红蓝对抗学习ing，代码审计学习ing，SRC挖洞学习ing,前复现型CTFer，最近开始回归CTF赛场。力求在不挂科的前提下，提升自己。</div></div></div><div class="sticky_layout"></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2020 By m0nk3y</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/fireworks.min.js"></script></div></body></html>
