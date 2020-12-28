@@ -1,146 +1,1053 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>标签: 作业 | M0nk3y‘s Blog</title><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta property="og:type" content="website">
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="m0nk3y">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="m0nk3y">
+    
+    <meta name="keywords" content="信息安全,CTF,攻防对抗,代码审计,安全研究,渗透测试">
+    
+    <meta name="description" content="">
+    <meta property="og:type" content="website">
 <meta property="og:title" content="M0nk3y‘s Blog">
 <meta property="og:url" content="https://hack-for.fun/tags/%E4%BD%9C%E4%B8%9A/index.html">
 <meta property="og:site_name" content="M0nk3y‘s Blog">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG">
 <meta property="article:author" content="m0nk3y">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG"><link rel="canonical" href="https://hack-for.fun/tags/%E4%BD%9C%E4%B8%9A/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
-  root: '/',
-  algolia: undefined,
-  localSearch: undefined,
-  translate: undefined,
-  noticeOutdate: undefined,
-  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
-  copy: {
-    success: '复制成功',
-    error: '复制错误',
-    noSupport: '浏览器不支持'
-  },
-  relativeDate: {
-    homepage: false,
-    post: false
-  },
-  runtime: '天',
-  date_suffix: {
-    just: '刚刚',
-    min: '分钟前',
-    hour: '小时前',
-    day: '天前',
-    month: '个月前'
-  },
-  copyright: undefined,
-  ClickShowText: undefined,
-  lightbox: 'fancybox',
-  Snackbar: undefined,
-  justifiedGallery: {
-    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
-    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
-  },
-  isPhotoFigcaption: false,
-  islazyload: false,
-  isanchor: false
-};
-
-var saveToLocal = {
-  set: function setWithExpiry(key, value, ttl) {
-    const now = new Date()
-    const expiryDay = ttl * 86400000
-    const item = {
-      value: value,
-      expiry: now.getTime() + expiryDay,
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    
+    <title>M0nk3y&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
     }
-    localStorage.setItem(key, JSON.stringify(item))
-  },
 
-  get: function getWithExpiry(key) {
-    const itemStr = localStorage.getItem(key)
+    body {
+        margin: 0;
+    }
 
-    if (!itemStr) {
-      return undefined
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
     }
-    const item = JSON.parse(itemStr)
-    const now = new Date()
 
-    if (now.getTime() > item.expiry) {
-      localStorage.removeItem(key)
-      return undefined
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
     }
-    return item.value
-  }
-}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
-  isPost: false,
-  isHome: false,
-  isHighlightShrink: false,
-  isToc: false,
-  postUpdate: '2020-12-28 21:21:56'
-}</script><noscript><style type="text/css">
-  #nav {
-    opacity: 1
-  }
-  .justified-gallery img {
-    opacity: 1
-  }
 
-  #recent-posts time,
-  #post-meta time {
-    display: inline !important
-  }
-</style></noscript><script>(function () {  window.activateDarkMode = function () {
-    document.documentElement.setAttribute('data-theme', 'dark')
-    if (document.querySelector('meta[name="theme-color"]') !== null) {
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
     }
-  }
-  window.activateLightMode = function () {
-    document.documentElement.setAttribute('data-theme', 'light')
-   if (document.querySelector('meta[name="theme-color"]') !== null) {
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-    }
-  }
-  const autoChangeMode = 'false'
-  const t = saveToLocal.get('theme')
-  if (autoChangeMode === '1') {
-    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
-    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
-    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
-    if (t === undefined) {
-      if (isLightMode) activateLightMode()
-      else if (isDarkMode) activateDarkMode()
-      else if (isNotSpecified || hasNoSupport) {
-        const now = new Date()
-        const hour = now.getHours()
-        const isNight = hour <= 6 || hour >= 18
-        isNight ? activateDarkMode() : activateLightMode()
-      }
-      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
-        if (saveToLocal.get('theme') === undefined) {
-          e.matches ? activateDarkMode() : activateLightMode()
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
         }
-      })
-    } else if (t === 'light') activateLightMode()
-    else activateDarkMode()
-  } else if (autoChangeMode === '2') {
-    const now = new Date()
-    const hour = now.getHours()
-    const isNight = hour <= 6 || hour >= 18
-    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
-    else if (t === 'light') activateLightMode()
-    else activateDarkMode()
-  } else {
-    if (t === 'dark') activateDarkMode()
-    else if (t === 'light') activateLightMode()
-  }const asideStatus = saveToLocal.get('aside-status')
-if (asideStatus !== undefined) {
-   if (asideStatus === 'hide') {
-     document.documentElement.classList.add('hide-aside')
-   } else {
-     document.documentElement.classList.remove('hide-aside')
-   }
-}})()</script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="M0nk3y‘s Blog" type="application/atom+xml">
-</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div id="body-wrap"><header class="not-index-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201108134100.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">M0nk3y‘s Blog</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="page-site-info"><h1 id="site-title">作业</h1></div></header><main class="layout" id="content-inner"><div id="tag"><div class="article-sort-title">标签 - 作业</div><div class="article-sort"><div class="article-sort-item year">2020</div><div class="article-sort-item no-article-cover"><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2020-11-08T09:14:55.000Z" title="发表于 2020-11-08 17:14:55">2020-11-08</time></div><a class="article-sort-item-title" href="/d300.html" title="Coding-Java-继承与多态以及抽象类与接口">Coding-Java-继承与多态以及抽象类与接口</a></div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">m0nk3y</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ifonly-go2019"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">Hack for fun，live for LOVE.</div></div></div><div class="sticky_layout"><div class="card-widget card-categories"><div class="card-content"><div class="item-headline"><i class="fas fa-folder-open"></i><span>分类</span></div><ul class="card-category-list" id="aside-cat-list">
-            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"><span class="card-category-list-name">渗透测试</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%BF%90%E7%BB%B4%E7%9F%A5%E8%AF%86/"><span class="card-category-list-name">运维知识</span><span class="card-category-list-count">1</span></a></li>
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201102172212.JPG" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="M0nk3y‘s Blog" type="application/atom+xml">
+</head>
+
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <a class="home-link" href=/>M0nk3y's Blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+">
+    
+    <!-- 主页  -->
             
-            </ul></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/APT/" style="font-size: 1.1em; color: #999">APT</a> <a href="/tags/CTF/" style="font-size: 1.5em; color: #99a9bf">CTF</a> <a href="/tags/CobaltStrike/" style="font-size: 1.1em; color: #999">CobaltStrike</a> <a href="/tags/Dev/" style="font-size: 1.1em; color: #999">Dev</a> <a href="/tags/PHP%E5%AE%89%E5%85%A8/" style="font-size: 1.1em; color: #999">PHP安全</a> <a href="/tags/RCE/" style="font-size: 1.1em; color: #999">RCE</a> <a href="/tags/Redis/" style="font-size: 1.1em; color: #999">Redis</a> <a href="/tags/SQL%E6%B3%A8%E5%85%A5/" style="font-size: 1.2em; color: #999da3">SQL注入</a> <a href="/tags/iptables/" style="font-size: 1.1em; color: #999">iptables</a> <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 1.4em; color: #99a5b6">代码审计</a> <a href="/tags/%E4%BD%9C%E4%B8%9A/" style="font-size: 1.1em; color: #999">作业</a> <a href="/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/" style="font-size: 1.1em; color: #999">文件包含</a> <a href="/tags/%E6%9D%82%E7%A2%8E/" style="font-size: 1.3em; color: #99a1ac">杂碎</a> <a href="/tags/%E6%B8%97%E9%80%8F%E5%B7%A5%E5%85%B7/" style="font-size: 1.1em; color: #999">渗透工具</a> <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" style="font-size: 1.2em; color: #999da3">渗透测试</a> <a href="/tags/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/" style="font-size: 1.1em; color: #999">漏洞挖掘</a> <a href="/tags/%E7%AB%AF%E5%8F%A3/" style="font-size: 1.1em; color: #999">端口</a> <a href="/tags/%E7%BA%A2%E8%93%9D%E5%AF%B9%E6%8A%97/" style="font-size: 1.1em; color: #999">红蓝对抗</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/12/"><span class="card-archive-list-date">十二月 2020</span><span class="card-archive-list-count">10</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/11/"><span class="card-archive-list-date">十一月 2020</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/10/"><span class="card-archive-list-date">十月 2020</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/09/"><span class="card-archive-list-date">九月 2020</span><span class="card-archive-list-count">6</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/08/"><span class="card-archive-list-date">八月 2020</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/06/"><span class="card-archive-list-date">六月 2020</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/05/"><span class="card-archive-list-date">五月 2020</span><span class="card-archive-list-count">2</span></a></li></ul></div></div><div class="card-widget card-webinfo"><div class="card-content"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">26</div></div><div class="webinfo-item"><div class="item-name">已运行时间 :</div><div class="item-count" id="runtimeshow" data-publishDate="2019-08-19T16:00:00.000Z"></div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2020-12-28T13:21:55.953Z"></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2020 By m0nk3y</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/fireworks.min.js"></script></div></body></html>
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main index-page">
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/d300.html" >
+            
+                <span>Coding-Java-继承与多态以及抽象类与接口</span>
+        </a>
+        <div class="abstract-content">
+            [toc]
+学习资料https://www.bilibili.com/video/BV1754y1X7n9?from=search&amp;seid=6059305124304871168
+https://www.liaoxuefeng.com/wiki/1252599548343744/1260454185794944
+方法构造方法由于构造方法是如此特殊，所以构造方法的名称就是类名。构造方法的参数没有限制，在方法内部，也可以编写任意语句。但是，和普通方法相比，构造方法没有返回值（也没有void），调用构造方法，必须用new操作符。
+没有在构造方法中初始化字段时，引用类型的字段默认是nu...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/11/08</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "Dev">Dev</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "作业">作业</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    <!-- paginator  -->
+    
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:ifonlysec@gmail.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="https://github.com/ifonly-go2019" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                <a href="/atom.xml" class="iconfont-archer rss" target="_blank" title=rss></a>
+            
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+    
+    <span id="busuanzi_container_site_uv">累计访客量: <span id="busuanzi_value_site_uv"></span> </span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 26
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/28</span><a class="archive-post-title" href= "/1209.html" >ThinkPHP 3.2.x SQL注入漏洞代码审计</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/20</span><a class="archive-post-title" href= "/773c.html" >NSSC 2020 9th Final</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/17</span><a class="archive-post-title" href= "/5880.html" >MacOS 上使用Docker操作mssql-server</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/11</span><a class="archive-post-title" href= "/b878.html" >第一届"祥云杯"网络安全大赛总决赛</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/07</span><a class="archive-post-title" href= "/d22f.html" >2020 December Metasploit community CTF</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/07</span><a class="archive-post-title" href= "/4ca3.html" >备战祥云杯总决赛</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/d554.html" >CTFer 从0到1配套题目刷题题解</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/d3b1.html" >2020年网鼎杯总决赛复现</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/05</span><a class="archive-post-title" href= "/6ebd.html" >2020年网鼎杯半决赛复现</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/05</span><a class="archive-post-title" href= "/6988.html" >某市HW2020红队心得总结</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/09</span><a class="archive-post-title" href= "/995.html" >针对几个典型问题的回答</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/08</span><a class="archive-post-title" href= "/d300.html" >Coding-Java-继承与多态以及抽象类与接口</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/04</span><a class="archive-post-title" href= "/558a.html" >Cobalt Strike</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/24</span><a class="archive-post-title" href= "/abc8.html" >2020小组招新有感</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/18</span><a class="archive-post-title" href= "/63e5.html" >MacOS 如何修改账户名</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/23</span><a class="archive-post-title" href= "/a45.html" >ThinkPHP5漏洞学习-RCE</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/21</span><a class="archive-post-title" href= "/0.html" >《透视APT》读书笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/16</span><a class="archive-post-title" href= "/8d0f.html" >ThinkPHP5漏洞学习-文件包含漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/13</span><a class="archive-post-title" href= "/69fea760.html" >ThinkPHP5漏洞学习-SQL注入</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/12</span><a class="archive-post-title" href= "/844d1b07.html" >新秀企业网站系统代码审计学习(复现)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/11</span><a class="archive-post-title" href= "/4fd81e40.html" >MacOS 下配置PHP代码审计环境，PHP调试学习</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/30</span><a class="archive-post-title" href= "/103ec22a.html" >CTF - 文件上传</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/26</span><a class="archive-post-title" href= "/13bb2df2.html" >iptables 学习</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/27</span><a class="archive-post-title" href= "/c10c5ca9.html" >Redis 安全学习笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/31</span><a class="archive-post-title" href= "/d8714939.html" >PHP以及MYSQL相关版本差异及对应的安全问</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/26</span><a class="archive-post-title" href= "/e42fccb.html" >常见端口服务漏洞</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="杂碎"><span class="iconfont-archer">&#xe606;</span>杂碎</span>
+    
+        <span class="sidebar-tag-name" data-tags="渗透测试"><span class="iconfont-archer">&#xe606;</span>渗透测试</span>
+    
+        <span class="sidebar-tag-name" data-tags="CobaltStrike"><span class="iconfont-archer">&#xe606;</span>CobaltStrike</span>
+    
+        <span class="sidebar-tag-name" data-tags="渗透工具"><span class="iconfont-archer">&#xe606;</span>渗透工具</span>
+    
+        <span class="sidebar-tag-name" data-tags="Dev"><span class="iconfont-archer">&#xe606;</span>Dev</span>
+    
+        <span class="sidebar-tag-name" data-tags="作业"><span class="iconfont-archer">&#xe606;</span>作业</span>
+    
+        <span class="sidebar-tag-name" data-tags="代码审计"><span class="iconfont-archer">&#xe606;</span>代码审计</span>
+    
+        <span class="sidebar-tag-name" data-tags="文件包含"><span class="iconfont-archer">&#xe606;</span>文件包含</span>
+    
+        <span class="sidebar-tag-name" data-tags="端口"><span class="iconfont-archer">&#xe606;</span>端口</span>
+    
+        <span class="sidebar-tag-name" data-tags="漏洞挖掘"><span class="iconfont-archer">&#xe606;</span>漏洞挖掘</span>
+    
+        <span class="sidebar-tag-name" data-tags="红蓝对抗"><span class="iconfont-archer">&#xe606;</span>红蓝对抗</span>
+    
+        <span class="sidebar-tag-name" data-tags="PHP安全"><span class="iconfont-archer">&#xe606;</span>PHP安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="SQL注入"><span class="iconfont-archer">&#xe606;</span>SQL注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="RCE"><span class="iconfont-archer">&#xe606;</span>RCE</span>
+    
+        <span class="sidebar-tag-name" data-tags="iptables"><span class="iconfont-archer">&#xe606;</span>iptables</span>
+    
+        <span class="sidebar-tag-name" data-tags="APT"><span class="iconfont-archer">&#xe606;</span>APT</span>
+    
+        <span class="sidebar-tag-name" data-tags="Redis"><span class="iconfont-archer">&#xe606;</span>Redis</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+        <span class="sidebar-category-name" data-categories="渗透测试"><span class="iconfont-archer">&#xe60a;</span>渗透测试</span>
+    
+        <span class="sidebar-category-name" data-categories="运维知识"><span class="iconfont-archer">&#xe60a;</span>运维知识</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "m0nk3y"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+     
+    </body>
+</html>
+
+
