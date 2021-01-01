@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="一文小总结逻辑漏洞"><meta name="keywords" content=""><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><title>一文小总结逻辑漏洞 | M0nk3y's Blog @ D0g3</title><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG"><link rel="stylesheet" href="/css/index.css?version=1.9.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css?version=1.9.0"><meta name="format-detection" content="telephone=no"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  hexoVersion: '5.1.1'
+} </script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="M0nk3y's Blog @ D0g3" type="application/atom+xml">
+</head><body><canvas class="fireworks"></canvas><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar" data-display="true"><div class="toggle-sidebar-info text-center"><span data-toggle="Toggle article">Toggle site</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0x00    前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">0x01 逻辑漏洞简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E%E6%A6%82%E8%A7%88"><span class="toc-number">3.</span> <span class="toc-text">0x02 逻辑漏洞概览</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E9%80%BB%E8%BE%91"><span class="toc-number">3.1.</span> <span class="toc-text">安装逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%AD%E4%B9%B0%E9%80%BB%E8%BE%91"><span class="toc-number">3.2.</span> <span class="toc-text">购买逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%A6%E6%88%B7%E9%80%BB%E8%BE%91"><span class="toc-number">3.3.</span> <span class="toc-text">账户逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2FA-%E5%A4%9A%E9%87%8D%E8%A6%81%E7%B4%A0%E9%AA%8C%E8%AF%81"><span class="toc-number">3.4.</span> <span class="toc-text">2FA(多重要素验证)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E7%A0%81"><span class="toc-number">3.5.</span> <span class="toc-text">验证码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Session"><span class="toc-number">3.6.</span> <span class="toc-text">Session</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B6%8A%E6%9D%83"><span class="toc-number">3.7.</span> <span class="toc-text">越权</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E8%B6%8A%E6%9D%83"><span class="toc-number">3.7.1.</span> <span class="toc-text">水平越权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9E%82%E7%9B%B4%E8%B6%8A%E6%9D%83"><span class="toc-number">3.7.2.</span> <span class="toc-text">垂直越权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E6%95%B0%E5%AE%89%E5%85%A8"><span class="toc-number">3.8.</span> <span class="toc-text">随机数安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3"><span class="toc-number">3.9.</span> <span class="toc-text">接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E9%80%BB%E8%BE%91"><span class="toc-number">3.10.</span> <span class="toc-text">其他逻辑</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E%E6%A1%88%E4%BE%8B"><span class="toc-number">4.</span> <span class="toc-text">0x03 逻辑漏洞案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x04-%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">0x04 总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x05-%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE"><span class="toc-number">6.</span> <span class="toc-text">0x05    思维导图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x0-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">7.</span> <span class="toc-text">0x0* 参考资料</span></a></li></ol></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG"></div><div class="author-info__name text-center">m0nk3y</div><div class="author-info__description text-center"></div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">Articles</span><span class="pull-right">52</span></a><a class="author-info-articles__tags article-meta" href="/tags"><span class="pull-left">Tags</span><span class="pull-right">52</span></a><a class="author-info-articles__categories article-meta" href="/categories"><span class="pull-left">Categories</span><span class="pull-right">9</span></a></div><hr><div class="author-info-links"><div class="author-info-links__title text-center">Links</div><a class="author-info-links__name text-center" target="_blank" rel="noopener" href="https://www.google.com">Google</a></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">M0nk3y's Blog @ D0g3</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus">   <a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a><a class="site-page" href="/tags">Tags</a><a class="site-page" href="/categories">Categories</a><a class="site-page" href="/about">About</a><a class="site-page" href="/link">Friends</a><a class="site-page" href="/mytalk">说说</a></span><span class="pull-right"></span></div><div id="post-info"><div id="post-title">一文小总结逻辑漏洞</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2020-04-14</time><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E/">逻辑漏洞</a><div class="post-meta-wordcount"><span>Word count: </span><span class="word-count">3.2k</span><span class="post-meta__separator">|</span><span>Reading time: 10 min</span></div></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00    前言"></a>0x00    前言</h1><p>因为之前挖公益SRC, 虽然没咋用心挖, 随便挖都挖了4(指收录,反射XSS我被忽略了好几个..)个(1中危3低危), 但是这还差的远, 而目前挖一些常见的漏洞估计已经有点难了, 大部分漏洞都是逻辑漏洞, 遂写一文来小总结一下, 也是学习一些逻辑上的利用思路, 大部分总结资料来源于互联网</p>
+<h1 id="0x01-逻辑漏洞简介"><a href="#0x01-逻辑漏洞简介" class="headerlink" title="0x01 逻辑漏洞简介"></a>0x01 逻辑漏洞简介</h1><ul>
+<li><p>逻辑漏洞是指由于<strong>程序逻辑不严导致一些逻辑分支处理错误</strong>造成的漏洞。</p>
+<p>在实际开发中，因为开发者水平不一没有安全意识，而且业务发展迅速内部测试没有及时到位，所以常常会出现类似的漏洞。</p>
+<p>这个逻辑漏洞既可以是逻辑<strong>太简单</strong>, 也可能是逻辑<strong>太复杂</strong>, 导致一些逻辑分支不能正常处理或处理错误</p>
+</li>
+<li><p>关注重点: </p>
+<p>业务流程 / <code>HTTP/HTTPS</code> 请求分析</p>
+</li>
+</ul>
+<h1 id="0x02-逻辑漏洞概览"><a href="#0x02-逻辑漏洞概览" class="headerlink" title="0x02 逻辑漏洞概览"></a>0x02 逻辑漏洞概览</h1><h2 id="安装逻辑"><a href="#安装逻辑" class="headerlink" title="安装逻辑"></a>安装逻辑</h2><ul>
+<li>比如Install.php 未删除,导致重装, 或者是因为逻辑问题导致了重置</li>
+<li>查看能否绕过判定重新安装</li>
+<li>查看能否利用安装文件获取信息</li>
+<li>看能否利用更新功能获取信息</li>
+</ul>
+<h2 id="购买逻辑"><a href="#购买逻辑" class="headerlink" title="购买逻辑"></a>购买逻辑</h2><ul>
+<li>褥羊毛, 修改支付的价格</li>
+<li>修改支付的状态</li>
+<li>修改购买数量为负数</li>
+<li>修改金额为负数</li>
+<li>成功购买请求重放</li>
+<li>并发数据库锁处理不当</li>
+<li>刷优惠券</li>
+<li>套现</li>
+<li>最大数量突破, 如果在前端JS限制, 那么可通过抓包来绕过,查看是否完成修改后的业务流程</li>
+</ul>
+<h2 id="账户逻辑"><a href="#账户逻辑" class="headerlink" title="账户逻辑"></a>账户逻辑</h2><ul>
+<li>任意用户注册</li>
+<li>任意用户删除</li>
+<li>任意密码重置</li>
+<li>任意密码修改</li>
+<li>覆盖注册</li>
+<li>尝试重复用户名</li>
+<li>注册遍历猜解已有账号</li>
+<li>注册允许空格, 取数据去掉空格</li>
+<li>大小写变换</li>
+<li>撞库</li>
+<li>账号劫持</li>
+<li>恶意尝试账号登陆锁死账户</li>
+<li>token验证逻辑在前端</li>
+<li>X-Forwarded-Host 处理不当</li>
+<li>越权修改密码</li>
+<li>修改密码没有旧密码等验证</li>
+<li>身份伪造</li>
+<li>逻辑绕过, 删除密保问题绕过</li>
+</ul>
+<h2 id="2FA-多重要素验证"><a href="#2FA-多重要素验证" class="headerlink" title="2FA(多重要素验证)"></a>2FA(多重要素验证)</h2><ul>
+<li>重置密码后自动登录没有2FA</li>
+<li>OAuth登录没有启用2FA</li>
+<li>2FA可爆破</li>
+<li>2FA有条件竞争</li>
+<li>修改返回值绕过</li>
+<li>激活链接没有启用2FA</li>
+<li>可通过CSRF禁用2FA</li>
+</ul>
+<h2 id="验证码"><a href="#验证码" class="headerlink" title="验证码"></a>验证码</h2><ul>
+<li>验证码可重用</li>
+<li>验证码可预测</li>
+<li>验证码强度低</li>
+<li>验证码无时间限制或者失效时间长</li>
+<li>验证码无猜测次数限制</li>
+<li>验证码传递特殊的参数或不传递参数绕过</li>
+<li>验证码可从返回包中直接获取</li>
+<li>验证码不刷新或无效</li>
+<li>验证码数量有限</li>
+<li>验证码在数据包中返回</li>
+<li>修改Cookie绕过</li>
+<li>修改返回包绕过</li>
+<li>验证码在客户端生成或校验</li>
+<li>验证码可OCR或使用机器学习识别</li>
+<li>验证码用于手机短信/邮箱轰炸</li>
+</ul>
+<h2 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h2><ul>
+<li>Session机制</li>
+<li>Session猜测 / 爆破</li>
+<li>Session伪造</li>
+<li>Session泄漏</li>
+<li>Session Fixation</li>
+</ul>
+<h2 id="越权"><a href="#越权" class="headerlink" title="越权"></a>越权</h2><h3 id="水平越权"><a href="#水平越权" class="headerlink" title="水平越权"></a>水平越权</h3><ul>
+<li>攻击者可以访问与他拥有相同权限的用户资源</li>
+<li>权限类型不变,ID改变</li>
+</ul>
+<h3 id="垂直越权"><a href="#垂直越权" class="headerlink" title="垂直越权"></a>垂直越权</h3><p>垂直越权🔨可以分为: 向上越权和向下越权, 道理就是字面意思</p>
+<ul>
+<li>低权限攻击者可以访问高级别用户的资源(User→Admin)</li>
+<li>权限ID不变, 类型改变</li>
+</ul>
+<h2 id="随机数安全"><a href="#随机数安全" class="headerlink" title="随机数安全"></a>随机数安全</h2><ul>
+<li>使用可破解, 不安全的随机数生成器</li>
+<li>使用时间等容易猜解的因子作为随机数种子</li>
+</ul>
+<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><p>重放, 短信轰炸</p>
+<h2 id="其他逻辑"><a href="#其他逻辑" class="headerlink" title="其他逻辑"></a>其他逻辑</h2><ul>
+<li>用户/订单/优惠券等ID生成有规律 , 可枚举</li>
+<li>接口无权限,次数的限制</li>
+<li>加密算法实现误用</li>
+<li>执行顺序可绕过</li>
+<li>敏感信息泄露</li>
+<li>数据篡改, 比如, 抓包修改手机号, 邮箱, 订单ID 商品编号, 用户ID等</li>
+</ul>
+<h1 id="0x03-逻辑漏洞案例"><a href="#0x03-逻辑漏洞案例" class="headerlink" title="0x03 逻辑漏洞案例"></a>0x03 逻辑漏洞案例</h1><p>推荐这篇文章, 还教了如何使用bp 抓手机包</p>
+<p><a target="_blank" rel="noopener" href="https://4hou.win/wordpress/?p=9366">商城类,手机抓包</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/201438.html">某HR业务网站逻辑漏洞挖掘案例</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/225770.html">逻辑漏洞小结之SRC篇</a></p>
+<p><a target="_blank" rel="noopener" href="https://ca0y1h.top/Web_security/basic_learning/19.%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/">https://ca0y1h.top/Web_security/basic_learning/19.%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2011-02272.html">顺丰宝业务逻辑漏洞</a>：数量和金额没有做签名</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2011-02513.html">移动手机支付业务逻辑漏洞</a>：爆破四位验证码</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2013-019761.html">新东方逻辑支付漏洞</a>：修改运费金额为负数，使得课程金额+运费大于0即可</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-074483.html">中国零食网支付逻辑漏洞</a>：同上</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2013-023789.html">阿里云计算按量付费逻辑漏洞一枚（低价享受超级主机）</a>：经过base64编码的数据可以被篡改，并且后端会接受篡改的数据</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2013-036787.html">乐视商城支付逻辑漏洞（价格可更改）</a>：价格参数明文显示在url，可以直接更改</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-053181.html">再次挖掘乐视商城支付逻辑漏洞</a>：同上</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-051673.html">读览天下支付逻辑漏洞可刷充值金额</a>：替换支付订单号</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-093365.html">益盟爱炒股商城支付逻辑漏洞</a>：修改Cookie中的参数值</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-0125060.html">饿了么逻辑漏洞之免费吃喝不是梦</a>：<code>手机号+;+手机号</code>绕过服务器对手机号码的次数限制</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-0135459.html">七夕单身专场之性多多免费刷成人用品(支付逻辑漏洞)</a>：改负数刷代币</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2016-0194751.html">大疆某处支付逻辑漏洞可1元买无人机</a>：https改为http访问，修改支付的参数</p>
+<p><strong>用户凭证暴力破解</strong></p>
+<p>四位或者六位的纯数字</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2012-011833.html">WooYun: 当当网任意用户密码修改漏洞</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2012-011720.html">WooYun: 微信任意用户密码修改漏洞</a></p>
+<p><strong>返回凭证</strong></p>
+<p>url返回验证码及token</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2012-05630.html">WooYun: 走秀网秀团任意密码修改缺陷</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-058210.html">WooYun: 天天网任意账户密码重置（二）</a></p>
+<p><strong>密码找回凭证在页面中</strong></p>
+<p>通过密保问题找回密码</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2012-04728.html">WooYun: sohu邮箱任意用户密码重置</a></p>
+<p><strong>返回短信验证码</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-085124.html">WooYun: 新浪某站任意用户密码修改（验证码与取回逻辑设计不当）</a></p>
+<p><strong>邮箱弱token</strong></p>
+<p>时间戳的md5</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2012-08333.html">WooYun: 奇虎360任意用户密码修改漏洞</a></p>
+<p><strong>用户名 &amp; 服务器时间</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-090226.html">WooYun: 中兴某网站任意用户密码重置漏洞（经典设计缺陷案例）</a></p>
+<p><strong>用户凭证有效性</strong></p>
+<p>短信验证码</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-053349.html">WooYun: OPPO手机重置任意账户密码（3）</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-053079.html">WooYun: 第二次重置OPPO手机官网任意账户密码（秒改）</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2013-020032.html">WooYun: OPPO修改任意帐号密码</a></p>
+<p><strong>邮箱token</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2012-012572.html">WooYun: 身份通任意密码修改-泄漏大量公民信息</a></p>
+<p><strong>重置密码token</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-078208.html">WooYun: 魅族的账号系统内存在漏洞可导致任意账户的密码重置</a></p>
+<p><strong>重新绑定</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2012-08307.html">WooYun: 网易邮箱可直接修改其他用户密码</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-0115537.html">WooYun: 如家酒店某严重逻辑漏洞可登陆任意账号可导致几千万敏感信息泄露（涉及任意用户账号个人基本信息、入住记录等）</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-0115276.html">Wooyun: 华住酒店官网某严重逻辑漏洞可登陆任意账号（涉及任意用户账号个人基本信息、入住记录等）</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-081467.html">WooYun: 12308可修改任意用户密码</a></p>
+<p><strong>邮箱绑定</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-092319.html">WooYun: 某彩票设计缺陷可修改任意用户密码</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-086726.html">WooYun: 中国工控网任意用户密码重置漏洞</a></p>
+<p><strong>服务器验证</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2013-018263.html">WooYun: 携程旅行网任意老板密码修改(庆在wooyun第100洞)</a></p>
+<p><strong>服务器验证可控内容</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-080278.html">WooYun: AA拼车网之任意密码找回2</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-082582.html">WooYun: 四川我要去哪517旅行网重置任意账号密码漏洞</a></p>
+<p><strong>服务器验证验证逻辑为空</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-088927.html">WooYun: 某政企使用邮件系统疑似存在通用设计问题</a></p>
+<p><strong>用户身份验证</strong></p>
+<p>账号与手机号码的绑定</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-075941.html">WooYun: 上海电信通行证任意密码重置</a></p>
+<p><strong>账号与邮箱账号的绑定</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-078208.html">WooYun: 魅族的账号系统内存在漏洞可导致任意账户的密码重置</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-091216.html">WooYun: 和讯网修改任意用户密码漏洞</a></p>
+<p><strong>找回步骤</strong></p>
+<p>跳过验证步骤、找回方式，直接到设置新密码页面</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2013-042404.html">WooYun: OPPO手机同步密码随意修改，短信通讯录随意查看</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-098765.html">WooYun: 中国电信某IDC机房信息安全管理系统设计缺陷致使系统沦陷</a></p>
+<p><strong>本地验证</strong></p>
+<p>在本地验证服务器的返回信息，确定是否执行重置密码，但是其返回信息是可控的内容，或者可以得到的内容</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-083035.html">WooYun: 看我如何重置乐峰网供应商管理系统任意用户密码（管理员已被重置）</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-069987.html">WooYun: oppo重置任意用户密码漏洞(4)</a></p>
+<p><strong>发送短信等验证信息的动作在本地进行，可以通过修改返回包进行控制</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2013-020532.html">WooYun: OPPO修改任意帐号密码-3</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2013-020425.html">WooYun: OPPO修改任意帐号密码-2</a></p>
+<p><strong>注入</strong></p>
+<p>在找回密码处存在注入漏洞</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-068060.html">WooYun: 用友人力资源管理软件（e-HR）另一处SQL注入漏洞（通杀所有版本）</a></p>
+<p><strong>Token生成</strong></p>
+<p>token生成可控</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-094242.html">WooYun: 天天网任意账号密码重置(非暴力温柔修改)</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2015-095729.html">WooYun: 天天网再一次重置任意账号密码(依旧非暴力)</a></p>
+<p><strong>注册覆盖</strong></p>
+<p>注册重复的用户名</p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-088708.html">WooYun: 中铁快运奇葩方式重置任意用户密码(admin用户演示)</a></p>
+<p><strong>session覆盖</strong></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/bugs/wooyun-2014-085843.html">WooYun: 聚美优品任意修改用户密码(非爆破)</a></p>
+<p><strong>越权相关逻辑漏洞</strong></p>
+<p>越权漏洞是Web应用程序中一种常见的安全漏洞。它的威胁在于一个账户即可控制全站用户数据。当然这些数据仅限于存在漏洞功能对应的数据。越权漏洞的成因主要是因为开发人员在对数据进行增、删、改、查询时对客户端请求的数据过分相信而遗漏了权限的判定。所以测试越权就是和开发人员拼细心的过程。</p>
+<p><strong>常见手法</strong></p>
+<ul>
+<li>操作时分析请求中的数据包，看看每个参数的作用，修改参数查看变化。</li>
+<li>拥有更多权限的账号，把能访问的URL都提取出来，给低权限用户访问或者直接访问，查看能否访问。</li>
+<li>猜测隐藏的API，如:guest/getorder，修改成admin/getorder。</li>
+<li>通过搜索引擎，或者提取JS中的URL，查找隐藏功能。如burpsuite中有一个BHP JS scraper的插件。</li>
+<li>猜测隐藏的参数，添加进去查看变化，如修改信息的时候加个ID。</li>
+<li>抓取所有的数据包，搜索用户名等关键词，比如我的用户名是test，在burpsuite中的HTTP history搜索test，看看有没有哪个数据包包含这个参数,将其修改为其他的用户名，查看变化。</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/-CWizFUofM78DkvymqEHiA">JSRC——越权漏洞挖掘</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/1mapo4wno1uMctrIEJwKvQ">JSRC——聊聊越权那些事</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.x10sec.org/static/drops/tips-727.html">我的越权之道</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/-r1oWQb_oS8jEMdJs9Ct_g">https://mp.weixin.qq.com/s/-r1oWQb_oS8jEMdJs9Ct_g</a></p>
+<p>多在网上看例子, 学习别人的思路.</p>
+<h1 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h1><ul>
+<li>测试业务的时候，先了解清楚业务整体流程，可以利用思维导图快速理清各个业务之间的关系，也可以通过查看 JS 了解（JS 中可能会存在信息泄漏）</li>
+<li>重点关注的业务：个人（他人）信息、密码修改（找回）、支付流程、注册流程、需要手机（邮箱）验证的业务</li>
+<li>对每个业务模块进行抓包，分析其中各种请求，注意 特殊参数，很有可能就是这些 特殊参数 决定了业务步骤抓包重放的过程，需要多次实验，判断是否可以跳过（绕过），如何跳过（绕过），纯数字可以用 数字 + 字母 尝试绕过</li>
+<li>返回包中数据的分析，关注特殊字符串和特殊参数</li>
+<li>综上所述，业务流程需同时结合 HTTP/HTTPS 请求分析，关注重点在各种可以用于区别的参数，绕过必要验证，跳过业务步骤</li>
+</ul>
+<p><strong>最重要的一点就是, 挖逻辑漏洞需要非常细心!!!</strong></p>
+<p>不定期补充~</p>
+<h1 id="0x05-思维导图"><a href="#0x05-思维导图" class="headerlink" title="0x05    思维导图"></a>0x05    思维导图</h1><p>参考资料: <a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/195837.html">https://www.freebuf.com/articles/web/195837.html</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo/images/20200414141903.png"></p>
+<h1 id="0x0-参考资料"><a href="#0x0-参考资料" class="headerlink" title="0x0* 参考资料"></a>0x0* 参考资料</h1><ul>
+<li><p><a target="_blank" rel="noopener" href="https://www.wooyun.org/">https://www.wooyun.org</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://websec.readthedocs.io/zh/latest/vuln/logic.html">https://websec.readthedocs.io/zh/latest/vuln/logic.html</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://masterxsec.github.io/2017/07/08/%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E/">https://masterxsec.github.io/2017/07/08/%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E/</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/PyxYuYu/MyBlog/issues/102">https://github.com/PyxYuYu/MyBlog/issues/102</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.hackhp.com/896.html">https://www.hackhp.com/896.html</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%A4%9A%E9%87%8D%E8%A6%81%E7%B4%A0%E9%A9%97%E8%AD%89">https://zh.wikipedia.org/wiki/%E5%A4%9A%E9%87%8D%E8%A6%81%E7%B4%A0%E9%A9%97%E8%AD%89</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/mylutte/article/details/50819146">https://blog.csdn.net/mylutte/article/details/50819146</a></p>
+</li>
+</ul>
+<p>思维导图: </p>
+<p><a target="_blank" rel="noopener" href="https://www.processon.com/view/5c11e98ae4b0ed122da3f749#map">https://www.processon.com/view/5c11e98ae4b0ed122da3f749#map</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/xiongjungit/websecuritymap">https://github.com/xiongjungit/websecuritymap</a></p>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://hack-for.fun/e280.html">https://hack-for.fun/e280.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="post-meta__tag-list"></div><div class="social-share pull-right" data-disabled="google,facebook"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><nav id="pagination"><div class="prev-post pull-left"><a href="/710f.html"><i class="fa fa-chevron-left">  </i><span>初探JavaScript Prototype Pollution Attack</span></a></div><div class="next-post pull-right"><a href="/f81b.html"><span>BUU WEB 刷题笔记6</span><i class="fa fa-chevron-right"></i></a></div></nav></div></div><footer class="footer-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"><div class="layout" id="footer"><div class="copyright">&copy;2019 - 2021 By m0nk3y</div><div class="framework-info"><span>Driven - </span><a target="_blank" rel="noopener" href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme - </span><a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="busuanzi"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@latest/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-ui-pack@latest/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.9.0"></script><script src="/js/fancybox.js?version=1.9.0"></script><script src="/js/sidebar.js?version=1.9.0"></script><script src="/js/copy.js?version=1.9.0"></script><script src="/js/fireworks.js?version=1.9.0"></script><script src="/js/transition.js?version=1.9.0"></script><script src="/js/scroll.js?version=1.9.0"></script><script src="/js/head.js?version=1.9.0"></script><script>if(/Android|webOS|iPhone|iPod|iPad|BlackBerry/i.test(navigator.userAgent)) {
+  $('#nav').addClass('is-mobile')
+  $('footer').addClass('is-mobile')
+  $('#top-container').addClass('is-mobile')
+}</script></body></html>
