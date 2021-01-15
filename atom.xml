@@ -6,7 +6,7 @@
   <link href="https://hack-for.fun/atom.xml" rel="self"/>
   
   <link href="https://hack-for.fun/"/>
-  <updated>2021-01-13T10:06:34.720Z</updated>
+  <updated>2021-01-15T17:03:21.564Z</updated>
   <id>https://hack-for.fun/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://hack-for.fun/a2bf.html"/>
     <id>https://hack-for.fun/a2bf.html</id>
     <published>2022-01-13T09:52:47.000Z</published>
-    <updated>2021-01-13T10:06:34.720Z</updated>
+    <updated>2021-01-15T17:03:21.564Z</updated>
     
     <content type="html"><![CDATA[<blockquote><p>放寒假了，效率该拿出来了。</p></blockquote><p>持续补充吧。也算是给自己打卡的地方。</p><h1 id="代码审计"><a href="#代码审计" class="headerlink" title="代码审计"></a>代码审计</h1><p>复现各个cms，从php的开始。学习代码审计的思路和技巧，以及<strong>自动化代码审计</strong>的构思。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php -&gt; nodejs -&gt; java</span><br></pre></td></tr></table></figure><h1 id="渗透"><a href="#渗透" class="headerlink" title="渗透"></a>渗透</h1><ul><li>Windows原生协议</li><li>票据</li><li>内网攻击技巧</li><li>学习CobaltStrike等渗透框架</li><li>了解免杀并能够自己动手实现</li></ul><h1 id="CTF"><a href="#CTF" class="headerlink" title="CTF"></a>CTF</h1><ul><li>打比赛和刷题就完事，总结线上解题赛的各种姿势</li><li>完成AWD框架的初步构建</li></ul><h1 id="Coding（EXP、POC）"><a href="#Coding（EXP、POC）" class="headerlink" title="Coding（EXP、POC）"></a>Coding（EXP、POC）</h1><p>近写实习上的东西，真的自己完全不会代码。</p><ul><li>所以平时多写点exp、poc。比如，每复现一个漏洞，或者审计一个cms，就写一个exp或者poc</li></ul><h1 id="吃饱喝足"><a href="#吃饱喝足" class="headerlink" title="吃饱喝足"></a>吃饱喝足</h1>]]></content>
     
