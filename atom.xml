@@ -6,7 +6,7 @@
   <link href="https://hack-for.fun/atom.xml" rel="self"/>
   
   <link href="https://hack-for.fun/"/>
-  <updated>2021-02-17T16:29:32.353Z</updated>
+  <updated>2021-02-17T16:39:47.912Z</updated>
   <id>https://hack-for.fun/</id>
   
   <author>
@@ -21,16 +21,12 @@
     <link href="https://hack-for.fun/33ed.html"/>
     <id>https://hack-for.fun/33ed.html</id>
     <published>2021-02-17T15:54:47.000Z</published>
-    <updated>2021-02-17T16:29:32.353Z</updated>
+    <updated>2021-02-17T16:39:47.912Z</updated>
     
-    <content type="html"><![CDATA[<p>太多了，就在本地Mweb里面放着。暂时没搞 mweb 同步 hexo blog。就只截图 toc部分，感兴趣的师傅可以一起交流交流，虽然我只学了点最基础的概念性问题。。还得多实操。</p><p>基本是按照daiker师傅的作品来学的，大部分也是C/V，还没有更多的个人补充。</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002655.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002656.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002657.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002658.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002659.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002700.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002701.png"></p>]]></content>
+    <content type="html"><![CDATA[<p>曾经以为知道点皮毛就够了。</p><a id="more"></a><p>太多了，就在本地Mweb里面放着。暂时没搞 mweb 同步 hexo blog。就只截图 toc部分，感兴趣的师傅可以一起交流交流，还得多实操。</p><p>基本是按照daiker师傅的作品来学的，大部分也是C/V，还没有更多的个人补充。</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002655.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002656.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002657.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002658.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002659.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002700.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210218002701.png"></p>]]></content>
     
     
-      
-      
-    <summary type="html">&lt;p&gt;太多了，就在本地Mweb里面放着。暂时没搞 mweb 同步 hexo blog。就只截图 toc部分，感兴趣的师傅可以一起交流交流，虽然我只学了点最基础的概念性问题。。还得多实操。&lt;/p&gt;
-&lt;p&gt;基本是按照daiker师傅的作品来学的，大部分也是C/V，还没有更多的个人补充</summary>
-      
+    <summary type="html">&lt;p&gt;曾经以为知道点皮毛就够了。&lt;/p&gt;</summary>
     
     
     
@@ -117,9 +113,9 @@
     
     
     
-    <category term="CobaltStrike" scheme="https://hack-for.fun/tags/CobaltStrike/"/>
-    
     <category term="渗透测试" scheme="https://hack-for.fun/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+    <category term="CobaltStrike" scheme="https://hack-for.fun/tags/CobaltStrike/"/>
     
   </entry>
   
