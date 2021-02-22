@@ -1,0 +1,236 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="如何防止溯源以及反溯源"><meta name="keywords" content="红蓝对抗"><meta name="author" content="m0nk3y"><meta name="copyright" content="m0nk3y"><title>如何防止溯源以及反溯源 | m0nk3y's Blog @ D0g3</title><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG"><link rel="stylesheet" href="/css/index.css?version=1.9.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css?version=1.9.0"><meta name="format-detection" content="telephone=no"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script><script src="https://cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  hexoVersion: '5.1.1'
+} </script><meta name="generator" content="Hexo 5.1.1"><link rel="alternate" href="/atom.xml" title="m0nk3y's Blog @ D0g3" type="application/atom+xml">
+</head><body><canvas class="fireworks"></canvas><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar" data-display="true"><div class="toggle-sidebar-info text-center"><span data-toggle="Toggle article">Toggle site</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BA%AF%E6%BA%90"><span class="toc-number">1.</span> <span class="toc-text">溯源</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BB%E5%87%BB%E6%BA%90%E6%8D%95%E8%8E%B7"><span class="toc-number">1.1.</span> <span class="toc-text">攻击源捕获</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%97%A5%E5%BF%97%E7%9A%84%E6%BA%AF%E6%BA%90%EF%BC%88Web-%E7%B3%BB%E7%BB%9F%E8%A2%AB%E6%94%BB%E5%87%BB%EF%BC%89"><span class="toc-number">1.1.1.</span> <span class="toc-text">基于日志的溯源（Web 系统被攻击）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E7%B3%BB%E7%BB%9F%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.1.2.</span> <span class="toc-text">主机系统、数据库系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E8%BE%93%E5%85%A5%E8%B0%83%E8%AF%95%E6%8A%80%E6%9C%AF"><span class="toc-number">1.1.3.</span> <span class="toc-text">路由输入调试技术</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E6%9D%80%E4%BC%A4%E9%93%BE%E6%A8%A1%E5%9E%8B-amp-%E9%92%BB%E7%9F%B3%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.</span> <span class="toc-text">分析模型——杀伤链模型&amp;钻石模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">关联分析方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B"><span class="toc-number">1.4.</span> <span class="toc-text">案例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#bypass-%E5%B8%88%E5%82%85%E5%8D%9A%E5%AE%A2"><span class="toc-number">1.4.1.</span> <span class="toc-text">bypass 师傅博客</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%BF%E9%87%8C%E4%BA%91%E5%AE%89%E5%85%A8%E4%B8%AD%E5%BF%83%E7%9A%84%E6%A1%88%E4%BE%8B"><span class="toc-number">1.4.2.</span> <span class="toc-text">阿里云安全中心的案例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B1WebShell-%E6%BA%AF%E6%BA%90%E6%94%BB%E5%87%BB%E8%80%85%E7%9A%84%E5%85%A5%E4%BE%B5%E9%80%94%E5%BE%84"><span class="toc-number">1.4.3.</span> <span class="toc-text">由WebShell 溯源攻击者的入侵途径</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%8D%E6%BA%AF%E6%BA%90%EF%BC%88%E6%BA%AF%E6%BA%90%E5%8F%8D%E5%88%B6%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">反溯源（溯源反制）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ip-%E5%AE%9A%E4%BD%8D%E6%8A%80%E6%9C%AF"><span class="toc-number">2.1.</span> <span class="toc-text">ip 定位技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#id-%E8%BF%BD%E8%B8%AA"><span class="toc-number">2.2.</span> <span class="toc-text">id 追踪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%AB%99url"><span class="toc-number">2.3.</span> <span class="toc-text">网站url</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%81%B6%E6%84%8F%E6%A0%B7%E6%9C%AC"><span class="toc-number">2.4.</span> <span class="toc-text">恶意样本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BE%E4%BA%A4%E8%B4%A6%E5%8F%B7"><span class="toc-number">2.5.</span> <span class="toc-text">社交账号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BB%E5%87%BB%E8%80%85%E7%94%BB%E5%83%8F"><span class="toc-number">2.6.</span> <span class="toc-text">攻击者画像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B-1"><span class="toc-number">2.7.</span> <span class="toc-text">案例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BE%E5%B7%A5"><span class="toc-number">2.7.1.</span> <span class="toc-text">社工</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6"><span class="toc-number">2.7.2.</span> <span class="toc-text">钓鱼邮件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%B2%E5%AE%88%E7%BB%84%E7%BB%87%E6%9E%B6%E6%9E%84"><span class="toc-number">2.8.</span> <span class="toc-text">防守组织架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BA%AF%E6%BA%90%E5%8F%8D%E5%88%B6%E6%80%BB%E7%BB%93"><span class="toc-number">2.9.</span> <span class="toc-text">溯源反制总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E6%BA%AF%E6%BA%90%EF%BC%88%E7%BA%A2%E9%98%9F%E8%A7%92%E5%BA%A6%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">如何防止溯源（红队角度）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#VPN"><span class="toc-number">3.1.</span> <span class="toc-text">VPN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E6%93%8D%E4%BD%9C%E6%81%B6%E4%B9%A0"><span class="toc-number">3.2.</span> <span class="toc-text">安全操作恶习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E8%9C%9C%E7%BD%90"><span class="toc-number">3.3.</span> <span class="toc-text">反蜜罐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%85%E9%99%A4%E6%97%A5%E5%BF%97%E6%96%B9%E5%BC%8F"><span class="toc-number">3.4.</span> <span class="toc-text">清除日志方式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20201228205809.JPG"></div><div class="author-info__name text-center">m0nk3y</div><div class="author-info__description text-center"></div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">Articles</span><span class="pull-right">62</span></a><a class="author-info-articles__tags article-meta" href="/tags"><span class="pull-left">Tags</span><span class="pull-right">53</span></a><a class="author-info-articles__categories article-meta" href="/categories"><span class="pull-left">Categories</span><span class="pull-right">9</span></a></div><hr><div class="author-info-links"><div class="author-info-links__title text-center">Links</div><a class="author-info-links__name text-center" target="_blank" rel="noopener" href="https://www.google.com">Google</a></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">m0nk3y's Blog @ D0g3</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus">   <a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a><a class="site-page" href="/tags">Tags</a><a class="site-page" href="/categories">Categories</a><a class="site-page" href="/about">About</a><a class="site-page" href="/link">Friends</a><a class="site-page" href="/mytalk">说说</a></span><span class="pull-right"></span></div><div id="post-info"><div id="post-title">如何防止溯源以及反溯源</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2021-02-21</time><div class="post-meta-wordcount"><span>Word count: </span><span class="word-count">4.4k</span><span class="post-meta__separator">|</span><span>Reading time: 13 min</span></div></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><p>温故而知新。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210222210541.png"></p>
+<a id="more"></a>
+
+
+
+<ul>
+<li>资料均来自互联网以及个人整理，仅用作学习用途，禁止非法利用，详情《网络安全法》。</li>
+<li>如有侵权，联系删除，感谢！</li>
+</ul>
+<h1 id="溯源"><a href="#溯源" class="headerlink" title="溯源"></a>溯源</h1><blockquote>
+<p>网络攻击溯源技术通过综合利用各种手段主动地追踪网络攻击发起者、定位攻击源，结合网络取证和威胁情报，有针对性地减缓或反制网络攻击，争取在造成破坏之前消除隐患，在网络安全领域具有非常重要的现实意义。</p>
+</blockquote>
+<p>攻击溯源技术，国外又被称为“Threat Hunting”，是为了应对外部APT攻击者和内部利益驱动的员工威胁而提出的一种解决方案。威胁狩猎[4]技术不被动地等待与响应，而是通过持续性监测技术，更早、更快地检测和发现威胁，并追踪威胁的源头。威胁狩猎技术强调用攻击者的视角来检测攻击，减少攻击者驻留时间，从而显著地改善组织的安全状况。放眼世界，包括FireEye等为代表的厂商以及越来越多的大型组织也开始进行威胁狩猎。</p>
+<p>工具</p>
+<p>安全分析师需要检查系统和网络上发生的历史操作记录和当前状态详细信息，因此需要依靠多种工具和数据源来协助溯源分析，常用的工具包括：</p>
+<ol>
+<li><p>安全监控工具：安全分析师使用不同来源的监控数据，例如防火墙、终端防护、网络入侵检测、内部威胁检测以及其他安全工具的监控数据，用以描绘驻留在网络中的攻击者所进行的活动。</p>
+</li>
+<li><p>可视化分析工具：帮助安全分析师通过使用交互式仪表板来实现复杂关系数据可视化，发现不同数据集之间的隐藏关联关系。</p>
+</li>
+<li><p>SIEM解决方案：SIEM解决方案从网络环境中的各种来源收集结构化日志数据，提供对数据的实时分析并向相关部门发出安全警报。SIEM解决方案可帮助安全分析师自动收集并利用来自安全监视工具和其他来源的大量日志数据，从而识别潜在安全威胁。</p>
+</li>
+<li><p>网络威胁情报：威胁情报提高了分析人员识别相关威胁并及时做出响应的能力，通过开源的威胁情报库实现信息交换，得到威胁分析所需的恶意IP地址、恶意软件哈希值等信息。</p>
+</li>
+<li><p>其他工具：一些特定功能的分析工具对攻击溯源也有很好的帮助，例如检查PDF操作、PowerShell操作等。</p>
+</li>
+</ol>
+<hr>
+<p>上面的说的太官方了，贴一个比较通俗易懂的。</p>
+<p>被攻击后溯源：</p>
+<blockquote>
+<p>出现异常的时间点(非常重要)、异常服务器的主要业务情况、大致的一个网络拓扑是不是在DMZ区、是否可以公网访问、开放了那些端口、是否有打补丁、使用了怎么样的一个web技术、最近是否做过什么变更、有没有什么安全设备之类的。</p>
+</blockquote>
+<p>根据收集到的信息，往往可以得出了几种可能。一个web服务器公网可以访问出现了被挂黑链的事件使用了s2框架，那么初步可以怀疑是s2-045 s2-046之类的命令执行漏洞了；如果一台公网服务器没有安装补丁又没有防火墙防护，administrator的密码为P@sswrod那么有很大的可能性是被暴力破解成功；后面的工作主要就是收集各种资料证明这一猜想即可。</p>
+<h2 id="攻击源捕获"><a href="#攻击源捕获" class="headerlink" title="攻击源捕获"></a>攻击源捕获</h2><p>安全设备报警，如扫描IP、威胁阻断、病毒木马、入侵事件等<br> 日志与流量分析，异常的通讯流量、攻击源与攻击目标等<br> 服务器资源异常，异常的文件、账号、进程、端口，启动项、计划任务和服务等<br> 邮件钓鱼，获取恶意文件样本、钓鱼网站URL等<br> 蜜罐系统，获取攻击者行为、意图的相关信</p>
+<h3 id="基于日志的溯源（Web-系统被攻击）"><a href="#基于日志的溯源（Web-系统被攻击）" class="headerlink" title="基于日志的溯源（Web 系统被攻击）"></a>基于日志的溯源（Web 系统被攻击）</h3><p>使用路由器、主机等设备记录网络传输的数据流中的关键信息(时间、源地址、目的地址)，追踪时基于日志查询做反向追踪。</p>
+<p>这种方式的优点在于兼容性强、支持事后追溯、网络开销较小。但是同时该方法也受性能、空间和隐私保护等的限制，考虑到以上的因素，可以限制记录的数据特征和数据数量。另外可以使用流量镜像等技术来减小对网络性能的影响。</p>
+<p>常见几个中间件的日志如下：</p>
+<blockquote>
+<p>1.apache的日志路径一般配置在httpd.conf的目录下或者位于/var/log/http</p>
+<p>2.IIS的日志默认在系统目录下的Logfiles下的目录当中</p>
+<p>3.tomcat 一般位于tomcat安装目录下的一个logs文件夹下面</p>
+<p>4.Nginx日志一般配置在nginx.conf或者vhost的conf文件中</p>
+<p>日志一般以日期命名，方便后续审计与安全人员进行分析。</p>
+</blockquote>
+<h3 id="主机系统、数据库系统"><a href="#主机系统、数据库系统" class="headerlink" title="主机系统、数据库系统"></a>主机系统、数据库系统</h3><p>Linux:</p>
+<p>/var/log/auth.log 包含系统授权信息，包括用户登录和使用的权限机制等信息</p>
+<p>/var/log/lastlog 记录登录的用户，可以使用命令lastlog查看</p>
+<p>/var/log/secure 记录大多数应用输入的账号与密码，登录成功与否</p>
+<p>/var/log/cron 记录crontab命令是否被正确的执行</p>
+<p>Windows：</p>
+<p>Windows平台下面的溯源就相对容易一些当然主要还是依靠windows的日志一般用 eventvwr命令打开事件查看器。默认分为三类：l应用程序、安全、性统 以evt文件形式存储%systemroot%\system32\config目录：</p>
+<p><img src="https://image.3001.net/images/20190426/1556290560_5cc31c00740d8.png!small"></p>
+<p>合理使用筛选器往往可以帮助我们更好的排查日志，比如怀疑是暴力破解入侵的筛选<strong>事件ID == 4625审核失败的日志，后续通过对时间的排查、以及源IP地址、类型与请求的频率进行分析来判断是否是来源于内网的暴力破解。</strong></p>
+<p><img src="https://image.3001.net/images/20190426/1556290578_5cc31c126b0eb.png!small"></p>
+<p>通过系统内部的日志来判断是否是恶意进程的运行状态。</p>
+<p><img src="https://image.3001.net/images/20190426/1556290597_5cc31c251d176.png!small"></p>
+<p>如下图是一个典型的SMB认证失败的情况：</p>
+<p><img src="https://image.3001.net/images/20190426/1556290673_5cc31c715e3fb.png!small"></p>
+<p>然后就是Windows 补丁了。</p>
+<h3 id="路由输入调试技术"><a href="#路由输入调试技术" class="headerlink" title="路由输入调试技术"></a>路由输入调试技术</h3><p>在攻击持续发送数据，且特性较为稳定的场景下，可以使用路由器的输入调试技术，在匹配到攻击流量时动态的向上追踪。这种方式在DDoS攻击追溯中比较有效，且网络开销较小。</p>
+<h2 id="分析模型——杀伤链模型-amp-钻石模型"><a href="#分析模型——杀伤链模型-amp-钻石模型" class="headerlink" title="分析模型——杀伤链模型&amp;钻石模型"></a>分析模型——杀伤链模型&amp;钻石模型</h2><p>杀伤链这个概念源自军事领域，它是一个描述攻击环节的模型。一般杀伤链有认为侦查跟踪(Reconnaissance)、武器构建(Weaponization)、载荷投递(Delivery)、漏洞利用(Exploitation)、安装植入(Installation)、通信控制(Command&amp;Control)、达成目标(Actions on Objective)等几个阶段。</p>
+<p>钻石模型由网络情报分析与威胁研究中心(The Center for Cyber Intelligence Anaysis and Threat Research，CCIATR)机构的Sergio Catagirone等人在2013年提出。</p>
+<p>该模型把所有的安全事件(Event)分为四个核心元素，即敌手(Adversary)，能力(Capability)，基础设施(Infrastructure)和受害者(Victim)，以菱形连线代表它们之间的关系，因而命名为“钻石模型”。</p>
+<p>杀伤链模型的特点是可说明攻击线路和攻击的进程，而钻石模型的特点是可说明攻击者在单个事件中的攻击目的和所使用攻击手法。</p>
+<h2 id="关联分析方法"><a href="#关联分析方法" class="headerlink" title="关联分析方法"></a>关联分析方法</h2><p>关联分析用于把多个不同的攻击样本结合起来。</p>
+<p>文档类（比如钓鱼，附件等。</p>
+<ul>
+<li>hash</li>
+<li>ssdeep</li>
+<li>版本信息(公司/作者/最后修改作者/创建时间/最后修改时间)</li>
+</ul>
+<p>行为分析</p>
+<p>基于网络行为，类似的交互方式</p>
+<p>可执行文件相似性分析</p>
+<ul>
+<li>特殊端口</li>
+<li>特殊字符串/密钥</li>
+<li>PDB文件路径<ul>
+<li>相似的文件夹</li>
+</ul>
+</li>
+<li>代码复用<ul>
+<li>相似的代码片段</li>
+</ul>
+</li>
+</ul>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><h3 id="bypass-师傅博客"><a href="#bypass-师傅博客" class="headerlink" title="bypass 师傅博客"></a>bypass 师傅博客</h3><p>案例一：邮件钓鱼攻击溯源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">攻防场景：攻击者利用社会工程学技巧伪造正常邮件内容，绕过邮件网关的查杀，成功投递到目标邮箱，诱骗用户点击邮件链接或下载附件文件。</span><br><span class="line">信息收集： 通过查看邮件原文，获取发送方IP地址、域名后缀邮箱、钓鱼网站或恶意附件样本等信息。</span><br><span class="line">溯源方式：第一种，可以通过相关联的域名&#x2F;IP进行追踪；第二种，对钓鱼网站进行反向渗透获取权限，进一步收集攻击者信息；第三种，通过对邮件恶意附件进行分析，利用威胁情报数据平台寻找同源样本获取信息，也能进一步对攻击者的画像进行勾勒。</span><br></pre></td></tr></table></figure>
+
+<p>案例二：Web入侵溯源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">攻防场景：攻击者通过NDAY和0DAY漏洞渗入服务器网段，Webshell 触发安全预警或者威胁检测阻断了C&amp;C域名的通讯。</span><br><span class="line">溯源方式：隔离webshell样本，使用Web日志还原攻击路径，找到安全漏洞位置进行漏洞修复，从日志可以找到攻击者的IP地址，但攻击者一般都会使用代理服务器或匿名网络（例如Tor）来掩盖其真实的IP地址。</span><br><span class="line">在入侵过程中，使用反弹shell、远程下载恶意文件、端口远程转发等方式，也容易触发威胁阻断，而这个域名&#x2F;IP，提供一个反向信息收集和渗透测试的路径。</span><br></pre></td></tr></table></figure>
+
+<p>案例三：蜜罐溯源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">攻防场景：在企业内网部署蜜罐去模拟各种常见的应用服务，诱导攻击者攻击。</span><br><span class="line">溯源方式：在攻击者入侵蜜罐时，蜜罐可以记录攻击者的入侵行为，获取攻击者的主机信息、浏览器信息、甚至是真实 IP及社交信息。</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="阿里云安全中心的案例"><a href="#阿里云安全中心的案例" class="headerlink" title="阿里云安全中心的案例"></a>阿里云安全中心的案例</h3><p>（其实是一个产品，不过这个图片思路值得学习）</p>
+<ul>
+<li>蠕虫传播事件</li>
+</ul>
+<p>下图描述了蠕虫传播源（例如：<code>185.234.*.*</code>）通过SSH暴力破解成功登录到服务器，并通过bash执行<strong>curl</strong>指令从远端下载挖矿程序并在服务器中执行该挖矿程序。</p>
+<p><img src="https://static-aliyun-doc.oss-accelerate.aliyuncs.com/assets/img/zh-CN/0713029951/p45771.png"></p>
+<ul>
+<li>Web漏洞入侵事件</li>
+</ul>
+<p>下图描述了黑客通过服务器（例如：<code>202.144.*.*</code>）发起攻击，通过Web漏洞向Linux服务器植入恶意shell脚本和挖矿程序，同时将代码写入计划任务（<strong>crond</strong>）实现攻击持久化。您可以通过溯源页面的节点信息，清晰地了解这一过程。此外，还可以观察到攻击者的多个IP及恶意下载源URL信息。</p>
+<p><img src="https://static-aliyun-doc.oss-accelerate.aliyuncs.com/assets/img/zh-CN/0713029951/p45773.png"></p>
+<h3 id="由WebShell-溯源攻击者的入侵途径"><a href="#由WebShell-溯源攻击者的入侵途径" class="headerlink" title="由WebShell 溯源攻击者的入侵途径"></a>由WebShell 溯源攻击者的入侵途径</h3><p><a target="_blank" rel="noopener" href="https://www.sec-un.org/by-webshell-intrusion-way-to-trace-the-attacker/">https://www.sec-un.org/by-webshell-intrusion-way-to-trace-the-attacker/</a></p>
+<h1 id="反溯源（溯源反制）"><a href="#反溯源（溯源反制）" class="headerlink" title="反溯源（溯源反制）"></a>反溯源（溯源反制）</h1><h2 id="ip-定位技术"><a href="#ip-定位技术" class="headerlink" title="ip 定位技术"></a>ip 定位技术</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">根据IP定位物理地址—代理IP</span><br><span class="line"> 溯源案例：通过IP端口扫描，反向渗透服务器进行分析，最终定位到攻击者相关信息</span><br></pre></td></tr></table></figure>
+
+<h2 id="id-追踪"><a href="#id-追踪" class="headerlink" title="id 追踪"></a>id 追踪</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ID追踪术，搜索引擎、社交平台、技术论坛、社工库匹配</span><br><span class="line">溯源案例：利用ID从技术论坛追溯邮箱，继续通过邮箱反追踪真实姓名，通过姓名找到相关简历信息</span><br></pre></td></tr></table></figure>
+
+<h2 id="网站url"><a href="#网站url" class="headerlink" title="网站url"></a>网站url</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">域名Whois查询—注册人姓名、地址、电话和邮箱。—域名隐私保护</span><br><span class="line"> 溯源案例：通过攻击IP历史解析记录&#x2F;域名，对域名注册信息进行溯源分析</span><br></pre></td></tr></table></figure>
+
+<p>但是一般技术人员应该都是静态博客吧，hexo 这些。</p>
+<h2 id="恶意样本"><a href="#恶意样本" class="headerlink" title="恶意样本"></a>恶意样本</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">提取样本特征、用户名、ID、邮箱、C2服务器等信息—同源分析</span><br><span class="line">溯源案例：样本分析过程中，发现攻击者的个人ID和QQ，成功定位到攻击者。</span><br></pre></td></tr></table></figure>
+
+<h2 id="社交账号"><a href="#社交账号" class="headerlink" title="社交账号"></a>社交账号</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">基于JSONP跨域，获取攻击者的主机信息、浏览器信息、真实 IP及社交信息等</span><br><span class="line"> 利用条件：可以找到相关社交网站的jsonp接口泄露敏感信息，相关网站登录未注销</span><br></pre></td></tr></table></figure>
+
+<h2 id="攻击者画像"><a href="#攻击者画像" class="headerlink" title="攻击者画像"></a>攻击者画像</h2><p>攻击路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">攻击目的：拿到权限、窃取数据、获取利益、DDOS等</span><br><span class="line">网络代理：代理IP、跳板机、C2服务器等</span><br><span class="line">攻击手法：鱼叉式邮件钓鱼、Web渗透、水坑攻击、近源渗透、社会工程等</span><br></pre></td></tr></table></figure>
+
+<p> 攻击者身份画像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">虚拟身份：ID、昵称、网名</span><br><span class="line">真实身份：姓名、物理位置</span><br><span class="line">联系方式：手机号、qq&#x2F;微信、邮箱</span><br><span class="line">组织情况：单位名称、职位信息</span><br></pre></td></tr></table></figure>
+
+<h2 id="案例-1"><a href="#案例-1" class="headerlink" title="案例"></a>案例</h2><h3 id="社工"><a href="#社工" class="headerlink" title="社工"></a>社工</h3><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210222225526.png"></p>
+<h3 id="钓鱼邮件"><a href="#钓鱼邮件" class="headerlink" title="钓鱼邮件"></a>钓鱼邮件</h3><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210222225945.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210222231625.png"></p>
+<h2 id="防守组织架构"><a href="#防守组织架构" class="headerlink" title="防守组织架构"></a>防守组织架构</h2><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210222230535.png"></p>
+<p>1、已知漏洞：演习之前，我们做了众测、红蓝对抗，发现了一些安全问题。相信这些问题，可能提前被某些攻击者已经掌握，于是将计就计，我们把这类漏洞做成诱饵。例如 shiro漏洞，springboot 的 actuator 监控等。</p>
+<p>2、热门漏洞：今年演习一波三折，第一天爆出了几十个0day，何不将计就计？利用这些漏洞来做诱饵呢，配上一些历史域名、欺骗域名服用，效果更佳。例如用 vpn.b.cn 运行某服 VPN 程序。</p>
+<p>3、产品特性：蜜罐厂家都有各自的特色。比如 A 家有Mysql 反制蜜罐，B家有RDP反制蜜罐，这些都可以合理搭配使用。</p>
+<h2 id="溯源反制总结"><a href="#溯源反制总结" class="headerlink" title="溯源反制总结"></a>溯源反制总结</h2><p>参考：<a target="_blank" rel="noopener" href="https://www.secrss.com/articles/27611">https://www.secrss.com/articles/27611</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210222234241.png"></p>
+<h1 id="如何防止溯源（红队角度）"><a href="#如何防止溯源（红队角度）" class="headerlink" title="如何防止溯源（红队角度）"></a>如何防止溯源（红队角度）</h1><blockquote>
+<p>前面两点都是蓝队角度。说说红队如何防止被溯源吧。</p>
+</blockquote>
+<p>任何需要认证的地方，不用自己真实的，也不用任何和公司有关的名词。</p>
+<p>任何需要交互操作的地方，都需要挂上全局代理，尽量不用暴露自己的真实ip，其次，警惕蜜罐，就那种看起来都多漏洞的站点，直接访问跳到后台，然后admin、123456就进去这种，稍微注意一下。</p>
+<p>任何服务器，C2、文件服务器，扫描器，都要特殊用途特殊操作。</p>
+<p>不开无用端口。</p>
+<p>即：匿名性、专业性、精细化</p>
+<hr>
+<blockquote>
+<p>别信所谓的绝对无后门，只不过是你发现不了。</p>
+<p>很多神器没有办法自己开发也只能将就着用</p>
+<p>所以我们为了避免信息泄露重</p>
+<p>要文件绝对不能放在攻击机上。</p>
+</blockquote>
+<p>（1）所有工作均在虚拟机进行</p>
+<p>（2）流量统一经网关走VPN进出</p>
+<p>（3）不同需求分配不同虚拟机</p>
+<p>（4）文件独立</p>
+<p>（5）全盘加密&amp;拒绝弱密码</p>
+<h2 id="VPN"><a href="#VPN" class="headerlink" title="VPN"></a>VPN</h2><p>真实APT的话，那肯定是高匿名性的。但是作为演习，一般就行了。</p>
+<ol>
+<li>线路匿名</li>
+</ol>
+<p>（1）网络接入点匿名</p>
+<p>（2）途径节点匿名且加密</p>
+<p>（3）使用的公网服务器匿名</p>
+<ol start="2">
+<li>网络接入点匿名</li>
+</ol>
+<h2 id="安全操作恶习"><a href="#安全操作恶习" class="headerlink" title="安全操作恶习"></a>安全操作恶习</h2><p>（1）图省事物理机连VPN直接搞</p>
+<p>这种情况基本意味着你没啥匿名可言</p>
+<p>而且一般这么做的人</p>
+<p>各种黑客软件也是直接在物理机运行。</p>
+<p>妥妥的成别人肉鸡，还是会自觉上线的那种。</p>
+<p>简直萌萌哒</p>
+<p>（2）账户混用</p>
+<p>比如在项目A中用了一个匿名邮箱</p>
+<p>或者其他什么账户。</p>
+<p>在项目B中继续使用。</p>
+<p>这样的话有关机构很容易</p>
+<p>根据这个邮箱把你的足迹关联起来</p>
+<p>由B挖出A，可能你在B项目中其他都做得很好</p>
+<p>没给别人机会追查你，但是</p>
+<p>项目A由于是你早期做的项目</p>
+<p>漏洞百出，给了他们追查你的机会。</p>
+<p>（3）公私不分</p>
+<p>最常见的就是随手把项目截图之类的东西</p>
+<p>经由私人账户发到QQ微信</p>
+<p>此外还有用私人邮箱，</p>
+<p>手机号发送文件和信息。接收验证码之类。</p>
+<p>（4）留特征值，这点多见于自写工具</p>
+<p>（5）电脑不关机就离开</p>
+<p>（6）黑页</p>
+<p>（7）密码通用</p>
+<p>（8）早期目标调研的时候用真实IP去访问</p>
+<h2 id="反蜜罐"><a href="#反蜜罐" class="headerlink" title="反蜜罐"></a>反蜜罐</h2><p>有插件、也可以自己判断是否为蜜罐。</p>
+<p>最好的方式是把浏览器中的登录记录给删点。或者是在虚拟机中操作。</p>
+<h2 id="清除日志方式"><a href="#清除日志方式" class="headerlink" title="清除日志方式"></a>清除日志方式</h2><ul>
+<li><code>kill &lt;bash process ID&gt;</code> 不会存储</li>
+<li><code>set +o history</code> 不写入历史记录</li>
+<li><code>unset HISTFILE</code> 清除历史记录的环境变量</li>
+</ul>
+<p>还有更多。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/99611.html">https://help.aliyun.com/document_detail/99611.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.secrss.com/articles/26264">https://www.secrss.com/articles/26264</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xiaozi/p/13817637.html">https://www.cnblogs.com/xiaozi/p/13817637.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://websec.readthedocs.io/zh/latest/defense/forensic.html">https://websec.readthedocs.io/zh/latest/defense/forensic.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/network/202168.html">https://www.freebuf.com/articles/network/202168.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.sec-un.org/by-webshell-intrusion-way-to-trace-the-attacker/">https://www.sec-un.org/by-webshell-intrusion-way-to-trace-the-attacker/</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/26217643">https://zhuanlan.zhihu.com/p/26217643</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/197104">https://www.anquanke.com/post/id/197104</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.secrss.com/articles/27611">https://www.secrss.com/articles/27611</a></p>
+<p><a target="_blank" rel="noopener" href="https://x.threatbook.cn/">https://x.threatbook.cn/</a></p>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">m0nk3y</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://hack-for.fun/49b7.html">https://hack-for.fun/49b7.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BA%A2%E8%93%9D%E5%AF%B9%E6%8A%97/">红蓝对抗</a></div><div class="social-share pull-right" data-disabled="google,facebook"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><nav id="pagination"><div class="next-post pull-right"><a href="/bd13.html"><span>免杀学习：静态恶意代码逃逸</span><i class="fa fa-chevron-right"></i></a></div></nav><div id="gitalk-container"></div><script>var gitalk = new Gitalk({
+  clientID: '6ceed9c245da8d33222a',
+  clientSecret: '143c0add0301972b963c8f672bf4e58a092673fb',
+  repo: 'Gitalk',
+  owner: 'ifonly-go2019',
+  admin: 'ifonly-go2019',
+  id: md5(decodeURI(location.pathname)),
+  language: 'zh-CN'
+})
+gitalk.render('gitalk-container')</script></div></div><footer class="footer-bg" style="background-image: url(https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20200825211012.jpg)"><div class="layout" id="footer"><div class="copyright">&copy;2019 - 2021 By m0nk3y</div><div class="framework-info"><span>Driven - </span><a target="_blank" rel="noopener" href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme - </span><a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="busuanzi"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@latest/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-ui-pack@latest/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.9.0"></script><script src="/js/fancybox.js?version=1.9.0"></script><script src="/js/sidebar.js?version=1.9.0"></script><script src="/js/copy.js?version=1.9.0"></script><script src="/js/fireworks.js?version=1.9.0"></script><script src="/js/transition.js?version=1.9.0"></script><script src="/js/scroll.js?version=1.9.0"></script><script src="/js/head.js?version=1.9.0"></script><script>if(/Android|webOS|iPhone|iPod|iPad|BlackBerry/i.test(navigator.userAgent)) {
+  $('#nav').addClass('is-mobile')
+  $('footer').addClass('is-mobile')
+  $('#top-container').addClass('is-mobile')
+}</script></body></html>
