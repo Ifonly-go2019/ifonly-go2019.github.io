@@ -6,7 +6,7 @@
   <link href="https://hack-for.fun/atom.xml" rel="self"/>
   
   <link href="https://hack-for.fun/"/>
-  <updated>2021-03-18T15:55:43.083Z</updated>
+  <updated>2021-03-18T15:56:58.050Z</updated>
   <id>https://hack-for.fun/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://hack-for.fun/b081.html"/>
     <id>https://hack-for.fun/b081.html</id>
     <published>2021-03-18T15:48:04.000Z</published>
-    <updated>2021-03-18T15:55:43.083Z</updated>
+    <updated>2021-03-18T15:56:58.050Z</updated>
     
     <content type="html"><![CDATA[<p>使用文档是这样的：</p><p>使用<code>mvn clean package -DskipTests</code>  ，我这里就报错了。</p><p>生成的jar位于<code>cli/target/ysomap-cli-0.0.1-SNAPSHOT-all.jar</code></p><p>执行<code>java -jar ysomap-0.0.1-SNAPSHOT-all.jar</code></p><p>解决如下：</p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210318235420.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210318235422.png"></p><p><img src="https://cdn.jsdelivr.net/gh/ifonly-go2019/PicGo//images/20210318235423.png"></p><p>解决办法：</p><p>用IDEA 自带的 maven install 就可以了。</p><p>具体报错原理的话：</p><p>可能是👇</p><p><a href="https://blog.csdn.net/u011734144/article/details/51894942">https://blog.csdn.net/u011734144/article/details/51894942</a></p><p>致谢：</p><p>感谢hpdoger师傅的解答。</p>]]></content>
     
